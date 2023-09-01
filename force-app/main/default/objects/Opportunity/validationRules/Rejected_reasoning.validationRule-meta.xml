@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Rejected_reasoning</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(ISPICKVAL( StageName , &apos;Rejected&apos;), ISBLANK(Rejected_Reason_Commercial__c))</errorConditionFormula>
+    <errorDisplayField>Rejected_Reason_Commercial__c</errorDisplayField>
+    <errorMessage>The Rejected Reasoning from Commercial has to be provided.</errorMessage>
+</ValidationRule>

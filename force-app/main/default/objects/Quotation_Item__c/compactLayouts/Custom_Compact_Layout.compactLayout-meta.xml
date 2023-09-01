@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Custom_Compact_Layout</fullName>
+    <fields>Name</fields>
+    <fields>Miscellaneous__c</fields>
+    <fields>Truck_idling_charges__c</fields>
+    <fields>MOT_fine_charges__c</fields>
+    <fields>Inspection__c</fields>
+    <fields>Container_stripping__c</fields>
+    <fields>Reefer_cntr_plug_in_charges__c</fields>
+    <fields>Bayan_cancellation_charge__c</fields>
+    <fields>Container_movement_charges__c</fields>
+    <fields>Non_Palletized_Surcharge__c</fields>
+    <label>Custom Compact Layout</label>
+</CompactLayout>

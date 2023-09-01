@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Import</fullName>
+    <active>true</active>
+    <label>Import</label>
+    <picklistValues>
+        <picklist>Payment_Terms__c</picklist>
+        <values>
+            <fullName>Advance Payment</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Cash Against Invoice</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Credit</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Quotation_Type__c</picklist>
+        <values>
+            <fullName>Air Export</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Air Import</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ISO Export</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ISO Import</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LCL Export</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LCL Import</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Local Operation Export</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Local Operation Import</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sea Export</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sea Import</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Status__c</picklist>
+        <values>
+            <fullName>Awaiting CRO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Confirmed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Issued</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Rejected</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Request for Revision</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Revised</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

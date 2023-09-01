@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>routenames__c</fullName>
+    <externalId>false</externalId>
+    <formula>Port_of_loading__r.Name + &quot; - &quot; +  Port_of_Destination__r.Name + &quot; - &quot; +   INCO_Term__r.Name</formula>
+    <label>routenames</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

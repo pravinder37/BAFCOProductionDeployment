@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Order_Item_Link__c</fullName>
+    <description>DEVELOPER USE ONLY.
+This field is used for mapping the order with respective item while Order Creation.
+Used Only for Development Purpose.</description>
+    <externalId>false</externalId>
+    <label>Order &amp; Item Link</label>
+    <length>255</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

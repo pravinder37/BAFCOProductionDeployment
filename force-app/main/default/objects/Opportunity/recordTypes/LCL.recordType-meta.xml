@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LCL</fullName>
+    <active>true</active>
+    <businessProcess>test</businessProcess>
+    <label>LCL</label>
+    <picklistValues>
+        <picklist>Business_Type__c</picklist>
+        <values>
+            <fullName>Export</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Import</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ForecastCategoryName</picklist>
+        <values>
+            <fullName>Best Case</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Closed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Commit</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Omitted</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pipeline</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>LeadSource</picklist>
+        <values>
+            <fullName>BAFCO_Website</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Email</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Social</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Word of mouth</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Service_Type__c</picklist>
+        <values>
+            <fullName>Air Export</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Air Import</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ISO Export</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ISO Import</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LCL Export</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LCL Import</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Local Operation Export</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Local Operation Import</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sea Export</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sea Import</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Service__c</picklist>
+        <values>
+            <fullName>Air Export</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Air Import</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FCL</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>ISO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LCL</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Local Operations</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Type</picklist>
+        <values>
+            <fullName>Existing Business</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>New Business</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

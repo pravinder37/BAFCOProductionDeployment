@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Purpose_of_Visit__c</fullName>
+    <externalId>false</externalId>
+    <label>Purpose of Visit</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Inquiry Follow up</fullName>
+                <default>false</default>
+                <label>Inquiry Follow up</label>
+            </value>
+            <value>
+                <fullName>Payment Followup</fullName>
+                <default>false</default>
+                <label>Payment Followup</label>
+            </value>
+            <value>
+                <fullName>Issues</fullName>
+                <default>false</default>
+                <label>Issues</label>
+            </value>
+            <value>
+                <fullName>Cold Call</fullName>
+                <default>false</default>
+                <label>Cold Call</label>
+            </value>
+            <value>
+                <fullName>Log a call</fullName>
+                <default>false</default>
+                <label>Log a call</label>
+            </value>
+            <value>
+                <fullName>Miscellaneous</fullName>
+                <default>false</default>
+                <label>Miscellaneous</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Tab_View__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF( Route__r.Opportunity_Enquiry__r.RecordType.Name ==  &apos;Air Freight&apos;, &apos;Total CBM Weight :&apos;&amp; Text( Route__r.Total_CBM__c ) &amp;&apos; Total Gross Weight:&apos;&amp; Text( Route__r.Total_Gross_Weight_KGs__c ) &amp;&apos; Total Volumetric Weight : &apos;&amp; Text( Route__r.Total_Volumetric_Weight__c ), &apos;CBM : &apos;&amp; Text(CBM__c) &amp;&apos; | Weight : &apos;&amp; Text(Weight_Kgs__c) &amp;&apos; | Units : &apos;&amp;Text(Units__c))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Tab View</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

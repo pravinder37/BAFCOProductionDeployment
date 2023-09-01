@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Looking_For__c</fullName>
+    <externalId>false</externalId>
+    <label>Looking For</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Ocean Freight</fullName>
+                <default>true</default>
+                <label>Ocean Freight</label>
+            </value>
+            <value>
+                <fullName>Air Freight</fullName>
+                <default>false</default>
+                <label>Air Freight</label>
+            </value>
+            <value>
+                <fullName>Transportation</fullName>
+                <default>false</default>
+                <label>Transportation</label>
+            </value>
+            <value>
+                <fullName>Warehousing</fullName>
+                <default>false</default>
+                <label>Warehousing</label>
+            </value>
+            <value>
+                <fullName>Custom Clearance</fullName>
+                <default>false</default>
+                <label>Custom Clearance</label>
+            </value>
+            <value>
+                <fullName>ISO Tanks</fullName>
+                <default>false</default>
+                <label>ISO Tanks</label>
+            </value>
+            <value>
+                <fullName>3PL &amp; 4PL</fullName>
+                <default>false</default>
+                <label>3PL &amp; 4PL</label>
+            </value>
+            <value>
+                <fullName>Container Terminals</fullName>
+                <default>false</default>
+                <label>Container Terminals</label>
+            </value>
+            <value>
+                <fullName>Project Cargo</fullName>
+                <default>false</default>
+                <label>Project Cargo</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
