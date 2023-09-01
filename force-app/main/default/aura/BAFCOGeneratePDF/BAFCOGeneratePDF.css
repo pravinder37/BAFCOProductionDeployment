@@ -1,0 +1,8 @@
+.THIS .customFont {
+ font-family: MontserratCustomfont;
+}
+
+@font-face {
+   font-family: MontserratCustomfont;
+   src: url('/resource/Montserrat/static/Montserrat-Medium.ttf') format('TrueType');
+}

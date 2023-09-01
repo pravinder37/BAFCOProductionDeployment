@@ -1,0 +1,6 @@
+.slds-modal__container {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 90rem;
+    min-width: 30rem;
+    }

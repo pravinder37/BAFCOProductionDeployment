@@ -1,0 +1,46 @@
+<template>
+    <lightning-layout multiple-rows>
+            <!--lightning-layout-item size="12">
+                <lightning-button label =' + Add Consignee'
+                                variant="Base"
+                                style="padding-left: 48%;"
+                                onclick={addConsignee}></lightning-button>
+            </lightning-layout-item-->
+        <!--template for:each={consigneeList} for:item="contr">
+            <lightning-layout-item key={contr} size="8" style="padding-bottom: 2px;" >
+                <c-b-a-f-c-o-custom-look-up-component
+                        obj-name="Account"
+                        search-placeholder="Search Consignee" 
+                        icon-name="standard:account"
+                        index={contr.index} 
+                        onlookupselected={handleConsigneeSelection}
+                        onlookupremoved={handleConsigneeRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                </lightning-layout-item>
+                <lightning-layout-item key={contr} size="4">
+                    <lightning-button-icon icon-name="utility:ban"
+                                variant="container"
+                                class="slds-m-top_large"  
+                                alternative-text="remove consignee" 
+                                title="remove consignee"
+                                data-record-id={contr.index}
+                                onclick={handleRemoveConsignee}></lightning-button-icon>
+                </lightning-layout-item>
+        </template-->
+        <lightning-layout-item size="11" class="slds-p-bottom_medium">
+            <span style="text-decoration: underline;color:#1a0dab;cursor: pointer;text-align:right;" onclick={handleNameClicked}>
+                {consigneeDisplayName}
+            </span>
+        </lightning-layout-item>
+        <lightning-layout-item size="1" class="slds-p-bottom_medium">
+            <span>
+                <lightning-button variant="base"
+                                  icon-name="utility:preview" 
+                                  onclick={handleDisplayAccountDetails}></lightning-button>
+            </span>
+        </lightning-layout-item>
+    </lightning-layout>
+    <template if:true={dispalayAccountDetails}>
+        <!--BAFCODisplayAccountDetails-->
+        <c-b-a-f-c-o-display-account-details header-title="Consignee Details" acc-id={consigneeId} onclose={handleHideAccountDetails} ></c-b-a-f-c-o-display-account-details>
+    </template>
+</template>

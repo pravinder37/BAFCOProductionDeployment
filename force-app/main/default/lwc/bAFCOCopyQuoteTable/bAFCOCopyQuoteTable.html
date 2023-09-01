@@ -1,0 +1,81 @@
+<template>
+    <lightning-quick-action-panel header="Copy To Mail ">
+        <div style="overflow-x: scroll !important;">
+            <p>Dear Valued Client,</p><br/>
+            <p>Thank you for giving BAFCO INTERNATIONAL the opportunity to quote for your order.</p><br/>
+            <p>Please find below the details:</p>
+            <br/>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th scope="col" if:true={havePickupPlace}>Place of Pickup</th>
+                        <th scope="col">Port of loading</th>
+                        <th scope="col" if:true={haveDischargePlace}>Place of Discharge</th>
+                        <th scope="col">Port of Destination</th>
+                        <th scope="col">Equipment type</th>
+                        <th scope="col">Service Type</th>
+                        <th scope="col">Inco Term</th>
+                        <th scope="col">Validity</th>
+                        <th scope="col">Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={tableData} for:item="item">
+                        <tr key={item} class="slds-hint-parent">
+                            <td scope="row" if:true={havePickupPlace}>{item.placeOfPickup}</td>
+                            <td scope="row">{item.loadingPort}</td>
+                            <td scope="row" if:true={haveDischargePlace}>{item.placeOfDischarge}</td>
+                            <td scope="row">{item.dischargePort}</td>
+                            <td scope="row">{item.equipmentType}</td>
+                            <td scope="row">{item.serviceType}</td>
+                            <td scope="row">{item.incoterm}</td>
+                            <td scope="row">{item.quotationValidity}</td>
+                            <td scope="row">{item.currencyCode} {item.total}</td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+            <br/>        
+            <p>We look forward to a positive response from your end.</p>
+            <br/>
+            <div>
+                <p><b style="text-decoration: underline;">Note:</b></p>
+            <ol class="slds-list_ordered">
+                <li>Subject to equipment & vessel space availability while placing booking.</li>
+                <li>Cargo insurance not covered in BAFCO scope.</li>
+                <li>Subject to war risk surcharge if any applied by line.</li>
+                <li>Standard free time at POD unless specified above.</li>
+                <li>ACID Number, Importer VAT ID, Exporter VAT ID mandatory to proceed with shipment for Egypt</li>
+            </ol>
+            </div>
+            <br/>
+            <template if:true={isExport}>
+                <p><b style="text-decoration: underline;">Above rates does not include the following charges which are additional:</b></p>
+                
+                <ol class="slds-list_ordered">
+                    <template for:each={HeaderList} for:item="item">
+                        <li  key={item}>{item}</li>
+                    </template></ol>
+                
+                <br/>
+                <p><b style="text-decoration: underline;">Above rates includes following operations:</b></p>
+                
+                <ol class="slds-list_ordered">
+                    <template for:each={inclHeaderList} for:item="item">
+                        <li  key={item}>{item}</li>
+                    </template>
+                </ol>
+            </template>
+            <template if:true={isImport}>
+                <p>Terms & Conditions:</p>
+                <p>{Header}</p>
+                <p>
+                    <template for:each={HeaderList} for:item="item">
+                        <p  key={item}>{item}</p>
+                    </template>
+                </p>
+            </template>
+            <br/>
+        </div>
+    </lightning-quick-action-panel>
+</template>

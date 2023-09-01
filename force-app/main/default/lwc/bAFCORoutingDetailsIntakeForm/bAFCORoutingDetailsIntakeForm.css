@@ -1,0 +1,89 @@
+@font-face {
+  font-family: "MontserratCustomfont";
+  src: url('/resource/Montserrat/static/Montserrat-Medium.ttf') format('TrueType');
+}
+:host {
+    --sds-c-tabs-item-color-border-active: #3A88F7;
+    --sds-c-tabs-item-color-border-hover: #3A88F7;
+    --sds-c-tabs-item-text-color: #5A5A5A;
+    --sds-c-tabs-item-text-color-active: #3A88F7;
+    font-family: "MontserratCustomfont";
+    font-weight: 700;
+    line-height: 16px;
+  }
+  .routingDetails{
+    font-family: "MontserratCustomfont";
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 900;
+    line-height: 16px;
+    letter-spacing: 0em;
+    text-align: left;
+  }
+  .incoCss{
+    font-family: "MontserratCustomfont";
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .profitLabel{
+    position: relative;
+    float: left;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "MontserratCustomfont";
+    font-size: 24px;
+    color: white;
+  }
+
+.buyingRateStyle{
+  text-align: center;
+  font-family: MontserratCustomfont;
+  background: #FFFFFF;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  margin-left: 14px;
+  margin-top: 5px;
+  margin-bottom: 8px;
+  border-radius: 7px;
+}
+.sellingRateStyle{
+  text-align: center;
+  font-family: MontserratCustomfont;
+   background: #FFFFFF;
+   padding-top: 14px;
+   padding-bottom: 14px;
+   margin-bottom: 8px;
+   border-radius: 7px;
+   margin-top: 5px;
+}
+.leadDetails{
+  font-family: MontserratCustomfont;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 15px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: #212121;
+}
+.leadLabel{
+  font-family: MontserratCustomfont;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 30px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: #5A5A5A;
+}
+.customFont{
+  font-family: "MontserratCustomfont";
+}
+.shippLineLabelCSS{
+  padding-top: 6%;
+}
+.shipLineValueCSS{
+  padding-right: 12%;
+  margin-left: 7%;
+}

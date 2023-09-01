@@ -1,0 +1,199 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                    <lightning-icon icon-name="utility:close"
+                        alternative-text="close"
+                        variant="inverse"
+                        size="small" ></lightning-icon>
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create Template</h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="overflow-y: scroll !important;">
+                <lightning-card>
+                    <div slot="title">
+                      <h3>
+                          <lightning-icon icon-name="standard:contact" size="small"></lightning-icon> Insert a Template Record           
+                      </h3>
+                      </div>
+                <lightning-layout multiple-rows>
+                    <lightning-layout-item size="12" style="padding-left: 20px;">
+                        <lightning-input label="Template Name "
+                            onchange={handleTemplateNameChange} 
+                            style="width: 40%;"
+                            class="slds-m-bottom_medium"
+                            value={name}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <label class="slds-form-element__label">
+                            <p style="padding-left: 22px">Field1 Name</p>
+                        </label>
+                        <c-b-a-f-c-o-custom-look-up-component
+                                                    obj-name="Additional_Charge__c"
+                                                    search-placeholder="Search Additional Charge" 
+                                                    icon-name="standard:account"
+                                                    onlookupselected={handleField1Selection}
+                                                    onlookupremoved={handleField1Removed}></c-b-a-f-c-o-custom-look-up-component>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <lightning-input type="number" label="Value"
+                            onchange={handleField1ValueChange} 
+                            value={field1Value}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <label class="slds-form-element__label">
+                            <p style="padding-left: 22px">Field2 Name</p>
+                        </label>
+                        <c-b-a-f-c-o-custom-look-up-component
+                                                    obj-name="Additional_Charge__c"
+                                                    search-placeholder="Search Additional Charge" 
+                                                    icon-name="standard:account"
+                                                    onlookupselected={handleField2Selection}
+                                                    onlookupremoved={handleField2Removed}></c-b-a-f-c-o-custom-look-up-component>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <lightning-input type="number" label="Value"
+                            onchange={handleField2ValueChange} 
+                            value={field2Value}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <label class="slds-form-element__label">
+                            <p style="padding-left: 22px">Field3 Name</p>
+                        </label>
+                        <c-b-a-f-c-o-custom-look-up-component
+                                                    obj-name="Additional_Charge__c"
+                                                    search-placeholder="Search Additional Charge" 
+                                                    icon-name="standard:account"
+                                                    onlookupselected={handleField3Selection}
+                                                    onlookupremoved={handleField3Removed}></c-b-a-f-c-o-custom-look-up-component>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <lightning-input type="number" label="Value"
+                            onchange={handleField3ValueChange} 
+                            value={field3Value}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <label class="slds-form-element__label">
+                            <p style="padding-left: 22px">Field4 Name</p>
+                        </label>
+                        <c-b-a-f-c-o-custom-look-up-component
+                                                    obj-name="Additional_Charge__c"
+                                                    search-placeholder="Search Additional Charge" 
+                                                    icon-name="standard:account"
+                                                    onlookupselected={handleField4Selection}
+                                                    onlookupremoved={handleField4Removed}></c-b-a-f-c-o-custom-look-up-component>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <lightning-input type="number" label="Value"
+                            onchange={handleField4ValueChange} 
+                            value={field4Value}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <label class="slds-form-element__label">
+                            <p style="padding-left: 22px">Field5 Name</p>
+                        </label>
+                        <c-b-a-f-c-o-custom-look-up-component
+                                                    obj-name="Additional_Charge__c"
+                                                    search-placeholder="Search Additional Charge" 
+                                                    icon-name="standard:account"
+                                                    onlookupselected={handleField5Selection}
+                                                    onlookupremoved={handleField5Removed}></c-b-a-f-c-o-custom-look-up-component>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <lightning-input type="number" label="Value"
+                            onchange={handleField5ValueChange} 
+                            value={field5Value}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <label class="slds-form-element__label">
+                            <p style="padding-left: 22px">Field6 Name</p>
+                        </label>
+                        <c-b-a-f-c-o-custom-look-up-component
+                                                    obj-name="Additional_Charge__c"
+                                                    search-placeholder="Search Additional Charge" 
+                                                    icon-name="standard:account"
+                                                    onlookupselected={handleField6Selection}
+                                                    onlookupremoved={handleField6Removed}></c-b-a-f-c-o-custom-look-up-component>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <lightning-input type="number" label="Value"
+                            onchange={handleField6ValueChange} 
+                            value={field6Value}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <label class="slds-form-element__label">
+                            <p style="padding-left: 22px">Field7 Name</p>
+                        </label>
+                        <c-b-a-f-c-o-custom-look-up-component
+                                                    obj-name="Additional_Charge__c"
+                                                    search-placeholder="Search Additional Charge" 
+                                                    icon-name="standard:account"
+                                                    onlookupselected={handleField7Selection}
+                                                    onlookupremoved={handleField7Removed}></c-b-a-f-c-o-custom-look-up-component>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <lightning-input type="number" label="Value"
+                            onchange={handleField7ValueChange} 
+                            value={field7Value}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <label class="slds-form-element__label">
+                            <p style="padding-left: 22px">Field8 Name</p>
+                        </label>
+                        <c-b-a-f-c-o-custom-look-up-component
+                                                    obj-name="Additional_Charge__c"
+                                                    search-placeholder="Search Additional Charge" 
+                                                    icon-name="standard:account"
+                                                    onlookupselected={handleField8Selection}
+                                                    onlookupremoved={handleField8Removed}></c-b-a-f-c-o-custom-look-up-component>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <lightning-input type="number" label="Value"
+                            onchange={handleField8ValueChange} 
+                            value={field8Value}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <label class="slds-form-element__label">
+                            <p style="padding-left: 22px">Field9 Name</p>
+                        </label>
+                        <c-b-a-f-c-o-custom-look-up-component
+                                                    obj-name="Additional_Charge__c"
+                                                    search-placeholder="Search Additional Charge" 
+                                                    icon-name="standard:account"
+                                                    onlookupselected={handleField9Selection}
+                                                    onlookupremoved={handleField9Removed}></c-b-a-f-c-o-custom-look-up-component>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <lightning-input type="number" label="Value"
+                            onchange={handleField9ValueChange} 
+                            value={field9Value}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <label class="slds-form-element__label">
+                            <p style="padding-left: 22px">Field10 Name</p>
+                        </label>
+                        <c-b-a-f-c-o-custom-look-up-component
+                                                    obj-name="Additional_Charge__c"
+                                                    search-placeholder="Search Additional Charge" 
+                                                    icon-name="standard:account"
+                                                    onlookupselected={handleField10Selection}
+                                                    onlookupremoved={handleField10Removed}></c-b-a-f-c-o-custom-look-up-component>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <lightning-input type="number" label="Value"
+                            onchange={handleField10ValueChange} 
+                            value={field10Value}></lightning-input>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-card>
+            </div>
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick={closeModal} title="Cancel">Cancel</button>
+                <button class="slds-button slds-button_brand" onclick={submitDetails} title="Save">Save</button>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

@@ -1,0 +1,14 @@
+@font-face {
+    font-family: "MontserratCustomfont";
+    src: url('/resource/Montserrat/static/Montserrat-Medium.ttf') format('TrueType');
+ }
+ .customFont{
+    font-family: "MontserratCustomfont";
+}
+.labelCss{
+    color: #5A5A5A;
+}
+.labelDataCss{
+    font-weight: 600;
+    line-height: 22px;
+}

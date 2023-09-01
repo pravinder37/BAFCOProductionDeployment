@@ -1,0 +1,27 @@
+<aura:component implements="lightning:isUrlAddressable,force:appHostable,force:hasRecordId,flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:lightningQuickAction"
+                access="global" controller="BAFCOEditOpportunityController" >
+   <lightning:navigation aura:id="navService"/>
+    <aura:attribute name="pageReference" type="Object"/>
+    <aura:attribute name="refRecordId" type="String" />
+    <aura:attribute name="isEdit" type="String" default="false" />
+    <aura:attribute name="isAir" type="String" default="true" />
+    <aura:attribute name="optyId" type="String" default="" />
+    <aura:attribute name="device" type="String" />
+    <aura:handler name="init" action="{!c.navigateToLC}" value="{!this}" />
+    <aura:if isTrue="{!v.device == 'PHONE'}">
+    <aura:html tag="style">
+        .slds-modal__container{
+        max-width: 60rem !important;
+        width:60% !important;
+        }
+        .slds-modal__content{
+            overflow-y:hidden !important;
+            height:unset !important;
+            max-height:unset !important;
+        }
+    </aura:html>
+	<div style="background: white;">
+        <c:bAFCOAirFreightEnquiryParent quoteID="{!v.refRecordId}" optyId="{!v.optyId}" isEdit="{!v.isEdit}" isAir="{!v.isAir}" />
+    </div>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,1171 @@
+<template>
+    <lightning-layout multiple-rows class="slds-gutters narrow-form" style="background-color: #f7f7f7;" >
+        <!--lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Regular Routing</p>
+            <span class=leadDetails>{routingRegular}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Kind of Shipment</p>
+            <span class=leadDetails>{shipmentKind}</span>
+        </lightning-layout-item-->
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Service of Type</p>
+            <span class=leadDetails>{serviceType}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">INCO Term</p>
+            <span class=leadDetails>{incoTerm}</span>            
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Port of Loading</p>
+            <span class=leadDetails>{portLoading}</span>            
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Port of Destination</p>
+            <span class=leadDetails>{portDestination}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Shipping Line</p>
+            <span class=leadDetails>{shippingLine}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Commodity</p>
+            <span class=leadDetails>{commodity}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Business Type</p>
+            <span class=leadDetails>{businessType}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium" if:true={pickupPlaceName}>
+            <p class="slds-m-top_small leadLabel">Place of Pickup</p>
+            <span class=leadDetails>{pickupPlaceName}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium" if:true={dischargePlaceName}>
+            <p class="slds-m-top_small leadLabel">Place of Discharge</p>
+            <span class=leadDetails>{dischargePlaceName}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" title={remarks} style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Remarks</p>
+            <span class=leadDetails>{remarks}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" title={cargoReadiness} class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Cargo Readiness</p>
+            <span class=leadDetails>{cargoReadiness}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" title={equipmentType} style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Equipment Types</p>
+            <span class=leadDetails>{equipmentType}</span>
+        </lightning-layout-item>
+    </lightning-layout>
+    <lightning-layout-item size="12" class="slds-m-left_xx-large" >
+        <lightning-layout multiple-rows style="margin-left: 70%;">
+            <lightning-layout-item size="12">
+                <lightning-button variant="base"
+                        icon-name="utility:add" 
+                        label="Add New Agent" 
+                        title="Add New Agent"
+                        style="font-weight: 600;float: right;"                                                
+                        onclick={handleShowaddAgentModel}></lightning-button>
+            </lightning-layout-item>
+            <lightning-layout-item size="12">
+                <lightning-button variant="brand"
+                        label="Quick Action" 
+                        title="Quick Action"
+                        style="font-weight: 600;float: right;padding-top: 10%;"                                                
+                        onclick={handleQuickActionClicked}></lightning-button>
+            </lightning-layout-item>
+        </lightning-layout>
+    </lightning-layout-item>
+    <template if:true={routingList} >
+        <lightning-layout style="background: white;">
+            <lightning-layout-item size="7">
+                <lightning-tabset class="agentTab">
+                    <template if:true={routlistNotfound}>
+                        <p class="slds-align_absolute-center slds-m-top_xx-large" style="min-height: 200px;">No Rate Found</p>
+                    </template>
+                    <template for:each={routingList} for:item="map">                        
+                        <lightning-tab label={map.key} key={map.key} value={map.key} onactive={handleAgentActive}>
+                            <lightning-tabset class="shipLineTab" active-tab-value={shippingTabSelected}>
+                                <template for:each={map.value} for:item="shipLine">
+                                    <lightning-tab label={shipLine.key2} key={shipLine.key2} value={shipLine.key2} onactive={handleShipLineActive}>
+                                        <lightning-tabset class="shipLineTab" active-tab-value={shippingEquipTabSelected}>
+                                            <template for:each={shipLine.value2} for:item="equip">
+                                                <lightning-tab label={equip.equipmentName} key={equip.equipmentName} value={equip.uniqueEquip} onactive={handleEquipmentNameActive}>
+                                                    <lightning-layout multiple-rows if:false={equipNotfound} >
+                                                        <lightning-layout-item size="4" ><!-- so as to make three columns --></lightning-layout-item>
+                                                        <lightning-layout-item size="4" ><b>Buying Rate</b></lightning-layout-item>
+                                                        <lightning-layout-item size="4" ><b>Selling Rate</b></lightning-layout-item>
+                                                        <lightning-layout-item size="4" class="slds-m-top_large" style="font-size: 16px;">
+                                                            <b>Sea Freight</b>
+                                                            <lightning-button variant="base"
+                                                            icon-name="utility:info" 
+                                                            onclick={handleShowServiceCharge}></lightning-button>
+                                                        </lightning-layout-item>
+                                                        <lightning-layout-item size="4" >
+                                                            <lightning-input style="padding-right: 10px;" disabled value={seaFreight}
+                                                            ></lightning-input>
+                                                        </lightning-layout-item>
+                                                        <lightning-layout-item size="4" >
+                                                            <lightning-input type="number" data-field="sellingRateField" style="padding-right: 10px;" onchange={handleSellRateChange}                                                 
+                                                            value={seaFreightSellRate}></lightning-input>
+                                                        </lightning-layout-item>
+                                                        <!--Service Charges-->
+                                                        <lightning-layout-item size="12" style="padding-top: 4%;">
+                                                            <lightning-layout multiple-rows if:true={totalSl}>
+                                                                <lightning-layout-item size="12">
+                                                                    <lightning-layout style="padding-bottom: 12px;">
+                                                                        <lightning-layout-item size="4"><b>Shipping Line Charge</b></lightning-layout-item>
+                                                                        <lightning-layout-item size="4"><lightning-input label="Add To Buying Rate" 
+                                                                            type="checkbox"
+                                                                            checked={addServiceCharge} 
+                                                                            onchange={handleaddServiceChargeChange}></lightning-input>
+                                                                        </lightning-layout-item>
+                                                                        <lightning-layout-item size="4"><lightning-input label="Included (Quotation PDF)" 
+                                                                            type="checkbox"
+                                                                            checked={includeServiceCharge} 
+                                                                            onchange={handleincludeServiceChargeChange}></lightning-input>
+                                                                        </lightning-layout-item>
+                                                                    </lightning-layout>
+                                                                </lightning-layout-item>
+                                                                <template if:true={displayAllServiceChargeField}>
+                                                                    <lightning-layout-item size="12">
+                                                                        <lightning-layout multiple-rows>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={BAF}><b>BAF</b></lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="selllingFieldCSS" if:true={BAF}>
+                                                                                <lightning-input 
+                                                                                        type="number"
+                                                                                        value={BAF}
+                                                                                        disabled={shippTotalChanged}
+                                                                                        onchange={handleBAFChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="selllingFieldCSS" if:true={BAF}>
+                                                                                <lightning-input 
+                                                                                        type="number"
+                                                                                        value={sellingBAF}
+                                                                                        disabled={shippTotalChanged}
+                                                                                        onchange={handlesellingBAFBAFChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={bunkerCharges}><b>Bunker Charges</b></lightning-layout-item>
+                                                                            <lightning-layout-item  size="4" class="selllingFieldCSS" if:true={bunkerCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={bunkerCharges}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleBunkerChargesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={bunkerCharges}>
+                                                                                <lightning-input 
+                                                                                        type="number"
+                                                                                        value={sellingbunkerCharges}
+                                                                                        disabled={shippTotalChanged}
+                                                                                        onchange={handleSellingBunkerChargesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={cleaningCharges}><b>Cleaning Charges</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={cleaningCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={cleaningCharges}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleCleaningChargesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={cleaningCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingcleaningCharges}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingCleaningChargesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={CMC}><b>Container Maintenance Charges</b></lightning-layout-item>
+                                                                            <lightning-layout-item  class="selllingFieldCSS"  size="4" if:true={CMC}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={CMC}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleCMCChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item  class="selllingFieldCSS"  size="4" if:true={CMC}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingCMC}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handlesellingCMCChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={carriageCongestionSurcharge}><b>Congestion Surcharge</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={carriageCongestionSurcharge}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={carriageCongestionSurcharge}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleCarriageCongestionChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={carriageCongestionSurcharge}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingcarriageCongestionSurcharge}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingCarriageCongestionChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={carrierSecurityFees}><b>carrier Security Fees</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={carrierSecurityFees}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={carrierSecurityFees}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSecurityFeeChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={carrierSecurityFees}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingcarrierSecurityFees}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingSecurityFeeChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={dgSurcharge}><b>DG Surcharge</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={dgSurcharge}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={dgSurcharge}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleDGSurchargeChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={dgSurcharge}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingdgSurcharge}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingDGSurchargeChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={DTHC}><b>DTHC</b></lightning-layout-item>                                                                            
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={DTHC}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={DTHC}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleDTHCChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={DTHC}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingDTHC}
+                                                                                    disabled={sellingshippTotalChanged}
+                                                                                    onchange={handleSellingDTHCChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={equipmentImbalance}><b>Equipment Imbalance</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={equipmentImbalance}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={equipmentImbalance}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleequipmentImblanceChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={equipmentImbalance}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingequipmentImbalance}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingequipmentImblanceChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={inlandFuelCharges}><b>InLand FuelCharges</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={inlandFuelCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={inlandFuelCharges}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleInlandFuelChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={inlandFuelCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellinginlandFuelCharges}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingInlandFuelChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={inlandHandlingfees}><b>InLand Handling Fees</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={inlandHandlingfees}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={inlandHandlingfees}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleInlandHandlingfeesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={inlandHandlingfees}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellinginlandHandlingfees}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingInlandHandlingfeesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={inlandHaulage}><b>InLand Haulage</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={inlandHaulage}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={inlandHaulage}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleInlandHaulageChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={inlandHaulage}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellinginlandHaulage}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingInlandHaulageChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={ISPS}><b>ISPS</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={ISPS}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={ISPS}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleISPSChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={ISPS}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingISPS}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingISPSChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={lowerSulphurSurcharge}><b>Lower Sulphur Surcharge</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={lowerSulphurSurcharge}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={lowerSulphurSurcharge}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleLowerSulpherChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={lowerSulphurSurcharge}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellinglowerSulphurSurcharge}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingLowerSulpherChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={operationalRecovery}><b>Operational Recovery</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={operationalRecovery}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={operationalRecovery}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleOperationalRecoveryChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={operationalRecovery}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingoperationalRecovery}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingOperationalRecoveryChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={OTHC}><b>OTHC</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={OTHC}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={OTHC}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleOTHCChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={OTHC}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingOTHC}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingOTHCChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={overWeightCharge}><b>Over Weight Charge</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={overWeightCharge}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={overWeightCharge}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleOverWeightChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={overWeightCharge}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingoverWeightCharge}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingOverWeightChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={sealCharges}><b>Seal Charges</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={sealCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sealCharges}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSealChargesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={sealCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingsealCharges}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingSealChargesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={warRiskSurcharges}><b>War Risk Charges</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={warRiskSurcharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={warRiskSurcharges}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleWarRiskSurchgesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={warRiskSurcharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingwarRiskSurcharges}
+                                                                                    disabled={shippTotalChanged}
+                                                                                    onchange={handleSellingWarRiskSurchgesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={totalSl}><b>Total Shipping Line Charge</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={totalSl}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    disabled
+                                                                                    value={totalSl}
+                                                                                    onchange={handletotalSlChange}></lightning-input>
+                                                                            </lightning-layout-item>  
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={totalSl}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    disabled
+                                                                                    value={sellingtotalSl}></lightning-input>
+                                                                            </lightning-layout-item>   
+                                                                        </lightning-layout>
+                                                                    </lightning-layout-item>
+                                                                </template>
+                                                                <template if:false={displayAllServiceChargeField} >
+                                                                    <lightning-layout-item size="4" class="labelStyle"><b>Total Shipping Line Charge</b></lightning-layout-item>
+                                                                    <lightning-layout-item class="selllingFieldCSS" size="4">
+                                                                        <lightning-input 
+                                                                            type="number"
+                                                                            disabled
+                                                                            value={totalSl}
+                                                                            onchange={handletotalSlChange}></lightning-input>
+                                                                    </lightning-layout-item>
+                                                                    <lightning-layout-item class="selllingFieldCSS" size="4">
+                                                                        <lightning-input 
+                                                                            type="number"
+                                                                            value={sellingtotalSl}
+                                                                            onchange={handleSellingtotalSlChange}></lightning-input>
+                                                                    </lightning-layout-item>
+                                                                </template>
+                                                            </lightning-layout>
+                                                        </lightning-layout-item>
+                                                        <lightning-layout-item size="12" style="padding-top: 4%;">
+                                                            <lightning-layout multiple-rows if:true={TotalOrigincharges}>
+                                                                <lightning-layout-item size="12">
+                                                                    <lightning-layout style="padding-bottom: 12px;">
+                                                                        <lightning-layout-item size="4"><b>Origin Charges</b></lightning-layout-item>
+                                                                        <lightning-layout-item size="4"><lightning-input label="Add To Buying Rate" 
+                                                                            type="checkbox"
+                                                                            checked={addOriginCharge} 
+                                                                            onchange={handleaddOriginChargeChange}></lightning-input>
+                                                                        </lightning-layout-item>
+                                                                        <lightning-layout-item size="4"><lightning-input label="Included (Quotation PDF)" 
+                                                                            type="checkbox"
+                                                                            checked={includeOriginCharge} 
+                                                                            onchange={handleincludeOriginChargeChange}></lightning-input>
+                                                                        </lightning-layout-item>
+                                                                    </lightning-layout>
+                                                                </lightning-layout-item>
+                                                                <template if:true={displayOriginChargeCharge}>
+                                                                    <lightning-layout-item size="12">
+                                                                        <lightning-layout multiple-rows>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={bayan}><b>Bayan</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={bayan}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={bayan}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleBayanChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={bayan}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingbayan}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingBayanChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={blFees}><b>BL Fees</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={blFees}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={blFees}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleBLFeesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={blFees}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingblFees}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingBLFeesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={originCustomClearance}><b>Origin Custom Clearance</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={originCustomClearance}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={originCustomClearance}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleoriginCustomClerancehange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={originCustomClearance}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingoriginCustomClearance}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingoriginCustomClerancehange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={exportServiceFees}><b>Export Service Fees</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={exportServiceFees}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={exportServiceFees}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleExportServicehange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={exportServiceFees}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingexportServiceFees}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingExportServicehange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={fasahFees}><b>Fasah Fees</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={fasahFees}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={fasahFees}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleFasahFeeChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={fasahFees}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingfasahFees}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingFasahFeeChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={fuelSurcharge}><b>Fuel Surcharges</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={fuelSurcharge}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={fuelSurcharge}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleFuelsurchargeChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={fuelSurcharge}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingfuelSurcharge}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingFuelsurchargeChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={inspection}><b>Inspection</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={inspection}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={inspection}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleInspectionChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={inspection}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellinginspection}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingInspectionChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={insuranceCharges}><b>Insurance Charges</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={insuranceCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={insuranceCharges}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleinsuranceChargeChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={insuranceCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellinginsuranceCharges}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellinginsuranceChargeChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={liftOnLiftOff}><b>Lift On Lift Off</b></lightning-layout-item>
+                                                                            <lightning-layout-item  class="selllingFieldCSS" size="4" if:true={liftOnLiftOff}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={liftOnLiftOff}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleLiftOnOffChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item  class="selllingFieldCSS" size="4" if:true={liftOnLiftOff}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingliftOnLiftOff}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingLiftOnOffChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={OriginDetention}><b>Origin Detention</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={OriginDetention}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={OriginDetention}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleOriginDetentionChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={OriginDetention}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingOriginDetention}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingOriginDetentionChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={OriginLoadingCharges}><b>Origin Loading Charges</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={OriginLoadingCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={OriginLoadingCharges}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleOriginLoadingChargesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={OriginLoadingCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingOriginLoadingCharges}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingOriginLoadingChargesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={pickUpCharges}><b>PickUp Charges</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={pickUpCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={pickUpCharges}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handlePickUpChargeChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={pickUpCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingpickUpCharges}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingPickUpChargeChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={ReeferControlPlugInCharge}><b>Reefer Control Plug In Charge</b></lightning-layout-item>
+                                                                            <lightning-layout-item  class="selllingFieldCSS" size="4" if:true={ReeferControlPlugInCharge}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={ReeferControlPlugInCharge}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleReferPlugInChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item  class="selllingFieldCSS" size="4" if:true={ReeferControlPlugInCharge}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingReeferControlPlugInCharge}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingReferPlugInChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={tabadul}><b>Tabadul</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={tabadul}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={tabadul}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handletabadulChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={tabadul}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingtabadul}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingtabadulChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={trapulinCharges}><b>Tarpulin Charges</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={trapulinCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={trapulinCharges}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleTrapulinChargesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={trapulinCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingtrapulinCharges}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingTrapulinChargesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={truckIdlingCharges}><b>Truck Idling Charges</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={truckIdlingCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={truckIdlingCharges}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleTruckIdlingChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={truckIdlingCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingtruckIdlingCharges}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingTruckIdlingChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={transportationCharges}><b>Transportation Charges</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={transportationCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={transportationCharges}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleTransPortationChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={transportationCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingtransportationCharges}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingTransPortationChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={vgm}><b>VGM</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={vgm}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={vgm}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleVGMChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={vgm}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingvgm}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingVGMChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={lashingCharges}><b>Lashing Charge</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={lashingCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={lashingCharges}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handlelashingChargesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS"  size="4" if:true={lashingCharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellinglashingCharges}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellinglashingChargesChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={xray}><b>Xray</b></lightning-layout-item>
+                                                                            <lightning-layout-item  class="selllingFieldCSS" size="4"  if:true={xray}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={xray}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handlexrayChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item  class="selllingFieldCSS" size="4"  if:true={xray}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={sellingxray}
+                                                                                    disabled={originTotalChanged}
+                                                                                    onchange={handleSellingxrayChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item size="4" class="labelStyle"  if:true={TotalOrigincharges}><b>Total Origin Charges</b></lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={TotalOrigincharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    value={TotalOrigincharges}
+                                                                                    disabled
+                                                                                    onchange={handletotalOriginChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={TotalOrigincharges}>
+                                                                                <lightning-input 
+                                                                                    type="number"
+                                                                                    disabled
+                                                                                    value={sellingTotalOrigincharges}
+                                                                                    onchange={handletotalSellingOriginChange}></lightning-input>
+                                                                            </lightning-layout-item>
+                                                                        </lightning-layout>
+                                                                    </lightning-layout-item>
+                                                                </template>
+                                                                <template if:false={displayOriginChargeCharge} >
+                                                                    <lightning-layout-item size="4" class="labelStyle" ><b>Total Origin Charges</b></lightning-layout-item>
+                                                                    <lightning-layout-item class="selllingFieldCSS" size="4">
+                                                                        <lightning-input 
+                                                                            type="number"
+                                                                            disabled
+                                                                            value={TotalOrigincharges}
+                                                                            onchange={handletotalSlChange}></lightning-input>
+                                                                    </lightning-layout-item>
+                                                                    <lightning-layout-item class="selllingFieldCSS" size="4">
+                                                                        <lightning-input 
+                                                                            type="number"
+                                                                            value={sellingTotalOrigincharges}
+                                                                            onchange={handletotalSellingOriginChange}></lightning-input>
+                                                                    </lightning-layout-item>
+                                                                </template>
+                                                            </lightning-layout>
+                                                        </lightning-layout-item>
+                                                        <lightning-layout-item size="12" style="padding-top: 4%;">
+                                                            <lightning-layout multiple-rows if:true={destinTotalCharges}>
+                                                                <lightning-layout-item size="12">
+                                                                    <lightning-layout style="padding-bottom: 12px;">
+                                                                        <lightning-layout-item size="4"><b>Destination Charges</b></lightning-layout-item>
+                                                                        <lightning-layout-item size="4"><lightning-input label="Add To Buying Rate" 
+                                                                            type="checkbox"
+                                                                            checked={addDestinCharge} 
+                                                                            onchange={handleaddDestinChange}></lightning-input>
+                                                                        </lightning-layout-item>
+                                                                        <lightning-layout-item size="4"><lightning-input label="Included (Quotation PDF)" 
+                                                                            type="checkbox"
+                                                                            checked={includeDestinCharge} 
+                                                                            onchange={handleincludeDestinChargeChange}></lightning-input>
+                                                                        </lightning-layout-item>
+                                                                    </lightning-layout>
+                                                                </lightning-layout-item>
+                                                                <template if:true={displayDestinCharges}>
+                                                                    <c-b-a-f-c-o-destin-charge-section destin-bayan-charges={destinBayanCharges}
+                                                                        destin-custom-clearance-charges={destinCustomClearanceCharges}
+                                                                        destin-d-o-charges={destinDOCharges}
+                                                                        destin-fasah-charges={destinFasahCharges}
+                                                                        destin-gate-pass-charges={destinGatePassCharges}
+                                                                        destin-l-o-l-o-charges={destinLOLOCharges}
+                                                                        destin-trans-portation-charges={destinTransPortationCharges}
+                                                                        destin-total-charges={destinTotalCharges}
+                                                                        destin-total-changed= {DestinTotalChanged}
+                                                                        display-destin-charges = {displayDestinCharges}
+                                                                        sellingdestin-bayan-charges={sellingdestinBayanCharges}
+                                                                        sellingdestin-custom-clearance-charges={sellingdestinCustomClearanceCharges}
+                                                                        sellingdestin-d-o-charges={sellingdestinDOCharges}
+                                                                        sellingdestin-fasah-charges ={sellingdestinFasahCharges}
+                                                                        sellingdestin-gate-pass-charges ={sellingdestinGatePassCharges}
+                                                                        sellingdestin-l-o-l-o-charges ={sellingdestinLOLOCharges}
+                                                                        sellingdestin-trans-portation-charges={sellingdestinTransPortationCharges}
+                                                                        sellingdestin-total-charges={sellingdestinTotalCharges}
+                                                                        onhandledestinbayanchargechange={handleDestinBayanChargeChange}
+                                                                        onhandledestinsellingbayanchargechange={handleDestinSellingBayanChargeChange}
+                                                                        onhandledestincustomclearancechargechange={handleDestinCustomClearanceChargeChange}
+                                                                        onhandledestinsellingcustomclearancechargechange={handleDestinSellingCustomClearanceChargeChange}
+                                                                        onhandledestindochargechange={handleDestinDOChargeChange}
+                                                                        onhandledestinsellingdochargechange={handleDestinSellingDOChargeChange}
+                                                                        onhandledestinfasahchargechange={handleDestinFasahChargeChange}
+                                                                        onhandlesellingdestinfasahchargechange={handleSellingDestinFasahChargeChange}
+                                                                        onhandledestingatepasschange={handleDestinGatePassChange}
+                                                                        onhandlesellingdestingatepasschange={handleSellingDestinGatePassChange}
+                                                                        onhandledestinlolochargechange={handleDestinLOLOChargeChange}
+                                                                        onhandlesellingdestinlolochargechange={handleSellingDestinLOLOChargeChange}
+                                                                        onhandledestintansportationchange={handleDestinTansPortationChange}
+                                                                        onhandlesellingdestintansportationchange={handleSellingDestinTansPortationChange}
+                                                                        onhandlesellingdestintotalchange={handleSellingDestinTotalChange}></c-b-a-f-c-o-destin-charge-section>
+                                                                </template>
+                                                                <template if:false={displayDestinCharges}>
+                                                                    <lightning-layout-item size="4" class="labelStyle"><b>Total Destination Charges</b></lightning-layout-item>
+                                                                    <lightning-layout-item class="selllingFieldCSS" size="4">
+                                                                        <lightning-input 
+                                                                            type="number"
+                                                                            disabled
+                                                                            value={destinTotalCharges}
+                                                                            onchange={handletotalSlChange}></lightning-input>
+                                                                    </lightning-layout-item>
+                                                                    <lightning-layout-item class="selllingFieldCSS" size="4">
+                                                                        <lightning-input 
+                                                                            type="number"
+                                                                            value={sellingdestinTotalCharges}
+                                                                            onchange={handleSellingtotalDestinChange}></lightning-input>
+                                                                    </lightning-layout-item>
+                                                                </template>
+                                                                </lightning-layout>
+                                                        </lightning-layout-item>
+                                                        <lightning-layout-item size="12" style="padding-top: 4%;">
+                                                            <lightning-layout multiple-rows if:true={displayAdditionalCharge}>
+                                                                <lightning-layout-item size="12">
+                                                                    <lightning-layout style="padding-bottom: 12px;">
+                                                                        <lightning-layout-item size="6"><b>Additional Charges</b></lightning-layout-item>
+                                                                        <!--lightning-layout-item size="4"><lightning-input label="Add To Buying Rate" 
+                                                                            type="checkbox"
+                                                                            checked={addAdditionalCharge} 
+                                                                            onchange={handleaddAdditionalChange}></lightning-input>
+                                                                        </lightning-layout-item-->
+                                                                        <lightning-layout-item size="6"><lightning-input label="Included (Quotation PDF)" 
+                                                                            type="checkbox"
+                                                                            checked={includeAdditionalCharge} 
+                                                                            onchange={handleincludeAdditionalChargeChange}></lightning-input>
+                                                                        </lightning-layout-item>
+                                                                    </lightning-layout>
+                                                                </lightning-layout-item>
+                                                                 <!--Additional Service charges -->
+                                                                <template for:each={additionalChargeList} for:item="item" >
+                                                                    <lightning-layout-item key={item} size="5" class="slds-m-top_large" style="padding-left: 7%" >
+                                                                        {item.name}
+                                                                    </lightning-layout-item>
+                                                                    <lightning-layout-item key={item} size="3">
+                                                                        <lightning-input style="padding-right: 10px;" 
+                                                                            onchange={handleAdditionalChange}
+                                                                            data-record-id={item.index}
+                                                                            type="number"                                                
+                                                                            value={item.value}></lightning-input>
+                                                                    </lightning-layout-item>
+                                                                    <lightning-layout-item key={item} size="3">
+                                                                        <lightning-input style="padding-right: 10px;" 
+                                                                            onchange={handleSellingAdditionalChange}
+                                                                            data-record-id={item.index}
+                                                                            type="number"                                                
+                                                                            value={item.sellingCharge}></lightning-input>
+                                                                    </lightning-layout-item>
+                                                                    <lightning-layout-item size="1" key={item} style="margin-top: 3%;" >
+                                                                        <lightning-button-icon icon-name="utility:ban"
+                                                                            size="2"                                                             
+                                                                            variant="container"                                                            
+                                                                            alternative-text="Remove Additional Charges" 
+                                                                            data-record-id={item.index}
+                                                                            title="Remove Additional Charges"
+                                                                            onclick={removeAdditionalCharge}></lightning-button-icon>                                                
+                                                                    </lightning-layout-item>
+                                                                </template>
+                                                                <lightning-layout-item class="labelStyle" style="padding-left: 7%;" size="4"  if:true={displayAdditionalTotal}>
+                                                                    Total Additional Charges
+                                                                </lightning-layout-item>
+                                                                <lightning-layout-item class="selllingFieldCSS" style="padding-left: 8%;" size="4"  if:true={displayAdditionalTotal}>
+                                                                    <lightning-input 
+                                                                        type="number"
+                                                                        disabled
+                                                                        value={additionalChargeTotal}
+                                                                        ></lightning-input>
+                                                                </lightning-layout-item>
+                                                                <lightning-layout-item style="padding-right: 10%;" size="4"  if:true={displayAdditionalTotal}>
+                                                                    <lightning-input 
+                                                                        type="number"
+                                                                        disabled
+                                                                        value={sellingadditionalChargeTotal}
+                                                                        ></lightning-input>
+                                                                </lightning-layout-item>
+                                                                
+                                                        <!--Additional charges End-->
+                                                            </lightning-layout>
+                                                        </lightning-layout-item>
+                                                        <lightning-layout-item size="12" style="padding-top: 4%;">
+                                                            <lightning-layout multiple-rows if:true={displayExworks}>
+                                                                <lightning-layout-item size="12">
+                                                                    <lightning-layout style="padding-bottom: 12px;">
+                                                                        <lightning-layout-item size="4"><b>Ex Works Charge</b></lightning-layout-item>
+                                                                        <lightning-layout-item size="4"><lightning-input label="Add To Buying Rate" 
+                                                                            type="checkbox"
+                                                                            checked={addExWorksCharge} 
+                                                                            onchange={handleaddExWorksChargeChange}></lightning-input>
+                                                                        </lightning-layout-item>
+                                                                        <lightning-layout-item size="4"><lightning-input label="Included (Quotation PDF)" 
+                                                                            type="checkbox"
+                                                                            checked={includeExWorksCharge} 
+                                                                            onchange={handleincludeExWorksChargeChange}></lightning-input>
+                                                                        </lightning-layout-item>
+                                                                    </lightning-layout>
+                                                                </lightning-layout-item>
+                                                                <lightning-layout-item size="4">{exWorksObj.Name}</lightning-layout-item>
+                                                                <lightning-layout-item size="4" style="padding-right: 5%;" >
+                                                                    <lightning-input 
+                                                                        type="number"
+                                                                        variant="label-hidden"
+                                                                        value={exWorksTotal}
+                                                                        onchange={handleExWorksTotalChange}
+                                                                        ></lightning-input>
+                                                                </lightning-layout-item>
+                                                                <lightning-layout-item size="4" style="padding-right: 5%;" >
+                                                                    <lightning-input 
+                                                                        type="number"
+                                                                        variant="label-hidden"
+                                                                        value={sellingexWorksTotal}
+                                                                        onchange={handleSellingExWorksTotalChange}
+                                                                        ></lightning-input>
+                                                                </lightning-layout-item>
+                                                            </lightning-layout>
+                                                        </lightning-layout-item>
+                                                        <!--Service Charge End-->
+                                                        
+                                                        <lightning-layout-item size="12" style="padding-top: 4%;">
+                                                            <lightning-layout multiple-rows>
+                                                                <!--lightning-layout-item size="6">
+                                                                    <lightning-button variant="base"
+                                                                            icon-name="utility:add" 
+                                                                            label="Add Service Charges" 
+                                                                            title="Add Service Charges"                                                
+                                                                            onclick={handleNewServiceCharge}></lightning-button>
+                                                                </lightning-layout-item-->
+                                                                <lightning-layout-item size="6">
+                                                                    <lightning-button variant="base"
+                                                                                icon-name="utility:add" 
+                                                                                label="Add Additional Charges" 
+                                                                                title="Add Additional Charges"                                                
+                                                                                onclick={handleAddAdditionalCharge}></lightning-button>
+                                                                </lightning-layout-item>
+                                                            </lightning-layout>
+                                                        </lightning-layout-item>                                                        
+                                                    </lightning-layout>
+                                                </lightning-tab>
+                                            </template>
+                                        </lightning-tabset>
+                                    </lightning-tab>
+                                </template>
+                            </lightning-tabset>
+                        </lightning-tab>
+                    </template>  
+                </lightning-tabset> 
+            </lightning-layout-item>
+
+            <lightning-layout-item size="5" if:false={equipNotfound} class="customFont">    
+                <div if:false={hideCalculationSection}>           
+                <div class="slds-m-top_xx-large slds-m-left_xx-large slds-m-bottom_x-large" if:false={isLoading} >
+                    <lightning-layout multiple-rows style="background: #f7f7f7;">
+                        <lightning-layout-item size="12" >
+                            <b class="slds-align_absolute-center" style="font-size: 16px;padding-top: 20px;">Total Cost </b>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" >
+                           <span class="slds-align_absolute-center" style="color: #5A5A5A; ">Quantity :  {quantity}</span>
+                        </lightning-layout-item>
+                        <!--lightning-layout-item size="1"></lightning-layout-item-->
+                        <lightning-layout-item size="5" class="buyingRateStyle">
+                            <span style="color: #3A88F7;font-size: 20px;">{currencyCode} {buyingRate}</span>
+                            <p class="slds-align_absolute-center" style="color: #5A5A5A;">Buying Rate</p>
+                            <p  class="slds-align_absolute-center" style="color: #5A5A5A; padding-top: 2px;font-size: 11px;">(Rate Type : {rateType})</p>
+                         </lightning-layout-item>
+                         <lightning-layout-item size="1"></lightning-layout-item>
+                         <lightning-layout-item size="5" class="sellingRateStyle">
+                            <span style="color: #4CAF50; font-size: 20px;">{currencyCode} {sellingRate}</span>
+                            <p class="slds-align_absolute-center" style="color: #4CAF50;">Selling Rate</p>
+                         </lightning-layout-item>
+                         <!--lightning-layout-item size="1"></lightning-layout-item-->
+                         <lightning-layout-item size="12" if:true={rmsRemarks} style="padding: 7px 0px 7px 15px;background: white;color: #5A5A5A;" >
+                            Remarks : <span>{rmsRemarks}</span>
+                         </lightning-layout-item>
+                         <lightning-layout-item size="12" class="profitButton">
+                            <span class="profitLabel">
+                                {profitLabel}
+                            </span>
+                         </lightning-layout-item>
+                         <lightning-layout-item size="12" >
+                             <span style="font-size: 11px; font-weight: 400;">Margin :</span>
+                             <span style="color: #3A88F7;">{margin} %</span>
+                            <span class="slds-m-left_xx-large" style="font-size: 11px;color: #434343;">
+                               Valid till : 
+                             </span>
+                             <span style="font-size: 12px; background: white; color: red;">{validity}</span>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" >
+                            <lightning-textarea label="Remarks" value={quoteRemarks} onchange={handleRemarksChange} placeholder="Your Text here..."></lightning-textarea>
+                        </lightning-layout-item>                        
+                        <!--lightning-layout-item size="12" >
+                            <lightning-button  
+                                variant="brand" 
+                                label="Select For Quotation" 
+                                title="Select For Quotation"
+                                disabled={quotationSaved} 
+                                onclick={handleGenerateQuotaion}></lightning-button>
+
+                        </lightning-layout-item-->
+                    </lightning-layout>                    
+                </div>
+                <lightning-spinner variant="brand" size="large" if:true={isLoading}></lightning-spinner>
+                <lightning-layout-item size="12" style="margin-left: 10%;">
+                    <lightning-layout multiple-rows>
+                        <lightning-layout-item size="6">
+                    <lightning-button  
+                        variant="brand" 
+                        label="Select For Quotation" 
+                        title="Select For Quotation"
+                        disabled={quotationSaved} 
+                        onclick={handleGenerateQuotaion}></lightning-button></lightning-layout-item>
+                        <lightning-layout-item size="6"><lightning-button  
+                        variant="brand" 
+                        style="margin-left: 10%;"
+                        label="Choose Template" 
+                        title="Choose Template"
+                        onclick={handleTemplateView}></lightning-button></lightning-layout-item>
+                        <lightning-layout-item size="12" style="margin-top: 3%; margin-left: 35%"><lightning-button  
+                            variant="brand" 
+                            label="Add Ex-works" 
+                            title="Add Ex-works"
+                            onclick={handleAddWorks}></lightning-button></lightning-layout-item>
+                        </lightning-layout>
+                    <!--lightning-layout-item size="12" style="margin-left: 40%;" if:true={quotationId}>
+                            <lightning-button  
+                                variant="base" 
+                                label="Proceed to Quotation" 
+                                title="Prodeed to Quotation"
+                                onclick={handleGotoQuotation}></lightning-button>
+                        </lightning-layout-item-->
+                    
+                </lightning-layout-item>      </div>           
+            </lightning-layout-item>
+        </lightning-layout>
+        <div if:true={equipNotfound}>
+            <lightning-layout multiple-rows class="customFont">
+                <lightning-layout-item size="12" class="slds-m-top_small slds-align_absolute-center">
+                    Shipping Line Rate are not available for this route.
+                </lightning-layout-item>
+                <lightning-layout-item size="12" class="slds-m-top_medium slds-align_absolute-center">
+                    <lightning-button  
+                                variant="brand" 
+                                label="Add Rates" 
+                                title="Add Rates" 
+                                onclick={handleAddRates}></lightning-button>
+                </lightning-layout-item>
+            </lightning-layout>
+         </div>
+    </template>
+    <template if:true={showServiceChargeModal}>
+        <c-b-a-f-c-o-service-charges-help-component rms-id={rmsId} onclose={closeServiceChargeModal}></c-b-a-f-c-o-service-charges-help-component>
+    </template>
+    <template if:true={addAgentModel}>
+        <c-b-a-f-c-o-import-add-agent onclose={handleHideAgentModal} onaddagent={handleAddAgentSelected}></c-b-a-f-c-o-import-add-agent>
+    </template>
+    <template if:true={addShippinglineModel}>
+        <c-b-a-f-c-o-add-shippingline-model
+        onclose={handlecloseAddShippLine}
+        onaddshippline={handleAddShipLine}
+        ></c-b-a-f-c-o-add-shippingline-model>
+    </template>
+    <template if:true={showAddRatesModel}>
+        <c-b-a-f-c-o-add-r-m-s-model 
+        port-loading={portLoading}
+        port-destination={portDestination}
+        commodity={commodity}
+        acct-name={acctName}
+        shipping-line={tempShippingTab}
+        equipment-type={shippingEquipTabSelected}
+        pickup-place={pickupPlace}
+        discharge-place={dischargePlace}
+        port-loading-id={portLoadingId}
+        business-type="Import"
+        inco-term-id = {incoTermId}
+        inco-term={incoTerm}
+        route-id={routeId}
+        agent-object={agentObject}
+        came-from-import="true"
+        lead-id={leadId}
+        onclose={handleCloseAddRates}
+        onsuccess={handledAddRateSave}
+         ></c-b-a-f-c-o-add-r-m-s-model>
+    </template>
+    <template if:true={showAdditionalChargeModal}>
+        <c-b-a-f-c-o-additional-charge-modal onaddselected={handleAddSelected} onclose={handleCloseAdditionalModal}></c-b-a-f-c-o-additional-charge-modal>
+    </template>
+    <template if:true={showNewServiceCharge}>
+        <c-b-a-f-c-o-import-add-service-charge onupdate={updateServiceCharges} service-charge-list={serviceChargeList} onclose={handleCloseNewServiceCharge}></c-b-a-f-c-o-import-add-service-charge>
+    </template>
+    <template if:true={showAdditionalChargetemplate}>
+        <c-b-a-f-c-o-additional-charge-template onclose={handleCloseTemplatePopup} onaddselected={handleTemplateSelected}></c-b-a-f-c-o-additional-charge-template>
+    </template>
+    <template if:true={showProcument}>
+        <c-b-a-f-c-o-rate-procurement 
+                                port-loading={portLoading}
+                                commodity={commodity}
+                                equipment={shippingEquipTabSelected}
+                                port-discharge={portDestination}
+                                enquiry-id={enquiryId}
+                                route-id={routeId}
+                                came-from-import="true"
+                                quantity={quantity} onclose={handleCloseProcurement}></c-b-a-f-c-o-rate-procurement>
+    </template>
+    <template if:true={displayExWorksModal}>
+        <c-b-a-f-c-o-select-ex-works onaddselected={handleAddExWorks} onclose={handleCloseExworks}></c-b-a-f-c-o-select-ex-works>
+    </template>
+</template>

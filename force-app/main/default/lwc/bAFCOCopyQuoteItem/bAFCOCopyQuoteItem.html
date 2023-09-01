@@ -1,0 +1,52 @@
+<template>
+    <table data-field="sellingRateField" style="position: fixed; left: -999999px; right: -9999999px;border: 1px solid black;"> 
+        <tr><td>Dear Valued Client,</td></tr>
+        <tr><td>Thank you for giving Bafco International the opportunity to quote for your order.</td></tr>
+        <tr><td>Please find below the details: </td></tr>
+        
+        <tr class="slds-line-height_reset">
+            <th scope="col">Port of loading</th>
+            <th scope="col">Port of Discharge</th>
+            <th scope="col">Equiment type</th>
+            <th scope="col">Service Type</th>
+            <th scope="col">Inco Term</th>
+            <th scope="col">Total</th>
+        </tr>
+        <template for:each={tableData} for:item="item">
+            <tr key={item} class="slds-hint-parent">
+                <td scope="row">{item.loadingPort}</td>
+                <td scope="row">{item.dischargePort}</td>
+                <td scope="row">{item.equipmentType}</td>
+                <td scope="row">{item.serviceType}</td>
+                <td scope="row">{item.incoterm}</td>
+                <td scope="row">{item.currencyCode} {item.total}</td>
+            </tr>
+        </template>
+        <tr><td> We look forward to a positive response from your end.</td></tr>
+        <template if:true={isExport}>
+            <tr><td> Exclusions:</td></tr>
+            <tr><td>{Header}</td></tr>
+            <template for:each={HeaderList} for:item="item">
+                <tr  key={item}><td>{item}</td></tr>
+            </template>
+            <tr><td> Inclusion:</td></tr>
+            <tr><td>{inclHeader}</td></tr>
+            <template for:each={inclHeaderList} for:item="item">
+                <tr  key={item}><td>{item}</td></tr>
+            </template>
+        </template>
+        <template if:true={isImport}>
+            <tr><td>Terms & Conditions:</td></tr>
+            <tr><td>{Header}</td></tr>
+            <template for:each={HeaderList} for:item="item">
+                <tr  key={item}><td>{item}</td></tr>
+            </template>
+        </template>
+        <tr><td>Note : </td></tr>
+        <tr><td>1. Subject to equipment & vessel space availability while placing booking</td></tr>
+        <tr><td>2. Cargo insurance not covered in BAFCO scope.</td></tr>
+        <tr><td>3. Subject to war risk surcharge if any applied by line</td></tr>
+        <tr><td>4. Standard free time at POD unless specified above.</td></tr>
+        <tr><td>5. ACID Number, Importer VAT ID, Exporter VAT ID mandatory to proceed with shipment for Egypt</td></tr>
+    </table>
+</template>

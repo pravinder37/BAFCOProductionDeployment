@@ -1,0 +1,42 @@
+<template>
+    <lightning-layout style="padding-top: 4%; width: 100% !important;" multiple-rows>
+        <lightning-layout-item size="5" large-device-size="5" medium-device-size="5" small-device-size="5">
+            <div class={containerTypeErrorClass}>
+                <label class="slds-form-element__label customFont">
+                    <p style="padding: 0px 20px 0px 20px; font-weight: 700;">Container</p>
+                </label>
+                <c-b-a-f-c-o-custom-look-up-component
+                            obj-name="Equipment_Type__c"
+                            search-placeholder="Search Equipment Types" 
+                            icon-name="standard:account"
+                            index={index} 
+                            onlookupselected={handleContainerTypeSelection}
+                            onlookupremoved={handleContainerTypeRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                            <div class="slds-form-element__help" style="color: rgb(234, 0, 30); padding-left: 20px; font-weight: 600;" if:true={containerTypeErrorClass}>
+                                Complete this field
+                            </div>
+            </div>
+        </lightning-layout-item>
+        <lightning-layout-item size="5"  large-device-size="5" medium-device-size="5" small-device-size="5">
+            <lightning-input type="number" label="Quantity"
+                            onchange={handleQuantityChange}
+                            data-field='quantityField'
+                            data-record-id={index}  
+                            style="padding: 0px 20px 0px 20px;font-weight: 700;"
+                            class={containerQuantityErrorClass}
+                            value={quantity}></lightning-input>
+                            <div class="slds-form-element__help" style="color: rgb(234, 0, 30); padding-left: 20px; font-weight: 600;" if:true={containerTypeErrorClass}>
+                                Complete this field
+                            </div>
+        </lightning-layout-item>
+        <lightning-layout-item class="removebuttonCss" size="2" large-device-size="2" medium-device-size="2" small-device-size="2">
+            <lightning-button-icon icon-name="utility:ban"
+                                variant="container"
+                                class="slds-m-top_large"  
+                                alternative-text="remove containerType" 
+                                title="remove containerType"
+                                data-record-id={index}
+                                onclick={handleRemoveContainer}></lightning-button-icon>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>

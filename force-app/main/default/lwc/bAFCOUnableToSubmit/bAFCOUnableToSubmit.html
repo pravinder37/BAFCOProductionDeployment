@@ -1,0 +1,22 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+    aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open"
+    onclick={handleModalClose}>
+<div class="slds-modal__container" onclick={stopPropagation}>
+   <header class="slds-modal__header slds-text-align_left">
+       <lightning-button-icon icon-name="utility:close" alternative-text="close details"
+                              class="slds-modal__close slds-button_icon-inverse"
+                              onclick={handleModalClose}></lightning-button-icon>
+                              <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Error</h2>
+   </header>
+   <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+       <p>Please Provide the Selling Rate</p>
+       <div class="slds-text-align_center">
+           <lightning-button label="OK" onclick={handleModalClose}></lightning-button>
+       </div>
+   </div>
+</div>
+</section>
+
+<div class="slds-backdrop slds-backdrop_open" onclick={handleModalClose}></div>   
+</template>

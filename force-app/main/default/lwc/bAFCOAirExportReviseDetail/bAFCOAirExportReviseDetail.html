@@ -1,0 +1,683 @@
+<template>
+    <lightning-layout multiple-rows class="slds-gutters narrow-form" style="background-color: #f7f7f7;" >
+        <!--lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Kind of Shipment</p>
+            <span class=leadDetails>{shipmentKind}</span>
+        </lightning-layout-item-->
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Service of Type</p>
+            <span class=leadDetails>{serviceType}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Airport of Loading</p>
+            <span class=leadDetails>{portLoading}</span>            
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Airport of Destination</p>
+            <span class=leadDetails>{portDestination}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Airline</p>
+            <span class=leadDetails>{shippingLine}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Commodity</p>
+            <span class=leadDetails>{commodity}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium" if:true={pickupPlaceName}>
+            <p class="slds-m-top_small leadLabel">Place of Pickup</p>
+            <span class=leadDetails>{pickupPlaceName}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium" if:true={dischargePlaceName}>
+            <p class="slds-m-top_small leadLabel">Place of Discharge</p>
+            <span class=leadDetails>{dischargePlaceName}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" title={remarks} style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Remarks</p>
+            <span class=leadDetails>{remarks}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" title={cargoDetails} style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Cargo Details
+                <lightning-button variant="base"
+                icon-name="utility:info" 
+                onclick={handleShowCargoDetails}></lightning-button>
+            </p>
+            <span class=leadDetails>{cargoDetails}</span>
+        </lightning-layout-item>
+    </lightning-layout>
+    <template if:true={quoteLineItemList}>
+        <lightning-layout style="background: white;">
+            <lightning-layout-item size="7">
+                <lightning-tabset>
+                    <template if:true={routlistNotfound}>
+                        <p class="slds-align_absolute-center slds-m-top_xx-large">No Rate Found</p>
+                    </template>
+                    <template for:each={quoteLineItemList} for:item="map">
+                        <lightning-tab label={map.key} key={map.key} value={map.key} onactive={handleshippingLineActive}>
+                            <lightning-tabset class="equipTab" active-tab-value={shippingEquipTabSelected}>
+                                <template for:each={map.value} for:item="equiptab">
+                                    <lightning-tab label={equiptab.equipmentName} key={equiptab.equipmentName} value={equiptab.equipmentName} onactive={handleEquipmentActive}>
+                                        <lightning-layout multiple-rows>
+                                            <lightning-layout-item size="12">Chargeable Weight : {equiptab.chargeableWeight}</lightning-layout-item>
+                                            <lightning-layout-item size="12"> 
+                                                <lightning-input disabled label="Transit Time" variant="label-inline" value={equiptab.transitTime}></lightning-input>
+                                            </lightning-layout-item>
+                                            <lightning-layout-item size="12">
+                                                <lightning-layout >
+                                                <lightning-layout-item size="4" ><!-- so as to make three columns --></lightning-layout-item>
+                                                <lightning-layout-item size="4" ><b>Buying Rate</b></lightning-layout-item>
+                                                <lightning-layout-item size="4" ><b>Selling Rate</b></lightning-layout-item>
+                                            </lightning-layout>
+                                            </lightning-layout-item>
+                                            <lightning-layout-item size="12">
+                                                <lightning-layout >
+                                                    <lightning-layout-item size="4" class="slds-m-top_large" style="font-size: 16px;" if:true={equiptab.seaFreight}>
+                                                        <b>Total</b>
+                                                        <lightning-button variant="base"
+                                                        icon-name="utility:info" 
+                                                        onclick={handleShowServiceCharge}></lightning-button>
+                                                    </lightning-layout-item>
+                                                    <lightning-layout-item size="4" >
+                                                        <lightning-input style="padding-right: 10px;" disabled value={equiptab.buyingRate} if:true={equiptab.buyingRate}></lightning-input>
+                                                    </lightning-layout-item>
+                                                    <lightning-layout-item size="4" >
+                                                        <lightning-input style="padding-right: 10px;" disabled value={equiptab.seaFreight} if:true={equiptab.seaFreight}></lightning-input>
+                                                    </lightning-layout-item>
+                                                </lightning-layout>                                          
+                                            </lightning-layout-item>
+                                            <lightning-layout-item size="12" style="padding-top: 4%;">
+                                                <lightning-layout multiple-rows if:true={equiptab.totalSl}>
+                                                    <lightning-layout-item size="12">
+                                                        <lightning-layout style="padding-bottom: 12px;">
+                                                            <lightning-layout-item size="4"><b>Shipping Line Charge</b></lightning-layout-item>
+                                                            <lightning-layout-item size="4"><lightning-input label="Add To Buying Rate" 
+                                                                type="checkbox"
+                                                                disabled
+                                                                checked={equiptab.addServiceCharge} 
+                                                                ></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item size="4"><lightning-input label="Included (Quotation PDF)" 
+                                                                type="checkbox"
+                                                                disabled
+                                                                checked={equiptab.includeServiceCharge}
+                                                                ></lightning-input>
+                                                            </lightning-layout-item>
+                                                        </lightning-layout>
+                                                    </lightning-layout-item>
+                                                    <lightning-layout-item size="12">
+                                                        <lightning-layout multiple-rows>
+                                                            <lightning-layout-item class="shipLineValueCSS"  size="12" if:true={equiptab.BAF}>
+                                                                <lightning-input 
+                                                                        type="number"
+                                                                        label="BAF"
+                                                                        variant="label-inline"
+                                                                        value={equiptab.BAF}
+                                                                        disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.bunkerCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Bunker Charges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.bunkerCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.cleaningCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Cleaning Charges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.cleaningCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item  class="shipLineValueCSS"  size="12" if:true={equiptab.CMC}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Container Maintenance Charges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.CMC}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.carriageCongestionSurcharge}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="carriage Congestion Surcharge"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.carriageCongestionSurcharge}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.carrierSecurityFees}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="carrier Security Fees"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.carrierSecurityFees}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.dgSurcharge}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="DG Surcharge"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.dgSurcharge}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.DTHC}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="DTHC"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.DTHC}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.equipmentImbalance}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Equipment Imbalance"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.equipmentImbalance}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.inlandFuelCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="InLand FuelCharges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.inlandFuelCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.inlandHandlingfees}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="InLand Handling Fees"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.inlandHandlingfees}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.inlandHaulage}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="InLand Haulage"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.inlandHaulage}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.ISPS}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="ISPS"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.ISPS}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.lowerSulphurSurcharge}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Lower Sulphur Surcharge"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.lowerSulphurSurcharge}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.operationalRecovery}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Operational Recovery"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.operationalRecovery}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.OTHC}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="OTHC"
+                                                                    value={equiptab.OTHC}
+                                                                    variant="label-inline"
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS"  size="12" if:true={equiptab.overWeightCharge}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Over Weight Charge"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.overWeightCharge}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS"  size="12" if:true={equiptab.sealCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Seal Charges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.sealCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS"  size="12" if:true={equiptab.warRiskSurcharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="War Risk Charges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.warRiskSurcharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.totalSl}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    variant="label-inline"
+                                                                    label="Total Shipping Line Charge"
+                                                                    disabled
+                                                                    value={equiptab.totalSl}
+                                                                    onchange={handletotalSlChange}></lightning-input>
+                                                            </lightning-layout-item>    
+                                                        </lightning-layout>
+                                                    </lightning-layout-item>
+                                                </lightning-layout>
+                                            </lightning-layout-item>
+                                            <lightning-layout-item size="12" style="padding-top: 4%;">
+                                                <lightning-layout multiple-rows if:true={equiptab.TotalOrigincharges}>
+                                                    <lightning-layout-item size="12">
+                                                        <lightning-layout style="padding-bottom: 12px;">
+                                                            <lightning-layout-item size="4"><b>Origin Charge</b></lightning-layout-item>
+                                                            <lightning-layout-item size="4"><lightning-input label="Add To Buying Rate" 
+                                                                type="checkbox"
+                                                                disabled
+                                                                checked={equiptab.addOriginCharge} 
+                                                                ></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item size="4"><lightning-input label="Included (Quotation PDF)" 
+                                                                type="checkbox"
+                                                                disabled
+                                                                checked={equiptab.includeOriginCharge}
+                                                                ></lightning-input>
+                                                            </lightning-layout-item>
+                                                        </lightning-layout>
+                                                    </lightning-layout-item>
+                                                    <lightning-layout-item size="12">
+                                                        <lightning-layout multiple-rows>
+                                                            <lightning-layout-item class="shipLineValueCSS"  size="12" if:true={equiptab.bayan}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Bayan"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.bayan}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.blFees}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="BL Fees"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.blFees}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.originCustomClearance}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Origin Custom Clearance"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.originCustomClearance}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.exportServiceFees}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Export Service Fees"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.exportServiceFees}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.fasahFees}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Fasah Fees"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.fasahFees}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.fuelSurcharge}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Fuel Surcharges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.fuelSurcharge}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.inspection}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Inspection"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.inspection}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.insuranceCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Insurance Charges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.insuranceCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item  class="shipLineValueCSS" size="12" if:true={equiptab.liftOnLiftOff}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Lift On Lift Off"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.liftOnLiftOff}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.OriginDetention}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Origin Detention"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.OriginDetention}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS"  size="12" if:true={equiptab.OriginLoadingCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Origin Loading Charges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.OriginLoadingCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS"  size="12" if:true={equiptab.pickUpCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="PickUp Charges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.pickUpCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item  class="shipLineValueCSS" size="12" if:true={equiptab.ReeferControlPlugInCharge}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Reefer Control Plug In Charge"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.ReeferControlPlugInCharge}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS"  size="12" if:true={equiptab.tabadul}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Tabadul"
+                                                                    value={equiptab.tabadul}
+                                                                    variant="label-inline"
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS"  size="12" if:true={equiptab.trapulinCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Tarpulin Charges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.trapulinCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS"  size="12" if:true={equiptab.truckIdlingCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="truck Idling Charges"
+                                                                    value={equiptab.truckIdlingCharges}
+                                                                    variant="label-inline"
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS"  size="12" if:true={equiptab.transportationCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="transportation Charges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.transportationCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS"  size="12" if:true={equiptab.vgm}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="VGM"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.vgm}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS"  size="12" if:true={equiptab.lashingCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Lashing Charge"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.lashingCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item  class="shipLineValueCSS" size="12"  if:true={equiptab.xray}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Xray"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.xray}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.TotalOrigincharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Total Origin Charges"
+                                                                    value={equiptab.TotalOrigincharges}
+                                                                    variant="label-inline"
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                        </lightning-layout>
+                                                    </lightning-layout-item>
+                                                </lightning-layout>
+                                            </lightning-layout-item>
+                                            <lightning-layout-item size="12" style="padding-top: 4%;">
+                                                <lightning-layout multiple-rows if:true={equiptab.destinTotalCharges}>
+                                                    <lightning-layout-item size="12">
+                                                        <lightning-layout style="padding-bottom: 12px;">
+                                                            <lightning-layout-item size="4"><b>Destination Charges</b></lightning-layout-item>
+                                                            <lightning-layout-item size="4"><lightning-input label="Add To Buying Rate" 
+                                                                type="checkbox"
+                                                                disabled
+                                                                checked={equiptab.addDestinCharge} 
+                                                                ></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item size="4"><lightning-input label="Included (Quotation PDF)" 
+                                                                type="checkbox"
+                                                                disabled
+                                                                checked={equiptab.includeDestinCharge}
+                                                                ></lightning-input>
+                                                            </lightning-layout-item>
+                                                        </lightning-layout>
+                                                    </lightning-layout-item>
+                                                    
+                                                    <lightning-layout-item size="12">
+                                                        <lightning-layout multiple-rows>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.destinBayanCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    variant="label-inline"
+                                                                    label="Bayan charges"
+                                                                    value={equiptab.destinBayanCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.destinCustomClearanceCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    variant="label-inline"
+                                                                    label="Custom Clearance Charges"
+                                                                    value={equiptab.destinCustomClearanceCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.destinDOCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    variant="label-inline"
+                                                                    label="DO Charges"
+                                                                    value={equiptab.destinDOCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>                                                                            
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.destinFasahCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Fasah Charges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.destinFasahCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>                                                                            
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.destinGatePassCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Gate Pass Charges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.destinGatePassCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.destinLOLOCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="LOLO Charges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.destinLOLOCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.destinTransPortationCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="transportation Charges"
+                                                                    variant="label-inline"
+                                                                    value={equiptab.destinTransPortationCharges}
+                                                                    disabled></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={equiptab.destinTotalCharges}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    label="Total Destination Charges"
+                                                                    variant="label-inline"
+                                                                    disabled
+                                                                    value={equiptab.destinTotalCharges}
+                                                                    ></lightning-input>
+                                                            </lightning-layout-item> 
+                                                        </lightning-layout>
+                                                    </lightning-layout-item>
+                                                </lightning-layout>
+                                            </lightning-layout-item>
+                                            <lightning-layout-item size="12" style="padding-top: 4%;">
+                                                <lightning-layout multiple-rows if:true={equiptab.totaladditionalCharge}>
+                                                    <lightning-layout-item size="12">
+                                                        <lightning-layout style="padding-bottom: 12px;">
+                                                            <lightning-layout-item size="4"><b>Additional Charges</b></lightning-layout-item>
+                                                            <lightning-layout-item size="4"><lightning-input label="Add To Buying Rate" 
+                                                                type="checkbox"
+                                                                disabled
+                                                                checked={equiptab.addAdditionalCharge} 
+                                                                ></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item size="4"><lightning-input label="Included (Quotation PDF)" 
+                                                                type="checkbox"
+                                                                disabled
+                                                                checked={equiptab.includeAdditionalCharge}
+                                                                ></lightning-input>
+                                                            </lightning-layout-item>
+                                                        </lightning-layout>
+                                                    </lightning-layout-item>
+                                                    <lightning-layout-item size="12">
+                                                        <lightning-layout multiple-rows>
+                                                            <template for:each={equiptab.additionalChargeList} for:item="addC">
+                                                                <lightning-layout-item size="12" key={addC}>
+                                                                    <lightning-layout multiple-rows style="padding-left: 8%;">
+                                                                        <lightning-layout-item size="6"  style="padding-top:30px">
+                                                                            {addC.Name}
+                                                                        </lightning-layout-item>
+                                                                        <lightning-layout-item size="6" >
+                                                                            <lightning-input style="padding-right: 10px;" disabled value={addC.value} ></lightning-input>
+                                                                        </lightning-layout-item>
+                                                                    </lightning-layout>
+                                                                </lightning-layout-item>
+                                                            </template>
+                                                        </lightning-layout>
+                                                    </lightning-layout-item>
+                                                </lightning-layout>
+                                            </lightning-layout-item>
+                                            <lightning-layout-item size="12" style="padding-top: 4%;">
+                                                <lightning-layout multiple-rows if:true={equiptab.LoadCharge}>
+                                                    <lightning-layout-item size="12">
+                                                        <lightning-layout style="padding-bottom: 12px;">
+                                                            <lightning-layout-item size="4"><b>Ex-works Charges</b></lightning-layout-item>
+                                                            <lightning-layout-item size="4"><lightning-input label="Add To Buying Rate" 
+                                                                type="checkbox"
+                                                                disabled
+                                                                checked={equiptab.addExWorksCharge} 
+                                                                ></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item size="4"><lightning-input label="Included (Quotation PDF)" 
+                                                                type="checkbox"
+                                                                disabled
+                                                                checked={equiptab.includeExWorksCharge}
+                                                                ></lightning-input>
+                                                            </lightning-layout-item>
+                                                        </lightning-layout>
+                                                    </lightning-layout-item>
+                                                    <lightning-layout-item size="12">
+                                                        <lightning-layout multiple-rows>
+                                                            <lightning-layout multiple-rows style="padding-left: 8%;">
+                                                                <lightning-layout-item size="6"  style="padding-top:30px">
+                                                                    {equiptab.exWorksCharge}
+                                                                </lightning-layout-item>
+                                                                <lightning-layout-item size="6" >
+                                                                    <lightning-input style="padding-right: 10px;" disabled value={equiptab.LoadCharge} ></lightning-input>
+                                                                </lightning-layout-item>
+                                                            </lightning-layout>
+                                                            </lightning-layout>
+                                                    </lightning-layout-item>
+                                                </lightning-layout>
+                                            </lightning-layout-item>
+                                        </lightning-layout>
+                                    </lightning-tab>
+                                </template>
+                            </lightning-tabset>
+                        </lightning-tab>
+                    </template>
+                </lightning-tabset>
+            </lightning-layout-item>
+            <lightning-layout-item size="5" class="customFont">
+                <div class="slds-m-top_xx-large slds-m-left_xx-large slds-m-bottom_x-large" >
+                    <lightning-layout multiple-rows style="background: #f7f7f7;">
+                        <lightning-layout-item size="12" >
+                            <b class="slds-align_absolute-center" style="font-size: 16px;padding-top: 20px;">Total Cost </b>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="5" class="buyingRateStyle">
+                            <span style="color: #3A88F7;font-size: 20px;">{currencyCode} {buyingRate}</span>
+                            <p class="slds-align_absolute-center" style="color: #5A5A5A;">Buying Rate</p>
+                            <p class="slds-align_absolute-center" style="color: #5A5A5A; padding-top: 2px;font-size: 11px;">(Rate Kg : {buyingRatekg})</p>
+                         </lightning-layout-item>
+                         <lightning-layout-item size="1"></lightning-layout-item>
+                         <lightning-layout-item size="5" class="sellingRateStyle">
+                            <span style="color: #4CAF50; font-size: 20px;">{currencyCode} {sellingRate}</span>
+                            <p class="slds-align_absolute-center" style="color: #4CAF50;">Selling Rate</p>
+                            <p class="slds-align_absolute-center" style="color: #5A5A5A; padding-top: 2px;font-size: 11px;">(Rate Kg : {sellingRatekg})</p>
+                         </lightning-layout-item>
+                         <lightning-layout-item size="12" style="text-align: center;">
+                            <span>Quotation Date : </span><span>{quotationDate}</span>
+                         </lightning-layout-item>
+                         <lightning-layout-item size="12" class="profitButton">
+                            <span class="profitLabel">
+                                {profitLabel}
+                            </span>
+                         </lightning-layout-item>
+                         <lightning-layout-item size="12" >
+                             <span style="font-size: 11px; font-weight: 400;">Margin : </span>
+                             <span style="color: #3A88F7;">{margin} %</span>
+                            <span class="slds-m-left_xx-large" style="font-size: 11px;color: #434343;">
+                               Valid till : 
+                             </span>
+                             <span style="font-size: 12px; background: white; color: red;">{validity}</span>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" >
+                            <lightning-textarea label="Remarks" placeholder="Your Text here..."></lightning-textarea>
+                        </lightning-layout-item> 
+                    </lightning-layout>                    
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+    </template>
+    <template if:true={showServiceChargeModal}>
+        <c-b-a-f-c-o-service-charges-help-component rms-id={rmsId} onclose={handleCloseModal}></c-b-a-f-c-o-service-charges-help-component>
+    </template>
+    <template if:true={displayCargoDetails}>
+        <c-b-a-f-c-o-display-cargo-details route-id={routeId} onclose={handleCloseCargoDetailsPopUp}></c-b-a-f-c-o-display-cargo-details>
+    </template>
+</template>

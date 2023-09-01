@@ -1,0 +1,88 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                    <lightning-icon icon-name="utility:close"
+                        alternative-text="close"
+                        variant="inverse"
+                        size="small" ></lightning-icon>
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" style="float: left;">Select Additional Charge Template</h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <div if:true={noneSelected} style="color: rgb(234, 0, 30);">Please select atleast one template.</div>
+                <template if:false={noRecordFound}>
+                    <ul class={errorClass}>
+                        <template for:each={totalTemplateData} for:item="item" >
+                            <li class="slds-accordion__list-item" key={item}>
+                                <section class="slds-accordion__section slds-is-open">
+                                  <div class="slds-accordion__summary">
+                                    <h2 class="slds-accordion__summary-heading">
+                                      <button class="slds-button slds-button_reset slds-accordion__summary-action" aria-expanded="true" title={item.Name} onclick={handleDisplayRow} data-id={item.Id}>
+                                        <lightning-input type="checkbox" label="" variant="label-hidden" value={item.Id} onchange={handleCheckboxClicked}></lightning-input>
+                                        <span class="slds-accordion__summary-content">{item.Name}</span>                                    
+                                        </button>
+                                    </h2>
+                                    <lightning-icon icon-name="utility:new" size="x-small" if:false={item.displayRow} alternative-text="Expand" title="Expand"></lightning-icon>
+                                    <lightning-icon icon-name="utility:ban" size="x-small" if:true={item.displayRow} alternative-text="collapse" title="collapse"></lightning-icon>
+                                      
+                                  </div>
+                                  <div class="slds-accordion__content" if:true={item.displayRow}>
+                                    <lightning-layout multiple-rows data-id={item.Id} onclick={handleAccordianClicked} style="cursor: pointer;padding-left: 10%;" onmouseover={handleMousHover} onmouseout={handleMouseOut}>
+                                        <lightning-layout-item size="3" if:true={item.Field1_Name__c} style="background: #EEF5FF;padding: 2%;margin-left: 2%;">
+                                            {item.Field1_Name__c} : {item.Field1_Value__c}
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="3" if:true={item.Field2_Name__c} style="background: #EEF5FF;padding: 2%;margin-left: 2%;">
+                                            {item.Field2_Name__c} : {item.Field2_Value__c}
+                                        </lightning-layout-item>                                    
+                                        <lightning-layout-item size="3" if:true={item.Field3_Name__c} style="background: #EEF5FF;padding: 2%;margin: 2%;">
+                                            {item.Field3_Name__c} : {item.Field3_Value__c}
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="3" if:true={item.Field4_Name__c} style="background: #EEF5FF;padding: 2%;margin: 2%;">
+                                            {item.Field4_Name__c} : {item.Field4_Value__c}
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="3" if:true={item.Field5_Name__c} style="background: #EEF5FF;padding: 2%;margin: 2%;">
+                                            {item.Field5_Name__c} : {item.Field5_Value__c}
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="3" if:true={item.Field6_Name__c} style="background: #EEF5FF;padding: 2%;margin: 2%;">
+                                            {item.Field6_Name__c} : {item.Field6_Value__c}
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="3" if:true={item.Field7_Name__c} style="background: #EEF5FF;padding: 2%;margin: 2%;">
+                                            {item.Field7_Name__c} : {item.Field7_Value__c}
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="3" if:true={item.Field8_Name__c} style="background: #EEF5FF;padding: 2%;margin: 2%;">
+                                            {item.Field8_Name__c} : {item.Field8_Value__c}
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="3" if:true={item.Field9_Name__c} style="background: #EEF5FF;padding: 2%;margin: 2%;">
+                                            {item.Field9_Name__c} : {item.Field9_Value__c}
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="3" if:true={item.Field10_Name__c} style="background: #EEF5FF;padding: 2%;margin: 2%;">
+                                            {item.Field10_Name__c} : {item.Field10_Value__c}
+                                        </lightning-layout-item>
+                                    </lightning-layout>
+                                  </div>
+                                </section>
+                              </li>
+                        </template>
+                    </ul>
+                </template>
+                <template if:true={noRecordFound} >
+                    <p class="slds-align_absolute-center">No Record found</p>
+                    <p class="slds-align_absolute-center">Please create new template.</p>
+                </template>
+            </div>
+                <footer class="slds-modal__footer slds-grid slds-grid_align-center">
+                    <button class="slds-button slds-button_outline-brand" onclick={createTemplate} title="Create New Template">Create New Template</button>
+                    <button class="slds-button slds-button_brand" onclick={handleAddSelected} title="Add Selected">Add Selected</button>
+                </footer>
+        </div>
+        <template if:true={showCreateModal}>
+            <c-b-a-f-c-o-create-template-modal 
+                    onclose={hanleCloseCreateTemplate}
+                    onsave={handleSaveTemplate}></c-b-a-f-c-o-create-template-modal>
+        </template>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>    
+</template>

@@ -1,0 +1,13 @@
+@font-face {
+    font-family: "MontserratCustomfont";
+    src: url('/resource/Montserrat/static/Montserrat-Medium.ttf') format('TrueType');
+ }
+ .customFont{
+    font-family: "MontserratCustomfont";
+    font-weight: 900 !important;
+}
+.class2 {
+    border-style: ridge;
+    border-color: #3A88F7;
+    padding: 6px;
+}

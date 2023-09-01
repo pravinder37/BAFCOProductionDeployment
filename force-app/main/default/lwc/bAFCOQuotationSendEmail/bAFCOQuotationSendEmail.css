@@ -1,0 +1,17 @@
+@font-face {
+    font-family: "MontserratCustomfont";
+    src: url('/resource/Montserrat/static/Montserrat-Medium.ttf') format('TrueType');
+  }
+  *{
+    font-family: "MontserratCustomfont";
+  }
+  :host {
+    --sds-c-textarea-sizing-min-height: 200px;
+    --sds-c-modal-content-max-height: 1000px !important;
+}
+*{
+    max-height: 1000px !important;
+}
+.slds-modal__content{
+    max-height: 1000px !important;
+}

@@ -1,0 +1,19 @@
+<apex:page standardController="Order__c" extensions="BAFCOGenerateOrderPDFMobileController" action="{!saveOrderPDF}">
+    <head>
+        <style >
+            @font-face {
+            font-family: "MontserratCustomfont";
+            src: url('{!URLFOR($Resource.Montserrat, 'static/Montserrat-Medium.ttf')}') format('truetype');
+            }
+            * {
+            font-family: MontserratCustomfont;
+            }
+        </style>
+    </head>
+        <div style="position: absolute; left: 50%; top:50%">
+        <div style="position: relative; left: -50%;">
+            <apex:image url="{!$Resource.LoadingGIF}"/>
+            Loading ....
+        </div>
+    </div>
+</apex:page>

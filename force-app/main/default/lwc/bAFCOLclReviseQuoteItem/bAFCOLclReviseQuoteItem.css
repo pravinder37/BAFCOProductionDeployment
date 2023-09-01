@@ -1,0 +1,29 @@
+.buyingRateStyle{
+    text-align: center;
+    background: #FFFFFF;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    margin-left: 14px;
+    margin-top: 5px;
+    margin-bottom: 8px;
+    border-radius: 7px;
+  }
+  .sellingRateStyle{
+    text-align: center;
+     background: #FFFFFF;
+     padding-top: 14px;
+     padding-bottom: 14px;
+     margin-bottom: 8px;
+     border-radius: 7px;
+     margin-top: 5px;
+  }
+  .profitLabel{
+    position: relative;
+    float: left;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "MontserratCustomfont";
+    font-size: 24px;
+    color: white;
+  }

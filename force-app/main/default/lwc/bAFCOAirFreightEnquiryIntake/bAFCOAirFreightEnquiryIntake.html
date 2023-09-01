@@ -1,0 +1,349 @@
+<template>
+    <lightning-layout multiple-rows> 
+        <lightning-layout-item size="12" if:true={copyFromAbove}> 
+           <lightning-button variant="base" class="mobilePaddingRight" style="float: right;" icon-name="utility:copy" label="Copy From Route 1" onclick={handleCopyFromAbove} data-record-id={leadIndex}></lightning-button>
+               
+        </lightning-layout-item>
+        <lightning-layout-item size="12" class="mobilePaddingRight" large-device-size="4" medium-device-size="4" small-device-size="12" if:true={isAccountObject}>            
+            <lightning-combobox label="Regular Route"
+                                class="labelStyle" 
+                                options={regularRouteOption}
+                                data-record-id={leadIndex}                                                    
+                                value={routingRegular} 
+                                disabled={isAir}
+                                style="padding: 0px 20px 0px 20px;"
+                                onchange={handleRegularRouteChange}
+                                placeholder="Select"></lightning-combobox>
+        </lightning-layout-item>
+       <lightning-layout-item size="12" class="mobilePaddingRight" large-device-size="4" medium-device-size="4" small-device-size="12">
+            <div class={incoTermClass}>
+                <label class="slds-form-element__label">
+                    <p style="padding: 0px 20px 0px 20px;" class="labelStyle" >INCO Term</p>
+                </label>
+                <c-b-a-f-c-o-custom-look-up-component
+                                obj-name="INCO_Term__c"
+                                search-placeholder="Search Inco Terms" 
+                                disable-field={disableIncoField}
+                                icon-name="standard:account"
+                                index={leadIndex}
+                                data-field="incoTermField"
+                                onlookupselected={handleIncoTermSelection}
+                                onlookupremoved={handleIncoTermRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                               
+            </div>
+            <div class="slds-form-element__help" style="color: rgb(234, 0, 30); padding-left: 20px; font-weight: 600;" if:true={incoTermClass}>
+                Complete this field
+            </div>
+        </lightning-layout-item>
+        <lightning-layout-item size="12" class="mobilePaddingRight labelStyle" large-device-size="4" medium-device-size="4" small-device-size="12">
+            <lightning-combobox label="Service Type" 
+                            options={serviceTypeOption}
+                            data-record-id={leadIndex}
+                            value={serviceType}
+                            disabled={disableServiceType}
+                            style="padding: 0px 20px 0px 20px;" 
+                            onchange={handleServiceType}
+                            class={serviceTypeClass}
+                            placeholder="Select"></lightning-combobox>
+                            <div class="slds-form-element__help" style="color: rgb(234, 0, 30); padding-left: 20px; font-weight: 600;" if:true={serviceTypeClass}>
+                                Complete this field
+                            </div>
+        </lightning-layout-item>
+        <template if:false={isAirEnquiry}>
+            <lightning-layout-item if:false={hidePOL} size="12" class="mobilePaddingRight" large-device-size="4" medium-device-size="4" small-device-size="12">
+                <div class={portOfLoadingClass}>
+                    <label class="slds-form-element__label">
+                        <p style="padding: 0px 20px 0px 20px;" class="labelStyle">{loadigPortLabel}</p>
+                    </label>
+                    <c-b-a-f-c-o-custom-look-up-component
+                                    obj-name={portObject}
+                                    search-placeholder="Search Loading Port" 
+                                    icon-name="standard:account"
+                                    index={leadIndex} 
+                                    onlookupselected={handleLoadingPortSelectedSelection}
+                                    onlookupremoved={handleLoadingPortRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                                    <div class="slds-form-element__help" style="color: rgb(234, 0, 30); padding-left: 20px; font-weight: 600;" if:true={portOfLoadingClass}>
+                                        Complete this field
+                                    </div>
+                </div>
+               
+            </lightning-layout-item>
+            <lightning-layout-item if:false={hidePOD} size="12" class="mobilePaddingRight" large-device-size="4" medium-device-size="4" small-device-size="12">
+                <div class={portOfDestinationClass}>
+                    <label class="slds-form-element__label">
+                        <p style="padding: 0px 20px 0px 20px;" class="labelStyle">{destinationPortLabel}</p>
+                    </label>
+                    <c-b-a-f-c-o-custom-look-up-component
+                                    obj-name={portObject}
+                                    search-placeholder="Search Destination Port" 
+                                    icon-name="standard:account"
+                                    index={leadIndex} 
+                                    onlookupselected={handleDestinationPortSelectedSelection}
+                                    onlookupremoved={handleDestinationPortRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                                    <div class="slds-form-element__help" style="color: rgb(234, 0, 30); padding-left: 20px; font-weight: 600;" if:true={portOfDestinationClass}>
+                                        Complete this field
+                                    </div>
+                </div>
+                
+            </lightning-layout-item>
+        </template>
+        <template if:true={isAirEnquiry}>
+            <lightning-layout-item if:false={hidePOL} size="12" class="mobilePaddingRight" large-device-size="4" medium-device-size="4" small-device-size="12">
+                <div class={portOfLoadingClass}>
+                    <label class="slds-form-element__label">
+                        <p style="padding: 0px 20px 0px 20px;" class="labelStyle">{loadigPortLabel}</p>
+                    </label>
+                    <c-b-a-f-c-o-airport-custom-lookup
+                                    obj-name={portObject}
+                                    search-placeholder="Search Loading Port" 
+                                    icon-name="standard:account"
+                                    index={leadIndex} 
+                                    onlookupselected={handleLoadingPortSelectedSelection}
+                                    onlookupremoved={handleLoadingPortRemoved}></c-b-a-f-c-o-airport-custom-lookup>
+                                    <div class="slds-form-element__help" style="color: rgb(234, 0, 30); padding-left: 20px; font-weight: 600;" if:true={portOfLoadingClass}>
+                                        Complete this field
+                                    </div>
+                </div>
+               
+            </lightning-layout-item>
+            <lightning-layout-item if:false={hidePOD} size="12" class="mobilePaddingRight" large-device-size="4" medium-device-size="4" small-device-size="12">
+                <div class={portOfDestinationClass}>
+                    <label class="slds-form-element__label">
+                        <p style="padding: 0px 20px 0px 20px;" class="labelStyle">{destinationPortLabel}</p>
+                    </label>
+                    <c-b-a-f-c-o-airport-custom-lookup
+                                    obj-name={portObject}
+                                    search-placeholder="Search Destination Port" 
+                                    icon-name="standard:account"
+                                    index={leadIndex} 
+                                    onlookupselected={handleDestinationPortSelectedSelection}
+                                    onlookupremoved={handleDestinationPortRemoved}></c-b-a-f-c-o-airport-custom-lookup>
+                                    <div class="slds-form-element__help" style="color: rgb(234, 0, 30); padding-left: 20px; font-weight: 600;" if:true={portOfDestinationClass}>
+                                        Complete this field
+                                    </div>
+                </div>
+                
+            </lightning-layout-item>
+        </template>
+        <lightning-layout-item size="12" if:false={hideShippingLine} class="mobilePaddingRight" large-device-size="4" medium-device-size="4" small-device-size="12">
+            <label class="slds-form-element__label">
+                <p style="padding: 0px 20px 0px 20px;" class="labelStyle">{shippLinePlaceLabel}</p>
+            </label>
+            <c-b-a-f-c-o-custom-look-up-component
+                            obj-name={shippLineObject}
+                            search-placeholder={shippLinePlaceHolder} 
+                            icon-name="standard:account"
+                            index={leadIndex} 
+                            onlookupselected={handleShippingLineSelection}
+                            onlookupremoved={handleShippingLineRemoved}></c-b-a-f-c-o-custom-look-up-component>
+        </lightning-layout-item>
+        <lightning-layout-item size="12" class="mobilePaddingRight" large-device-size="4" medium-device-size="4" small-device-size="12">
+            <div class={commodityClass}>
+                <label class="slds-form-element__label">
+                    <p style="padding: 0px 20px 0px 20px;" class="labelStyle">Commodity</p>
+                </label>
+                <c-b-a-f-c-o-custom-look-up-component
+                                obj-name="Commodity__c"
+                                search-placeholder="Search Commodity" 
+                                icon-name="standard:account"
+                                index={leadIndex} 
+                                onlookupselected={handleCommoditySelection}
+                                onlookupremoved={handleCommodityRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                                <div class="slds-form-element__help" style="color: rgb(234, 0, 30); padding-left: 20px; font-weight: 600;" if:true={commodityClass}>
+                                    Complete this field
+                                </div>
+            </div>
+           
+        </lightning-layout-item>
+        <lightning-layout-item if:false={isLCL} style="padding: 20px 0px 0px 20px;" size="12" class="mobilePaddingRight" large-device-size="4" medium-device-size="4" small-device-size="12" >
+                            <lightning-input type="checkbox" label="Stackable"
+                                    onchange={handleStackableParentChange}
+                                    data-record-id={leadIndex} 
+                                    style="padding: 0px 20px 0px 0px;font-weight: 700;"
+                                    checked={stackableParent}></lightning-input>
+                            <lightning-input type="checkbox" label="Palletized"
+                                    onchange={handlePalletizedParentChange}
+                                    data-record-id={leadIndex}
+                                    style="padding: 0px 20px 0px 0px;font-weight: 700;"
+                                    checked={palletizedParent}></lightning-input>
+        </lightning-layout-item>
+        <lightning-layout-item size="12" class="mobilePaddingRight labelStyle" large-device-size="4" medium-device-size="4" small-device-size="12" if:true={showPickupPlaceField}>
+            <div class={pickupPlaceClass}>
+                <lightning-input label="Place of Pickup"
+                                 value={placeOfPickup}
+                                 style="padding: 0px 20px 0px 20px;"
+                                 onchange={handlePickupPlaceInputchange} ></lightning-input>               
+            </div> 
+            <div class="slds-form-element__help" style="color: rgb(234, 0, 30); padding-left: 20px;" if:true={pickupPlaceClass}>
+                Complete this field.
+            </div>   
+        </lightning-layout-item>
+        <lightning-layout-item size="12" class="mobilePaddingRight labelStyle" large-device-size="4" medium-device-size="4" small-device-size="12" if:true={showDischargePlaceField}>
+            <div class={dischargePlaceClass}>
+                <lightning-input label="Place of Discharge"
+                                value={placeOfDischarge}
+                                 style="padding: 0px 20px 0px 20px;"
+                                 onchange={handleDischargePlaceInputchange} ></lightning-input>
+                                <div class="slds-form-element__help" style="color: rgb(234, 0, 30); padding-left: 20px; font-weight: 600;" if:true={dischargePlaceClass}>
+                                    Complete this field
+                                </div>
+            </div>
+        </lightning-layout-item>        
+        <lightning-layout-item size="12" class="mobilePaddingRight" large-device-size="4" medium-device-size="4" small-device-size="12">
+            <lightning-input type="checkbox" label="Dangerous Goods"
+                            onchange={handleDangeorusGood}
+                            class="labelStyle"
+                            data-record-id={leadIndex}
+                            style="padding: 20px 20px 0px 20px;" 
+                            checked={dangerousGoods}></lightning-input>
+        </lightning-layout-item>
+        <lightning-layout-item size="12" class="mobilePaddingRight" large-device-size="4" medium-device-size="4" small-device-size="12" if:true={showDGClassField}>
+            <lightning-combobox label="DG Class" 
+                            options={dgClassOption}
+                            class="labelStyle"
+                            data-record-id={leadIndex}
+                            value={dgClass}
+                            style="padding: 0px 20px 0px 20px;" 
+                            onchange={handleDGClass}
+                            placeholder="Select"></lightning-combobox>
+        </lightning-layout-item>
+        <lightning-layout-item size="12" class="mobilePaddingRight" large-device-size="4" medium-device-size="4" small-device-size="12">
+            <lightning-textarea label="Remarks"
+                            data-record-id={leadIndex}
+                            class="labelStyle"
+                            onchange={handleRemarkChange}
+                            style="padding: 0px 20px 0px 20px;" 
+                            value={remarks}></lightning-textarea>
+        </lightning-layout-item> 
+        <!--lightning-layout-item size="12" class="mobilePaddingRight" large-device-size="4" medium-device-size="4" small-device-size="12" if:true={isImport}>
+            <lightning-input type="date"  style="padding: 0px 20px 0px 20px;" class="labelStyle"  label="Cargo Readiness" value={cargoReadiness} min={minDate} onchange={handelCargoReadinessDate}></lightning-input>
+        </lightning-layout-item-->
+    </lightning-layout>
+    <p class="slds-m-around_medium" 
+        style="font-size: 1.1rem; padding: 0px 20px 0px 20px;">
+        <img src={AddContainerPNG}>
+        <span style="margin-left: 10px; margin-top: 10px;font-weight: 700; ">Add Packages</span><span style="float: right;"><lightning-button variant="base"
+            icon-name="utility:add"
+            class="slds-m-top_large labelStyle"  
+            alternative-text="Add New Packages"
+            label="Add New Packages" 
+            title="Add New Packages"
+            style="padding: 0px 20px 0px 20px;" 
+            data-record-id={leadIndex} 
+            onclick={handleAddContainer}></lightning-button></span>
+    </p>
+    <div if:true={containerRecord} style="white-space: nowrap;">
+        <lightning-layout multiple-rows style="width: 90% !important;">
+            <template for:each={containerRecord} for:item="contr">
+                <lightning-layout-item size="12" key={contr}>
+                    <lightning-layout multiple-rows>
+                        <lightning-layout-item if:true={isAirEnquiry} size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
+                            <lightning-combobox label="UOM"
+                                data-record-id={contr.index} 
+                                style="padding-right: 20px;font-weight: 700;"
+                                options={UOMOption}                                                
+                                value={contr.uomValue} 
+                                class={contr.UOMErrorClass}
+                                onchange={handleUOMChange}
+                                placeholder="Select"></lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item if:true={isAirEnquiry} size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
+                            <lightning-input type="number" label="Length"
+                                    onchange={handlelengthChange}
+                                    step="0.01"
+                                    data-record-id={contr.index} 
+                                    disabled={contr.CBMChanged} 
+                                    style="padding-right: 20px;font-weight: 700;"
+                                    class={contr.lengthErrorClass}
+                                    value={contr.length}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item if:true={isAirEnquiry} size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
+                            <lightning-input type="number" label="Width"
+                                    step="0.01"
+                                    onchange={handleWidthChange}
+                                    disabled={contr.CBMChanged} 
+                                    data-record-id={contr.index}  
+                                    style="padding-right: 20px;font-weight: 700;"
+                                    class={contr.widthErrorClass}
+                                    value={contr.width}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item if:true={isAirEnquiry} size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
+                            <lightning-input type="number" label="Height"
+                                    onchange={handleHeightChange}
+                                    step="0.01"
+                                    disabled={contr.CBMChanged} 
+                                    data-record-id={contr.index}  
+                                    style="padding-right: 20px;font-weight: 700;"
+                                    class={contr.heightErrorClass}
+                                    value={contr.height}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" large-device-size="4" medium-device-size="4" small-device-size="6" >
+                            <lightning-input type="number" label="CBM (KGs)"
+                                    onchange={handleCBMChange}
+                                    disabled={contr.disableCBM}
+                                    step="0.001"
+                                    data-record-id={contr.index}  
+                                    style="padding: 0px 20px 0px 0px;font-weight: 700;"
+                                    class={contr.CBMErrorClass}
+                                    value={contr.CBM}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" large-device-size="4" medium-device-size="4" small-device-size="6" >
+                            <lightning-input type="number" label="Gross Weight (KGs)"
+                                    onchange={handleWeightChange}
+                                    step="0.01"
+                                    data-record-id={contr.index}  
+                                    style="padding: 0px 20px 0px 0px;font-weight: 700;"
+                                    class={contr.WeightErrorClass}
+                                    value={contr.Weight}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" large-device-size="4" medium-device-size="4" small-device-size="6" >
+                            <lightning-input type="number" label="Volumetric weight(Kgs)"
+                                    step="0.01"
+                                    disabled
+                                    style="padding: 0px 20px 0px 0px;font-weight: 700;"
+                                    value={contr.volumeWeight}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item if:true={isLCL} size="6" style="padding-top: 14px;" large-device-size="4" medium-device-size="4" small-device-size="6" >
+                            <lightning-input type="checkbox" label="Stackable"
+                                    onchange={handleStackableChange}
+                                    data-record-id={contr.index}  
+                                    style="padding: 0px 20px 0px 0px;font-weight: 700;"
+                                    checked={contr.stackable}></lightning-input>
+                            <lightning-input type="checkbox" label="Palletized"
+                                    onchange={handlePalletizedChange}
+                                    data-record-id={contr.index}  
+                                    style="padding: 0px 20px 0px 0px;font-weight: 700;"
+                                    checked={contr.palletized}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" large-device-size="4" medium-device-size="4" small-device-size="6" >
+                            <lightning-input type="number" label="Units"
+                                    onchange={handleUnitsChange}
+                                    data-record-id={contr.index}  
+                                    style="padding: 0px 20px 0px 0px;font-weight: 700;"
+                                    class={contr.unitsErrorClass}
+                                    value={contr.units}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="12" medium-device-size="12" small-device-size="12" >
+                            <lightning-textarea label="Cargo Details" 
+                                                onchange={handleCargoDetailsChange}
+                                                data-record-id={contr.index}
+                                                style="padding: 0px 20px 0px 0px;font-weight: 700;"
+                                                class={contr.cargoDetailsError}
+                                                value={contr.cargoDetails} ></lightning-textarea>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="4" style ="padding:25px 0px 0px 15px;" large-device-size="4" medium-device-size="4" small-device-size="4" >
+                            <lightning-button-icon icon-name="utility:ban"
+                                variant="container"
+                                class="slds-m-top_large"  
+                                alternative-text="remove containerType" 
+                                title="remove containerType"
+                                data-record-id={contr.index}
+                                onclick={handleRemoveContainer}></lightning-button-icon>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    <hr/>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout>
+    </div>
+</template>

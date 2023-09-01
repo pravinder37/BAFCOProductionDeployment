@@ -1,0 +1,30 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" access="global">
+    <aura:html tag="style">
+        .slds-modal__container{
+        max-width: 60rem !important;
+        width:60% !important;
+        }
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+       
+        @media (max-width:767px){
+        
+        .slds-modal__container{
+        max-width: 100% !important;
+        width: initial !important;                   
+        }
+        
+        .slds-modal__content{
+        padding:2px !important;
+        }     
+        
+        }
+        }
+    </aura:html>
+    <div style="background: white;" >
+        <c:bAFCOCopyQuoteTable recordId="{!v.recordId}"/>
+    </div>
+</aura:component>

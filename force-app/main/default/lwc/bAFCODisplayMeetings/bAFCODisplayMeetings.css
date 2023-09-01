@@ -1,0 +1,54 @@
+@font-face {
+    font-family: "MontserratCustomfont";
+    src: url('/resource/Montserrat/static/Montserrat-Medium.ttf') format('TrueType');
+ }
+ .customFont{
+    font-family: "MontserratCustomfont";
+}
+.slds-form-element__control .slds-radio{
+    display: contents !important;
+}
+.leftPadding{
+    padding-left: 4%;
+}
+.eventValueClass{
+    font-weight: 600;   
+}
+.eventLabelClass{
+    font-size: 12px;
+    color: #555657;
+}
+.meetingIntakeClass{
+    width: 50%;
+}
+.inputFieldClass{
+    padding: 0px 20px;
+}
+.cssClasss{
+    margin-top: 2% !important;
+}
+.paddingCss{
+    padding-left: 5% !important;
+    padding-right: 5% !important;
+}
+.lookupField{
+    padding-left: 3% !important;
+    padding-right: 3% !important;
+}
+@media only screen and (max-width: 600px) {
+    .meetingIntakeClass {
+      width: 100%  !important;
+    }
+    .mobileCssDateTime{
+        padding-left: 0% !important;
+        padding-top: 3% !important;
+        padding-bottom: 3%!important;
+    }
+    .cssClasss{
+        margin-top: 2%;
+    }
+    .lookupField{
+        padding-left: 0% !important;
+        padding-right: 0% !important;
+    }
+  }

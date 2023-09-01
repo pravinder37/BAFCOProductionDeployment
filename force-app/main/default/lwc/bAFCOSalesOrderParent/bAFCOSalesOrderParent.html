@@ -1,0 +1,187 @@
+<template>
+    <lightning-layout multiple-rows>
+        <lightning-layout-item size="3">
+            <c-b-a-f-c-o-sales-order-list qty-valid={qtyValid} customer-account={customerAccount} onvalidateqty={handleValidateQty} display-ship-consignee={displayShip_consignee} display-selected-quote-item={selectedDatalist} quantity-data={quantityDatalist} active-section={activeTab}></c-b-a-f-c-o-sales-order-list>
+        </lightning-layout-item>
+        <lightning-layout-item size="9">
+            <lightning-layout multiple-rows class="customFont">
+                <lightning-layout-item size="4" style=" padding-top: 27px;">
+                    <span style="font-size: 24px; margin-top: 10px; font-weight: 900;">Create Order</span>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" if:true={quoteObj} style="padding-top: 4%;">
+                    <lightning-layout>
+                        <lightning-layout-item size="2">
+                            <span class="labelCss">Quotation number</span>
+                            <p class="labelDataCss">{quoteObj.quoteNumber}</p>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="2">
+                            <span>Company</span>
+                            <p class="labelDataCss">{quoteObj.company}</p>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="2">
+                            <span>Business Type</span>
+                            <p class="labelDataCss">{quoteObj.businessType}</p>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="2">
+                            <span>Mode</span>
+                            <p class="labelDataCss">{quoteObj.mode}</p>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="2">
+                            <span>Contact Mobile</span>
+                            <p class="labelDataCss">{quoteObj.contactMobile}</p>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="2">
+                            <span>Contact Email</span>
+                            <p class="labelDataCss">{quoteObj.contactEmail}</p>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </lightning-layout-item>
+                <lightning-layout-item size="12">
+                    <lightning-tabset>
+                        <template for:each={salesOrderList} for:item="map">
+                            <lightning-tab label={map.key} key={map.key} value={map.key} onactive={handleTabActive}>
+                                <lightning-layout multiple-rows style="margin: 1% 1% 1% 0%; background: #F7F7F7;">
+                                    <!--lightning-layout-item size="3" style="padding-left: 2%;padding-top: 1%;">
+                                        <span class="labelCss">Regular Routing</span>
+                                        <p if:true={map.value.Regular_Routing__c} class="labelDataCss">{map.value.Regular_Routing__c}</p>
+                                        <p if:false={map.value.Regular_Routing__c} class="labelDataCss">-</p>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="3" style="padding-left: 2%;padding-top: 1%;">
+                                        <span class="labelCss">Kind of shipment</span>
+                                        <p if:true={map.value.Kind_Of_Shipment__c} class="labelDataCss">{map.value.Kind_Of_Shipment__c}</p>
+                                        <p if:false={map.value.Kind_Of_Shipment__c} class="labelDataCss">-</p>
+                                    </lightning-layout-item-->
+                                    <lightning-layout-item size="3" style="padding-left: 2%;padding-top: 1%;">
+                                        <span class="labelCss">Service type</span>
+                                        <p if:true={map.value.Service_Type__c} class="labelDataCss">{map.value.Service_Type__c}</p>
+                                        <p if:false={map.value.Service_Type__c} class="labelDataCss">-</p>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item if:false={isAirFreight} size="3" style="padding-left: 2%;padding-top: 1%;">
+                                        <span class="labelCss">Port of loading</span>
+                                        <p if:true={map.value.Port_of_loading__c} class="labelDataCss">{map.value.Port_of_loading__r.Name}</p>
+                                        <p if:false={map.value.Port_of_loading__c} class="labelDataCss">-</p>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="3" if:false={isAirFreight}  style="padding-left: 2%;padding-top: 1%;">
+                                        <span class="labelCss">Port of Destination</span>
+                                        <p if:true={map.value.Port_of_Destination__c} class="labelDataCss">{map.value.Port_of_Destination__r.Name}</p>
+                                        <p if:false={map.value.Port_of_Destination__c} class="labelDataCss">-</p>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item if:true={isAirFreight} size="3" style="padding-left: 2%;padding-top: 1%;">
+                                        <span class="labelCss">Airport of loading</span>
+                                        <p if:true={map.value.Airport_of_Loading__c} class="labelDataCss">{map.value.Airport_of_Loading__r.Name}</p>
+                                        <p if:false={map.value.Airport_of_Loading__c} class="labelDataCss">-</p>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="3" if:true={isAirFreight}  style="padding-left: 2%;padding-top: 1%;">
+                                        <span class="labelCss">Airport of Destination</span>
+                                        <p if:true={map.value.Airport_of_Destination__c} class="labelDataCss">{map.value.Airport_of_Destination__r.Name}</p>
+                                        <p if:false={map.value.Airport_of_Destination__c} class="labelDataCss">-</p>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="3" if:false={isAirFreight} style="padding-left: 2%;padding-top: 1%;">
+                                        <span class="labelCss">Shipping line</span>
+                                        <p if:true={map.value.Shipping_Line__c} class="labelDataCss">{map.value.Shipping_Line__r.Name}</p>
+                                        <p if:false={map.value.Shipping_Line__c} class="labelDataCss">-</p>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="3" if:true={isAirFreight} style="padding-left: 2%;padding-top: 1%;">
+                                        <span class="labelCss">Airline</span>
+                                        <p if:true={map.value.Airline__c} class="labelDataCss">{map.value.Airline__r.Name}</p>
+                                        <p if:false={map.value.Airline__c} class="labelDataCss">-</p>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="3" style="padding-left: 2%;padding-top: 1%;">
+                                        <span class="labelCss">Commodity</span>
+                                        <p if:true={map.value.Commodity__c} class="labelDataCss">{map.value.Commodity__r.Name}</p>
+                                        <p if:false={map.value.Commodity__c} class="labelDataCss">-</p>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="3" style="padding-left: 2%;padding-top: 1%;"> 
+                                        <span class="labelCss">Cargo weight</span>
+                                        <p if:true={map.value.Cargo_Weight__c} class="labelDataCss">{map.value.Cargo_Weight__c}</p>
+                                        <p if:false={map.value.Cargo_Weight__c} class="labelDataCss">-</p>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="3" style="padding-left: 2%;padding-top: 1%;">
+                                        <span class="labelCss">Remarks</span>
+                                        <p if:true={map.value.Remarks__c} class="labelDataCss">{map.value.Remarks__c}</p>
+                                        <p if:false={map.value.Remarks__c} class="labelDataCss">-</p>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="3" style="padding-left: 2%;padding-top: 1%;">
+                                        <span class="labelCss">Cargo Readiness</span>
+                                        <p if:true={map.value.Cargo_Readiness__c} class="labelDataCss"><lightning-formatted-date-time value={map.value.Cargo_Readiness__c}></lightning-formatted-date-time></p>
+                                        <p if:false={map.value.Cargo_Readiness__c} class="labelDataCss">-</p>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="3" if:true={displayCargoDetails} style="padding-left: 2%;padding-top: 1%;">
+                                        <span class="labelCss">Cargo Details
+                                            <lightning-button variant="base"
+                                            icon-name="utility:info" 
+                                            onclick={handleShowCargoDetails}></lightning-button>
+                                        </span>
+                                        <p if:true={cargoDatails}>{cargoDatails}</p>
+                                        <p if:false={cargoDatails}>-</p>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                            </lightning-tab>
+                        </template>
+                    </lightning-tabset>
+                </lightning-layout-item>
+                <lightning-layout-item size="12">
+                    <lightning-layout multiple-rows>
+                        <template for:each={equipList} for:item="equip">
+                            <lightning-layout-item size="12" key={equip}>
+                                <img src={containerPng}><span class="labelDataCss" style="margin-left: 1%;">{equip.key}</span><span><!--lightning-input type="number" value={equip.Qty} style="width: 8%; padding-left:8px" label="Quantity" data-equip={equip.key} onchange={handleQuantityChanged}></lightning-input--></span>
+                                <lightning-layout multiple-rows >
+                                    <template for:each={equip.value} for:item="shipLine">                                    
+                                        <lightning-layout-item key={shipLine} size="3" style="background: #EEF5FF;padding: 1%;margin: 1%;">
+                                            <lightning-layout multiple-rows>
+                                                <lightning-layout-item size="6">
+                                                    <span class="labelDataCss"><lightning-input type="checkbox" 
+                                                        label={shipLine.shipName} 
+                                                        data-equip={equip.key}
+                                                        data-shipline={shipLine.shipName}
+                                                        data-sellingtotal={shipLine.sellingRate}                                                
+                                                        checked={shipLine.checkBoxSelected}
+                                                        onchange={handleCheckBoxClicked}></lightning-input></span>
+                                                    <p><span>Selling : </span><span style="background: white;color: #4CAF50; padding: 4px 2px 4px 2px">{shipLine.currencyCode} {shipLine.sellingRate}</span></p>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="6" class={shipLine.QtyErrorClass} style="padding-left: 10%;">
+                                                    <lightning-input type="number" 
+                                                                    label="Qty"
+                                                                    class={shipLine.QtyErrorClass}
+                                                                    data-equip={equip.key}
+                                                                    data-shipline={shipLine.shipName}
+                                                                    data-sellingtotal={shipLine.sellingRate}    
+                                                                    style="max-width: 60%;"
+                                                                    value={shipLine.Qty} 
+                                                                    onchange={handleItemQuantitychange}></lightning-input>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="6" if:true={displayShip_consignee} >
+                                                    <lightning-input type="number" 
+                                                                    label="Agent Share"
+                                                                    data-equip={equip.key}
+                                                                    style="max-width: 70%;"
+                                                                    data-shipline={shipLine.shipName}
+                                                                    data-sellingtotal={shipLine.sellingRate}  
+                                                                    value={shipLine.agentShare} 
+                                                                    onchange={handleAgentSharechange}></lightning-input>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="6" if:true={displayShip_consignee} >
+                                                    <lightning-input type="number" 
+                                                                    label="POD Freetime"
+                                                                    data-equip={equip.key}
+                                                                    style="max-width: 70%;"
+                                                                    data-shipline={shipLine.shipName}
+                                                                    data-sellingtotal={shipLine.sellingRate}  
+                                                                    value={shipLine.PODFreeTime} 
+                                                                    onchange={handlePODFreeTimechange}></lightning-input>
+                                                </lightning-layout-item>
+                                            </lightning-layout>                                            
+                                        </lightning-layout-item>                                    
+                                    </template>
+                                </lightning-layout>
+                            </lightning-layout-item>
+                        </template>
+                    </lightning-layout>
+                </lightning-layout-item>          
+            </lightning-layout>
+        </lightning-layout-item>
+    </lightning-layout>
+    <template if:true={displayCargoDetailsPopUP}>
+        <c-b-a-f-c-o-display-cargo-details route-id={selectedRouteId} is-order={isOrder} onclose={handleCloseCargoDetailsPopUp}></c-b-a-f-c-o-display-cargo-details>
+    </template>
+</template>

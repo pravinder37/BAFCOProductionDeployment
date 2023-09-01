@@ -1,0 +1,61 @@
+<template>
+    <lightning-spinner variant="brand" size="large" if:true={isLoading}></lightning-spinner>
+    <Span><h1 style="padding-top: 2%;text-align: center;font-size: 22px;">Send Nomination Email</h1></Span>
+    <hr style="margin-top: 9px;margin-bottom: 1px;"/>
+    <div style="padding: 0% 5% 5% 5%;">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="7" >
+                <lightning-input 
+                                value={toSend} 
+                                data-field="toSendField"
+                                placeholder="Input email. Example: one@email.com,two@email.com" 
+                                pattern="^([\w+-.%]+@[\w.-]+\.[A-Za-z]{2,4})?(,[\w+-.%]+@[\w.-]+\.[A-Za-z]{2,4}){0,4}$"
+                                message-when-pattern-mismatch="Invalid format. Email(s) must have a domain. For multiple emails, please separate by commas w/o spaces." 
+                                label="To :" 
+                                onchange={handletoSend}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="7">
+                <lightning-input 
+                                value={toCCSend} 
+                                data-field="toCCSendField"
+                                placeholder="Input email. Example: one@email.com,two@email.com" 
+                                pattern="^([\w+-.%]+@[\w.-]+\.[A-Za-z]{2,4})?(,[\w+-.%]+@[\w.-]+\.[A-Za-z]{2,4}){0,4}$"
+                                message-when-pattern-mismatch="Invalid format. Email(s) must have a domain. For multiple emails, please separate by commas w/o spaces." 
+                                label="CC :" 
+                                onchange={handletoCCSend}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="7">
+                <lightning-input 
+                                value={toBCCSend} 
+                                data-field="toBCCField"
+                                pattern="^([\w+-.%]+@[\w.-]+\.[A-Za-z]{2,4})?(,[\w+-.%]+@[\w.-]+\.[A-Za-z]{2,4}){0,4}$"
+                                message-when-pattern-mismatch="Invalid format. Email(s) must have a domain. For multiple emails, please separate by commas w/o spaces." 
+                                placeholder="Input email. Example: one@email.com,two@email.com" 
+                                label="BCC :" 
+                                onchange={handletoBCCSend}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="7">
+                <lightning-input 
+                value={subject} 
+                data-field="subjectField"
+                placeholder="Subject"
+                label="Subject :" 
+                onchange={handlesubject}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" style="padding-top:2%;">
+                <lightning-textarea label="" data-field="bodyField" value={body} variant="label-hidden" onchange={handleBodychange}></lightning-textarea>
+            </lightning-layout-item>
+        </lightning-layout>
+        <hr style="margin-top: 1px;margin-bottom: 18px;"/>
+        <div class="slds-box slds-theme_shade" style="height: 65px;">
+            <lightning-button variant="neutral"
+            style="float: right;"
+             label="Cancel" onclick={closeAction}>
+            </lightning-button>
+            <lightning-button variant="brand"
+             style="float: right;padding-right: 10px;"
+             label="Send Email" onclick={sendEmailClicked} 
+             class="slds-m-left_x-small">
+            </lightning-button>
+        </div></div>
+</template>

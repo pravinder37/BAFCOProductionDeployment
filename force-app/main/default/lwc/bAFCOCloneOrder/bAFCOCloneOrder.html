@@ -1,0 +1,19 @@
+<template>
+    <lightning-quick-action-panel header="Clone Order">
+        <lightning-spinner variant="brand" size="large" if:true={isLoading}></lightning-spinner>
+            <p style="font-size: 15px;" class="slds-align_absolute-center">Are you sure? this will create a copy of this order (with different order number).</p>
+            <div slot="footer" class="slds-align_absolute-center">
+                <lightning-button
+                    variant="neutral"
+                    onclick={handleNoClicked}
+                    label="No"
+                ></lightning-button>
+                <lightning-button
+                    variant="brand"
+                    label="Yes"
+                    class="slds-m-left_x-small"
+                    onclick={handleYesClicked}
+                ></lightning-button>
+            </div>
+    </lightning-quick-action-panel>
+</template>

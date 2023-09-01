@@ -1,0 +1,12 @@
+<design:component>
+    
+  	<design:attribute name="formFactor" label="formFactor" />
+    <design:attribute name="Android" label="Android" />
+    <design:attribute name="iOS" label="iOS" />
+    <design:attribute name="iPad" label="iPad" />
+    <design:attribute name="iPhone" label="iPhone" />
+    <design:attribute name="Phone" label="Phone" />
+    <design:attribute name="Tablet" label="Tablet" />
+    <design:attribute name="WindowsPhone" label="WindowsPhone" />
+
+</design:component>

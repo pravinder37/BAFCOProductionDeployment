@@ -1,0 +1,92 @@
+public class OrderDataWrapper {
+    public class OrderData {
+        public String Account {get; set;}
+        public String Amount {get; set;}
+        public String Branch {get; set;}
+        public String BusinessType {get; set;}
+        public String Enquiry {get; set;}
+        public String EnquiryCreated {get; set;}
+        public String Leadc {get; set;}        
+        public String Name {get; set;}
+        public String QuotationTurnaroundTime {get; set;}
+        public String QuotationValidity {get; set;}
+        Public List<OrderItemData> orderItemData;
+    }
+    public class OrderItemData {
+        public String BAF {get; set;}
+        public String Bayancancellationchargec {get; set;}
+        public String Bayan {get; set;}
+        public String BayanCharges {get; set;}
+        public String BLFees {get; set;}
+        public String Bunkersurcharge {get; set;}
+        public String Cleaningcharges {get; set;}
+        public String ContainerMaintenanceCharge {get; set;}
+        public String CarriageCongestionSurcharge {get; set;}
+        public String CarrierSecurityFees {get; set;}
+        public String OriginCustomsclearance {get; set;}
+        public String DestinationCustomClearance {get; set;}
+        public String ContainerLashingCharges {get; set;}
+        public String Containermovementcharges {get; set;}
+        public String Containerstripping {get; set;}
+        public String DGSurcharge {get; set;}
+        public String DOcharges {get; set;}
+        public String DestinationLoadingCharges {get; set;}
+        public String Direction {get; set;}
+        public String DTHC {get; set;}
+        public String EquipmentImbalanceCharge {get; set;}
+        public String ExportServiceFees {get; set;}
+        public String FasahFee {get; set;}
+        public String FasahCharges {get; set;}
+        public String FuelSurcharge {get; set;}
+        public String Freetimecertificatecharges {get; set;}
+        public String Fumigation {get; set;}
+        public String Gatepasscharges {get; set;}
+        public String InlandFuelSurcharge {get; set;}
+        public String InlandHandlingFees {get; set;}
+        public String Inlandhaulage {get; set;}
+        public String Inspection {get; set;}
+        public String Insurancecharges {get; set;}
+        public String ISPS {get; set;}
+        public String LowSulphurSurcharge {get; set;}
+        public String OperationalRecoverySurcharge {get; set;}
+        public String LashingCharges {get; set;}
+        public String LiftonLiftoff {get; set;}
+        public String LOLOCharges {get; set;}
+        public String LoadingCharges {get; set;}
+        public String MinistryclearncechargeforOOGcargo {get; set;}
+        public String Miscellaneous {get; set;}
+        public String MOTfinecharges {get; set;}
+        public String NonPalletizedSurcharge {get; set;}
+        public String OriginDetentionDemurrageCharges {get; set;}
+        public String OriginLoadingCharges {get; set;}
+        public String OTHC {get; set;}
+        public String OverweightOverheightsurcharge {get; set;}
+        public String Pestcontrol {get; set;}
+        public String PortShuttling {get; set;}
+        public String PickupCharges {get; set;}
+        public String Reefercntrplugincharges {get; set;}
+        public String ReeferPTIcharges {get; set;}
+        public String Reefersteamwash {get; set;}
+        public String Repalletization {get; set;}
+        public String SealCharges {get; set;}
+        public String SeaFreight {get; set;}
+        public String StuffingCharges {get; set;}
+        public String SweepingCleaning {get; set;}
+        public String Tabadul {get; set;}
+        public String Tarpaulinecharge {get; set;}
+        public String TotalINCO {get; set;}
+        public String Total {get; set;}
+        public String TotalSLc {get; set;}
+        public String TotalDestinationc {get; set;}
+        public String TruckHeadcharges {get; set;}
+        public String Truckidlingcharges {get; set;}
+        public String TransportationChargeName {get; set;}
+        public String TransportationCharges {get; set;}
+        public String VGM {get; set;}
+        public String Vesselcertificatecharges {get; set;}
+        public String WarRiskSurcharge {get; set;}
+        public String Wrappingpackingcharges {get; set;}
+        public String Xray {get; set;}
+
+    }
+}

@@ -1,0 +1,33 @@
+@font-face {
+    font-family: "MontserratCustomfont";
+    src: url('/resource/Montserrat/static/Montserrat-Medium.ttf') format('TrueType');
+ }
+
+.leadDetails{
+    font-family: MontserratCustomfont;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 15px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: #212121;
+}
+.leadLabel{
+    font-family: MontserratCustomfont;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 30px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: #5A5A5A;
+}
+.customFont{
+    font-family: "MontserratCustomfont";
+}
+@media only screen and (max-width: 600px) {
+    .mobileDevice{
+        display: block !important;
+    }
+}

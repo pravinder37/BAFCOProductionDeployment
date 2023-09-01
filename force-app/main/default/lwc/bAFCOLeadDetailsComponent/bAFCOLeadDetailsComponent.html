@@ -1,0 +1,33 @@
+<template>
+    <div class="slds-m-left_large  customFont ">
+    <lightning-layout vertical-align="stretch" multiple-rows >
+        <lightning-layout-item size="12" style="margin-top: 5%;">
+            <p><span style="font-size: 24px; font-weight: 900;">{leadDetails.leadName}</span></p>
+        </lightning-layout-item>
+        <lightning-layout-item size="6" large-device-size="12" medium-device-size="12" small-device-size="6" >
+            <p class="slds-m-top_small leadLabel">Date Created</p>
+            <span class=leadDetails>{leadDetails.createdDate}</span>
+        </lightning-layout-item> 
+        <lightning-layout-item size="6" large-device-size="12" medium-device-size="12" small-device-size="6">
+            <p class="slds-m-top_small leadLabel">Owner</p>
+            <span class=leadDetails>{leadDetails.owner}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="6" large-device-size="12" medium-device-size="12" small-device-size="6" >
+            <p class="slds-m-top_small leadLabel">Business Type</p>
+            <span class=leadDetails>{leadDetails.businessType}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="6" large-device-size="12" medium-device-size="12" small-device-size="6" >
+            <p class="slds-m-top_small leadLabel">Modes</p>
+            <span class=leadDetails>{leadDetails.modes}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="6" large-device-size="12" medium-device-size="12" small-device-size="6" >
+            <p class="slds-m-top_small leadLabel">Contact Emails</p>
+            <span class=leadDetails>{leadDetails.contactEmail}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="6" large-device-size="12" medium-device-size="12" small-device-size="6" >
+            <p class="slds-m-top_small leadLabel">Contact Mobile</p>
+            <span class=leadDetails>{leadDetails.contactMobile}</span>
+        </lightning-layout-item>
+    </lightning-layout>
+</div>
+</template>

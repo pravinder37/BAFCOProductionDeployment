@@ -1,0 +1,19 @@
+<aura:component controller="BAFCOLeadDetailsController" implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasRecordId" access="global" >
+    <aura:attribute name="value" type="List"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="device" type="String" />
+    <aura:attribute name="options" type="List" default="[
+    {'label': 'Show Shipping Line', 'value': 'showShippLine'},
+    {'label': 'Show Break-up of Charges', 'value': 'showCharges'}
+    ]"/>
+    <h1 style="font-size: 30px;text-align: center;">Generate PDF</h1>
+    <hr style="margin-top: 10px;"/>
+    <lightning:checkboxGroup name="Checkbox Group"
+                             label=""
+                             style="font-size: 22px;padding-left: 8%;"
+                             options="{! v.options }"
+                             value="{! v.value }"/>
+    <div class="slds-align_absolute-center " style="padding-top:5%">
+        <lightning:button variant="brand" label="Generate PDF" title="Generate PDF" onclick="{! c.openVFPage }" />
+    </div>
+</aura:component>

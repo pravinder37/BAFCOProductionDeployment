@@ -1,0 +1,116 @@
+<template>
+    <lightning-spinner size="large" variant="brand" if:true={isLoading}></lightning-spinner>
+    <div style="padding-left: 2%;padding-right: 2%; padding-top: 2%;">
+        <!--lightning-layout>
+            <lightning-layout-item size="12"   small-device-size="12" medium-device-size="2" style="padding-top: 23px; padding-left: 19px !important;padding-right: 20px !important;">
+                <lightning-button label="Reset" class="mobileRespcss" icon-name="utility:refresh" onclick={handleAddRateClicked}></lightning-button>
+            </lightning-layout-item>
+        </lightning-layout-->
+        <lightning-layout class="customFont" multiple-rows style="padding-bottom: 30px;">
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="3" large-device-size="3"  style="padding-left: 1%;">
+                <label class="slds-form-element__label">
+                    <p style="padding-left: 22px" class="customFont">Port of loading</p>
+                </label>
+                <c-b-a-f-c-o-custom-look-up-component
+                                obj-name="Port__c"
+                                search-placeholder="Search Port of loading" 
+                                icon-name="standard:account"
+                                onlookupselected={handlePortSelection}
+                                onlookupremoved={handlePortRemoved}></c-b-a-f-c-o-custom-look-up-component>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" small-device-size="12" medium-device-size="3" large-device-size="3"  style="padding-left: 1%;"> 
+                <label class="slds-form-element__label">
+                    <p style="padding-left: 22px" class="customFont">Port of destination</p>
+                </label>               
+               <c-b-a-f-c-o-custom-look-up-component
+                                obj-name="Port__c"
+                                search-placeholder="Search Port of destination" 
+                                icon-name="standard:account"
+                                onlookupselected={handleDestinationSelection}
+                                onlookupremoved={handleDestinationRemoved}></c-b-a-f-c-o-custom-look-up-component>
+
+            </lightning-layout-item>
+            <lightning-layout-item size="12"  small-device-size="9" medium-device-size="3" large-device-size="3" style="padding-left: 19px !important;padding-right: 20px !important;">
+                <lightning-input type="date" class="mobileRespcss customFont" label="Validity expires in" data-field="validityField" value={validity} onchange={handleValidityChange} ></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="12"  small-device-size="12" medium-device-size="3" large-device-size="3" style="padding-top: 23px; padding-left: 19px !important;padding-right: 20px !important;">
+                <lightning-button variant="brand" class="mobileRespcss" label="Search" title="Search" onclick={handleSearchClick}></lightning-button>
+            </lightning-layout-item>
+            <lightning-layout-item size="12"   small-device-size="12" medium-device-size="12" large-device-size="12" style="padding-top: 23px; padding-left: 19px !important;padding-right: 20px !important;">
+                <span>
+                    <lightning-button label="Add Rates" class="mobileRespcss" variant="brand" onclick={handleAddRateClicked}></lightning-button>
+                </span>
+                <span>
+                    <lightning-button label="Refresh" icon-name="utility:refresh" variant="outline" onclick={refreshClicked}></lightning-button>
+                </span>
+                <span>
+                    <lightning-button label="Reset" icon-name="utility:refresh" variant="outline" onclick={resetClicked}></lightning-button>
+                </span>
+            </lightning-layout-item>
+        </lightning-layout>
+        <div class="external-events slds-scrollable" style="max-height:20rem;" if:true={SearchClicked}>
+            <table class="customFont slds-table slds-table_bordered slds-table_cell-buffer" style="margin-top: 2%;" if:true={SearchClicked}>
+                <thead>
+                    <tr>
+                        <th scope="col">Shipping line</th>
+                        <th scope="col">Port of loading</th>
+                        <th scope="col">Port of destination</th>
+                        <th scope="col">Agent</th>
+                        <th scope="col">Commodity</th>
+                        <th scope="col">Rate Type</th>
+                        <th scope="col">Valid till</th>
+                        <th scope="col">Equipment type</th>            
+                        <th scope="col">Rate</th>
+                        <th scope="col">Updated by</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody if:true={hasRecord}>
+                    <template for:each={displayRMSRecords} for:item="rms">
+                        <tr key={rms.rmsID}>
+                            <td>
+                                {rms.shippingLineName}                           
+                            </td>    
+                            <td>{rms.loadingPortName}</td>
+                            <td>{rms.loadingDestinationName}</td>                
+                            <td>{rms.agentName}</td>                                        
+                            <td>{rms.commodityName}</td> 
+                            <td>{rms.rateType}</td>              
+                            <td>{rms.validity}</td>    
+                            <td>{rms.equipmentName}</td>             
+                            <td>
+                                <span>{rms.seaFreight}</span>
+                                <span>
+                                    <lightning-button variant="base"
+                                    data-rmsid={rms.rmsID}
+                                    icon-name="utility:info" 
+                                    style="padding-left: 4px;"
+                                    onclick={handleShowServiceCharge}></lightning-button>
+                                </span>
+                            </td>                
+                            <td>{rms.lastModifiedByName}</td>                
+                            <td>
+                                <lightning-button-icon variant="label-hidden" label="" icon-name="utility:preview" data-rmsid={rms.rmsID} onclick={navigateToRms}></lightning-button-icon>
+                                <lightning-button-icon variant="label-hidden" label="" icon-name="utility:copy" data-rmsid={rms.rmsID} onclick={CopyRms}></lightning-button-icon>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+                <tbody if:false={hasRecord}>
+                    <tr>
+                        <th colspan="8" style="padding-top: 4%;padding-bottom: 4%;padding-left: 44%;">No Record Found</th>
+                    </tr>
+                </tbody>        
+            </table>
+        </div>
+        
+        <template if:true={showServiceChargeModal}>
+            <div>
+                <c-b-a-f-c-o-service-charges-help-component rms-id={rmsId} onclose={handleCloseModal}></c-b-a-f-c-o-service-charges-help-component>
+            </div>            
+        </template>
+        <template if:true={showAddRatesModel}>
+            <c-b-a-f-c-o-r-m-s-intake-form copy-rms-id={rmsId} onclose={handleCloseAddRates} onsuccess={handleSuccessAddRate}></c-b-a-f-c-o-r-m-s-intake-form>
+        </template>
+    </div>    
+</template>

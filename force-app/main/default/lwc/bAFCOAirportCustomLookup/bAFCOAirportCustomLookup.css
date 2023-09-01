@@ -1,0 +1,11 @@
+@font-face {
+    font-family: "MontserratCustomfont";
+    src: url('/resource/Montserrat/static/Montserrat-Medium.ttf') format('TrueType');
+ }
+ *{
+    font-family: "MontserratCustomfont";
+}
+.pillSize {
+    --slds-c-pill-line-height:27px;
+    display:block  !important;
+}

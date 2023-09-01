@@ -1,0 +1,19 @@
+<aura:component implements="force:hasRecordId,lightning:hasPageReference,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable"
+                access="global" >
+<aura:attribute name="refRecordId" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:html tag="style">
+        .slds-modal__container{
+        max-width: 60rem !important;
+        width:60% !important;
+        }
+        .slds-modal__content{
+            overflow-y:hidden !important;
+            height:unset !important;
+            max-height:unset !important;
+        }
+    </aura:html>
+	<div style="background: white;">
+        <c:bAFCOImportQuoteParent enquiryId="{!v.refRecordId}"/>
+    </div>	
+</aura:component>

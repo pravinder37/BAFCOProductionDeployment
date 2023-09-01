@@ -1,0 +1,28 @@
+@font-face {
+    font-family: "MontserratCustomfont";
+    src: url('/resource/Montserrat/static/Montserrat-Medium.ttf') format('TrueType');
+ }
+.labelStyle{
+    font-weight: 600;
+    line-height: 30px;
+    letter-spacing: 0em;
+    text-align: left;
+    font-size: 12px;
+    font-family: "MontserratCustomfont";
+}
+
+.customFont{
+    font-family: "MontserratCustomfont";
+}
+.addNewRouteCss{
+    padding-left: 3%;
+    padding-top: 4%;
+}
+@media only screen and (max-width: 600px) {
+    .addNewRouteCss{
+        padding-left: 6%;
+    }
+    .mobilePaddingRight{
+        padding-right: 7%;
+    }
+}

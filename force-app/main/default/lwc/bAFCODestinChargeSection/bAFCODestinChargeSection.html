@@ -1,0 +1,126 @@
+<template>
+    <lightning-layout-item size="12">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="4" class="labelStyle"  if:true={destinBayanCharges}><b>Bayan charges</b></lightning-layout-item>
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinBayanCharges}>
+                <lightning-input 
+                    type="number"
+                    value={destinBayanCharges}
+                    disabled={DestinTotalChanged}
+                    onchange={handleDestinBayanChargeChange}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinBayanCharges}>
+                <lightning-input 
+                    type="number"
+                    value={sellingdestinBayanCharges}
+                    disabled={DestinTotalChanged}
+                    onchange={handleDestinSellingBayanChargeChange}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="4" class="labelStyle"  if:true={destinCustomClearanceCharges}><b>Custom Clearance Charges</b></lightning-layout-item>
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinCustomClearanceCharges}>
+                <lightning-input 
+                    type="number"
+                    value={destinCustomClearanceCharges}
+                    disabled={DestinTotalChanged}
+                    onchange={handleDestinCustomClearanceChargeChange}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinCustomClearanceCharges}>
+                <lightning-input 
+                    type="number"
+                    value={sellingdestinCustomClearanceCharges}
+                    disabled={DestinTotalChanged}
+                    onchange={handleDestinSellingCustomClearanceChargeChange}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="4" class="labelStyle"  if:true={destinDOCharges}><b>DO Charges</b></lightning-layout-item>
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinDOCharges}>
+                <lightning-input 
+                    type="number"
+                    value={destinDOCharges}
+                    disabled={DestinTotalChanged}
+                    onchange={handleDestinDOChargeChange}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinDOCharges}>
+                <lightning-input 
+                    type="number"
+                    value={sellingdestinDOCharges}
+                    disabled={DestinTotalChanged}
+                    onchange={handleDestinSellingDOChargeChange}></lightning-input>
+            </lightning-layout-item>   
+            <lightning-layout-item size="4" class="labelStyle"  if:true={destinFasahCharges}><b>Fasah Charges</b></lightning-layout-item>                                                                         
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinFasahCharges}>
+                <lightning-input 
+                    type="number"
+                    value={destinFasahCharges}
+                    disabled={DestinTotalChanged}
+                    onchange={handleDestinFasahChargeChange}></lightning-input>
+            </lightning-layout-item>   
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinFasahCharges}>
+                <lightning-input 
+                    type="number"
+                    value={sellingdestinFasahCharges}
+                    disabled={DestinTotalChanged}
+                    onchange={handleSellingDestinFasahChargeChange}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="4" class="labelStyle"  if:true={destinGatePassCharges}><b>Gate Pass Charges</b></lightning-layout-item>                                                                            
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinGatePassCharges}>
+                <lightning-input 
+                    type="number"
+                    value={destinGatePassCharges}
+                    disabled={DestinTotalChanged}
+                    onchange={handleDestinGatePassChange}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinGatePassCharges}>
+                <lightning-input 
+                    type="number"
+                    value={sellingdestinGatePassCharges}
+                    disabled={DestinTotalChanged}
+                    onchange={handleSellingDestinGatePassChange}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="4" class="labelStyle"  if:true={destinLOLOCharges}><b>LOLO Charges</b></lightning-layout-item>
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinLOLOCharges}>
+                <lightning-input 
+                    type="number"
+                    value={destinLOLOCharges}
+                    disabled={DestinTotalChanged}
+                    onchange={handleDestinLOLOChargeChange}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinLOLOCharges}>
+                <lightning-input 
+                    type="number"
+                    value={sellingdestinLOLOCharges}
+                    disabled={DestinTotalChanged}
+                    onchange={handleSellingDestinLOLOChargeChange}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="4" class="labelStyle"  if:true={destinTransPortationCharges}><b>Transportation Charges</b></lightning-layout-item>
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinTransPortationCharges}>
+                <lightning-input 
+                    type="number"
+                    value={destinTransPortationCharges}
+                    disabled={DestinTotalChanged}
+                    onchange={handleDestinTansPortationChange}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinTransPortationCharges}>
+                <lightning-input 
+                    type="number"
+                    value={sellingdestinTransPortationCharges}
+                    disabled={DestinTotalChanged}
+                    onchange={handleSellingDestinTansPortationChange}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="4" class="labelStyle"  if:true={destinTotalCharges}><b>Total Destination Charges</b></lightning-layout-item>
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinTotalCharges}>
+                <lightning-input 
+                    type="number"
+                    disabled
+                    value={destinTotalCharges}
+                    onchange={handleDestinTotalChange}></lightning-input>
+            </lightning-layout-item> 
+            <lightning-layout-item class="selllingFieldCSS" size="4" if:true={destinTotalCharges}>
+                <lightning-input 
+                    type="number"
+                    disabled
+                    value={sellingdestinTotalCharges}
+                    onchange={handleSellingDestinTotalChange}></lightning-input>
+            </lightning-layout-item> 
+        </lightning-layout>
+    </lightning-layout-item>
+</template>

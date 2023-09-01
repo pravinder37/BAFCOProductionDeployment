@@ -1,0 +1,382 @@
+<apex:page title="Generate Pdf" renderAs="pdf" standardController="Quotation__c" extensions="BAFCOGeneratePDFController" applyHtmlTag="false" standardStylesheets="false" showHeader="false" applyBodyTag="false" action="{!getQuoteData}" >
+    
+    <head>
+        <style >
+            @page {
+            size: a4 portrait; 
+            margin: 0px 0px 12px 0px;
+            @top-center {
+            content: element(header);
+            } 
+            @bottom-center {
+            content: element(footer);
+            width:100%
+            }
+            margin-top: 75px;
+            }
+            div.header {
+            padding: 12px;
+            position: running(header);
+            }
+            div.footer {
+            display: block;
+            padding:0px 0px 0px 0px;
+            position: running(footer);
+            }
+            table{ width:100%;}
+            @font-face {
+            font-family: "MontserratCustomfont";
+            src: url('{!URLFOR($Resource.Montserrat, 'static/Montserrat-Medium.ttf')}') format('truetype');
+            }
+            * {
+            font-family: Helvetica,Dialog;
+            font-size: 12px;
+            }
+            .boxesCss{
+            max-width:168px;
+            min-width:168px;
+            width:168px;
+            min-height:40px;
+            max-height:40px;
+            height:40px;
+            //text-align: center;
+            // background: #E5F6FE !important;
+            //color : #01648E;
+            }
+        </style>
+    </head>
+    <body>
+        <!--div style="height: 8px ;background: #E39E25;"></div-->
+        <div class="header" style="background: #01648E;height: 48px;">
+            <apex:image url="{!$Resource.QuoteCombinedHeaderLogo}" style="height: 50px;"/><!--apex:image url="{!$Resource.QuotePdfLogo02}" style="padding-top :4px"/-->
+        </div>
+        <div class="footer">
+            <div style="background: #E39E25;height:8px;"></div>
+        </div>
+        <br/>
+        <div style="background: #F1FAFF; font-family:MontserratCustomfont" >
+            <apex:image url="{!$Resource.QuotePdfBookIcon}" style="padding:3px 0px 2px 3px;"/>
+            <span style="color: #01648E; position: absolute;margin-top:0px;left: 36px;"><b style="font-size: large;">QUOTATION</b></span>
+            <span style="color: #212121; position: absolute;margin-top:3px;left: 19%;font-size: 13px;">
+                (Thank you for giving BAFCO the opportunity to quote on your business.)
+            </span>
+        </div>
+        <div style="margin-top: 1%;">
+            <table class="customFont">
+                <tr >
+                    <td><!-- first Column -->
+                        <table>
+                            <tr>
+                                <td>Customer Name</td>
+                                <td><b>{!dto.customerName}</b></td></tr>
+                            <tr><td>Contact Person</td>
+                                <td><b>{!dto.contactPerson}</b></td></tr>
+                            <tr><td>Address</td>
+                                <td><b>{!dto.address}</b></td></tr>
+                            <tr><td>Phone</td>
+                                <td><b>{!dto.phone}</b></td></tr>
+                            <tr><td>Email</td>
+                                <td><b>{!dto.email}</b></td>
+                            </tr>
+                            <tr style="visibility:hidden"><td>rough data</td><td><b>#####</b></td></tr>
+                            <tr style="visibility:hidden"><td>rough data</td><td><b>#####</b></td></tr>
+                        </table>
+                    </td> 
+                    <td><!-- Second Column -->
+                        <table >
+                            <tr>
+                                <td>Quotation No.</td>
+                                <td><b>{!dto.quoteNumber}</b></td>
+                            </tr>
+                            <tr>
+                                <td>Quotation Issued</td>
+                                <td><b>{!dto.quoteIssued}</b></td>
+                            </tr>
+                            <tr>
+                                <td>Prepared by</td>
+                                <td><b>{!dto.preparedBy}</b></td>
+                            </tr>
+                            <tr>
+                                <td>Sales responsible</td>
+                                <td style="min-width: 120px;"><b>{!dto.salesResponsible}</b></td>
+                            </tr>
+                            <tr style="background: #E5F6FE;color: #01648E;">
+                                <td colspan="2">
+                                    <table>
+                                        <tr>
+                                            <td style="width: 44%;">Effective from</td>
+                                            <td><b>{!dto.effectiveFrom}</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 44%;">Validity to</td>
+                                            <td><b>{!dto.validityTo}</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 44%;">Service Type / Shipping Term</td>
+                                            <td><b>{!dto.serviceType} / {!dto.shippingTerm}</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 44%;">Payment Term</td>
+                                            <td><b>{!dto.paymentTerm}</b></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        
+        
+        <div style="height:29px;background: #F1FAFF;border-radius: 4px;color: #01648E; margin-top:1%">
+            <table>
+                <tr>
+                    <td style="width:20px"><apex:image url="{!$Resource.QuoteDollerIcon}" style="padding:3px 0px 2px 5px;"/></td>
+                    <td><sapn><b style="font-size: large;">FREIGHT RATES</b></sapn></td>
+                </tr>
+            </table>
+        </div>
+        <!-- quoteItems data--->
+        <div style="margin-top:1%; ">
+            <div style="display:{!if(showCharges == false,'block','none')}" >
+                <table style="border-collapse: collapse !important;width: 100%;margin-bottom:1%;">
+                    <thead>
+                        <tr style="background: #F1FAFF;">
+                            <th style="border: 1px solid;display:{!if(showPickupPlace == true,'block','none')};">Pickup Place</th>
+                            <th style="border: 1px solid;">Airport of Loading</th>
+                            <th style="border: 1px solid;">Airport of  Destination</th>
+                            <th style="border: 1px solid;display:{!if(showPickupDischarge == true,'block','none')};">Discharge Place</th>
+                            <th style="border: 1px solid;">Rate/Kg</th>
+                            <!--th style="border: 1px solid;">Agent</th-->
+                            <th style="border: 1px solid;">Total</th>
+                            <th style="border: 1px solid;">Comodity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!dto.serviceChargeList}" var="item" >
+                            <tr>
+                                <td style="display:{!if(showPickupPlace == true,'block','none')};border: 1px solid;"><apex:outputText value="{!item.placeOfPickup}"/></td>
+                                <td style="border: 1px solid;"><apex:outputText value="{!item.portOfLoading}"/></td>
+                                <td style="border: 1px solid;"><apex:outputText value="{!item.portOfDestination}"/></td>
+                                <td style="display:{!if(showPickupDischarge == true,'block','none')};border: 1px solid;"><apex:outputText value="{!item.placeOfDischarge}"/></td>
+                                <td style="border: 1px solid;"><apex:outputText value="{!item.rateKg}"/></td>
+                                <!--td style="border: 1px solid;"><apex:outputText value="{!item.agentShare}"/></td-->
+                                <td style="border: 1px solid;"><apex:outputText value="{!item.total}"/></td>
+                                <td style="border: 1px solid;"><apex:outputText value="{!item.commodity}"/></td>
+                            </tr>
+                        </apex:repeat>
+                    </tbody>
+                </table>
+            </div>
+            <div style="display:{!if(showCharges == true,'block','none')}">
+                <table style="width: 100%;margin-bottom:1%;">
+                    <tbody>
+                        <apex:repeat value="{!dto.serviceChargeList}" var="item" >
+                            <tr style="background: #F1FAFF;">
+                                <th style="border: 1px solid;display:{!if(showPickupPlace == true,'block','none')};">Pickup Place</th>
+                                <th style="border: 1px solid;">Airport of Loading</th>
+                                <th style="border: 1px solid;">Airport of  Destination</th>
+                                <th style="border: 1px solid;display:{!if(showPickupDischarge == true,'block','none')};">Discharge Place</th>
+                                <th style="border: 1px solid;">Rate/Kg</th>
+                                <!--th style="border: 1px solid;">Agent</th-->
+                                <th style="border: 1px solid;">Total</th>
+                                <th style="border: 1px solid;">Comodity</th>
+                            </tr>
+                            <tr>
+                                <td style="display:{!if(showPickupPlace == true,'block','none')};border: 1px solid;"><apex:outputText value="{!item.placeOfPickup}"/></td>
+                                <td style="border: 1px solid;"><apex:outputText value="{!item.portOfLoading}"/></td>
+                                <td style="border: 1px solid;"><apex:outputText value="{!item.portOfDestination}"/></td>
+                                <td style="display:{!if(showPickupDischarge == true,'block','none')};border: 1px solid;"><apex:outputText value="{!item.placeOfDischarge}"/></td>
+                                <td style="border: 1px solid;"><apex:outputText value="{!item.rateKg}"/></td>
+                                <!--td style="border: 1px solid;"><apex:outputText value="{!item.agentShare}"/></td-->
+                                <td style="border: 1px solid;"><apex:outputText value="{!item.total}"/></td>
+                                <td style="border: 1px solid;"><apex:outputText value="{!item.commodity}"/></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <apex:panelGrid style="display: block;" rendered="{!showCharges == true}" columns="4">
+                                         <!--additonla charge -->
+                                        
+                                        <apex:repeat value="{!item.addtionalChargeList}" var="addn" >
+                                            <apex:panelGroup >
+                                                <div class="boxesCss" style="background: #EFEFEF;padding: 10px">
+                                                    <apex:panelGrid columns="3">
+                                                        <apex:outputText value="{!addn.name}"/>
+                                                        <apex:outputText value="{!addn.value}"/>
+                                                        <apex:outputText value="{!item.currencyCode}"/>
+                                                        <span style="display:{!if(addn.includeAdditionalCharge == true,'block','none')}" >(Included)</span>
+                                                        <span style="display:{!if(addn.includeAdditionalCharge == false,'block','none')}" >(Excluded)</span>
+                                                    </apex:panelGrid>
+                                                </div>
+                                            </apex:panelGroup>
+                                        </apex:repeat>
+                                        
+                                        <apex:panelGroup rendered="{!item.exWorksObj.LoadCharge  != NULL}">
+                                            <div class="boxesCss" style="background: #EFEFEF;padding: 10px;">
+                                                <apex:panelGrid columns="3">
+                                                    <apex:outputText value="{!item.exWorksObj.Id} "/>
+                                                    <apex:outputText value="{!item.exWorksObj.LoadCharge}"/> 
+                                                    <apex:outputText value="{!item.currencyCode}"/>
+                                                    <span style="display:{!if(item.exWorksObj.includeExWorksCharge == true,'block','none')}" >(Included)</span>
+                                                    <span style="display:{!if(item.exWorksObj.includeExWorksCharge == false,'block','none')}" >(Excluded)</span>
+                                                </apex:panelGrid>
+                                            </div>
+                                        </apex:panelGroup>
+                                    </apex:panelGrid>
+                                </td>
+                            </tr><br/>
+                        </apex:repeat>
+                    </tbody>
+                </table>
+            </div>            
+        </div>
+        <div style="margin-top:1%">
+            <table>
+                <tr style="background: #F1FAFF;">
+                    <th style="border: 1px solid;">Quote No</th>
+                    <th style="border: 1px solid;">Quantity</th>
+                    <th style="border: 1px solid;">Equipment type</th>
+                    <!--th style="border: 1px solid;">Unit Price</th>
+                    <th style="border: 1px solid;">Freight</th-->
+                    <th style="border: 1px solid;">Commodity</th>
+                    <th style="border: 1px solid;">Airline</th>
+                </tr>
+                <apex:repeat value="{!dto.ContainerExportList}" var="item" >
+                    <tr>
+                        <td style="border: 1px solid;"><apex:outputText value="{!item.quoteNo}"/></td>
+                        <td style="border: 1px solid;"><apex:outputText value="{!item.qty}"/></td>
+                        <td style="border: 1px solid;"><apex:outputText value="{!item.equipmentType}"/></td>
+                        <!--td style="border: 1px solid;"><apex:outputText value="{!item.unitPrice}"/></td>
+                        <td style="border: 1px solid;"><apex:outputText value="{!item.freight}"/></td-->
+                        <td style="border: 1px solid;"><apex:outputText value="{!item.commodity}"/></td>
+                        <td style="border: 1px solid;"><apex:outputText value="{!item.airline}"/></td>
+                    </tr>
+                </apex:repeat>
+            </table>
+        </div>
+        <div style="height:29px;background: #F1FAFF;border-radius: 4px;color: #01648E; margin-top:1%">
+            <table>
+                <tr>
+                    <td><sapn><b style="font-size: large;">Package Details</b></sapn></td>
+                </tr>
+            </table>
+        </div>
+        <div style="margin-top:1%">
+            <table>
+                <tr style="background: #F1FAFF;">
+                    <th style="border: 1px solid;">UOM</th>
+                    <th style="border: 1px solid;">Length</th>
+                    <th style="border: 1px solid;">Width</th>
+                    <th style="border: 1px solid;">Height</th>
+                    <th style="border: 1px solid;">Units</th>
+                    <th style="border: 1px solid;">CBM (KGs)</th>                    
+                    <th style="border: 1px solid;">Gross Weight (KGs)</th>
+                </tr>
+                <apex:repeat value="{!dto.routeEquipList}" var="prod" >
+                    <tr>
+                        <td style="border: 1px solid;">{!prod.UOM__c}</td>
+                        <td style="border: 1px solid;">{!prod.Length__c}</td>
+                        <td style="border: 1px solid;">{!prod.Width__c}</td>
+                        <td style="border: 1px solid;">{!prod.Height__c}</td>
+                        <td style="border: 1px solid;">{!prod.Units__c}</td>
+                        <td style="border: 1px solid;">{!prod.CBM__c}</td>
+                        <td style="border: 1px solid;">{!prod.Weight_Kgs__c}</td>
+                    </tr>
+                </apex:repeat>
+            </table>
+        </div>
+        <div style="margin-top:1%">
+            <table>
+                <tr style="background: #F1FAFF;">
+                    <th style="border: 1px solid;">Total CBM</th>
+                    <th style="border: 1px solid;">Total Gross Weight (KGs)</th>
+                    <th style="border: 1px solid;">Total Volumetric Weight (KGs)</th>
+                </tr>
+                <apex:repeat value="{!dto.serviceChargeList}" var="item" >
+                    <tr>
+                        <td style="border: 1px solid;"><apex:outputText value="{!item.totalCBM}"/></td>
+                        <td style="border: 1px solid;"><apex:outputText value="{!item.totalGrossWeight}"/></td>
+                        <td style="border: 1px solid;"><apex:outputText value="{!item.totalVolumetricWeight}"/></td>
+                    </tr>
+                </apex:repeat>
+            </table>
+        </div>
+        <div style="margin-top1%;margin-bottom:1%; background: #FFF3E0;min-height: 36px;padding-left:20px;padding-top:20px;padding-bottom:20px;">
+            <span><b style="font-size:larger">REMARKS : </b><apex:outputText value="{!SUBSTITUTE(JSENCODE(dto.remarks),'\n','<br/>')}" style="white-space:pre;" escape="false" /></span>
+        </div>
+        <div style="margin-top1%;">
+            <apex:panelGrid columns="3">
+                <apex:image url="{!$Resource.QuoteNewQRCode}" height="100px" width="100px"/>
+                <div>
+                    <span style="color:#01648E;font-size:large !important;font-weight:600;">Standard Operating Procedures</span>
+                    <p>
+                        Scan the QR code provided to understand all the details
+                        of standard operating procedures.
+                    </p>
+                </div>
+            </apex:panelGrid>
+        </div>
+        <div style="display:{!if(dto.recordTypeName == 'Export','block','none')}" >
+            <!--apex:include pageName="BAFCOGeneratePDFFooterPage"/-->
+            <br/>
+            <div style="background: #F1FAFF; font-family:MontserratCustomfont" >
+                <table>
+                    <tr>
+                        <td style="width:20px;"><apex:image url="{!$Resource.AstrickPng}" style="padding: 5px 0px 3px 3px"/></td>
+                        <td ><span style="color:#01648E;padding-top:0px"><b style="font-size: large;">TERMS &amp; CONDITIONS</b></span></td>
+                    </tr>
+                </table>
+            </div>
+            <div style="margin-top: 5px; ">
+                
+                <span style="color:#01648E"><b>Exclusions:</b></span>
+                <p>
+                    <!--span>Above rates does not include the following charges which are additional.</span-->
+                    <span>{!dto.exclusionHeader}</span>
+                </p>
+                <ul>
+                    <apex:repeat value="{!dto.exclusionList}" var="item" >
+                        <li>{!item}</li>
+                    </apex:repeat>
+                </ul>
+            </div>
+            <div style="margin-top: 5px; ">
+                <span style="color:#01648E"><b>Inclusions:</b></span>
+            </div>
+            <p>
+                <span>{!dto.inclusionHeader}</span>
+            </p>
+            <ul>
+                <apex:repeat value="{!dto.inclusionList}" var="item" >
+                    <li>{!item}</li>
+                </apex:repeat>
+            </ul>
+        </div>
+        <div style="display:{!if(dto.recordTypeName == 'Import','block','none')}" >
+        	<br/>
+            <div style="background: #F1FAFF; font-family:MontserratCustomfont" >
+                <table>
+                    <tr>
+                        <td style="width:20px;"><apex:image url="{!$Resource.AstrickPng}" style="padding: 5px 0px 3px 3px"/></td>
+                        <td ><span style="color:#01648E;padding-top:0px"><b style="font-size: large;">TERMS &amp; CONDITIONS</b></span></td>
+                    </tr>
+                </table>
+            </div>
+            <div style="margin-top: 5px; ">
+                
+                <!--span style="color:#01648E"><b>Exclusions:</b></span-->
+                <p>
+                    <!--span>Above rates does not include the following charges which are additional.</span-->
+                    <span>{!dto.termsNConditionHeader}</span>
+                </p>
+                <ul>
+                    <apex:repeat value="{!dto.termsNConditionList}" var="item" >
+                        <li>{!item}</li>
+                    </apex:repeat>
+                </ul>
+            </div>
+        </div>
+    </body>
+</apex:page>

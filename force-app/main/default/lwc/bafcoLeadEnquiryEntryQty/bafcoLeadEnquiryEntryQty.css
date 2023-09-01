@@ -1,0 +1,8 @@
+.removebuttonCss{
+    padding-top: 2%;
+}
+@media only screen and (max-width: 600px) {
+    .removebuttonCss{
+        padding-top: 7% !important;
+    }
+}

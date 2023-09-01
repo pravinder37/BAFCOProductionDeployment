@@ -1,0 +1,10 @@
+.paddingCss{
+    padding-left: 4% !important;
+    padding-right: 4% !important;
+}
+@media only screen and (max-width: 600px) {
+    .paddingCss{
+        padding-left: 5% !important;
+        padding-right: 5% !important;
+    }
+}

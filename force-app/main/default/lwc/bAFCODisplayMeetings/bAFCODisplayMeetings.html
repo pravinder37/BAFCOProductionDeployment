@@ -1,0 +1,170 @@
+<template>
+    <lightning-spinner size="large" variant="brand" if:true={isLoading}></lightning-spinner>
+    <div class="customFont" style="background: white;padding: 3%;">
+        <lightning-layout multiple-rows if:true={displayInitial}>
+            <lightning-layout-item size="12" large-device-size="6" medium-device-size="6" small-device-size="12" style="font-size: 14px; font-weight: 600;">
+                Meetings for the Day
+            </lightning-layout-item>
+            <lightning-layout-item class="mobileCssDateTime" style="padding-left: 25%;" size="12" large-device-size="6" medium-device-size="12" small-device-size="12">
+                <lightning-layout multiple-rows>
+                    <lightning-layout-item size="12" large-device-size="6" medium-device-size="12" small-device-size="12" style="padding-top: 8%;">
+                        <lightning-button label="Create Meeting" variant="brand" onclick={handleCreateMeetingClicked}></lightning-button>                
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" large-device-size="6" medium-device-size="12" small-device-size="12">
+                        <lightning-input type="date" data-field="filtereDate" value={filteredDate} min={minTodaysDate} label="Filter Date wise" onchange={handlefilteredDateChange}></lightning-input>
+                    </lightning-layout-item>
+                </lightning-layout>                
+            </lightning-layout-item>
+            <lightning-layout-item size="12" style="padding-top: 2%;">
+                <div if:true={hasEvent}>
+                    <template for:each={eventList} for:item="ev">
+                        <lightning-card key={ev} data-evid={ev.recordId}>
+                            <lightning-layout multiple-rows  style="padding-left: 2%;">
+                                <lightning-layout-item size="12" large-device-size="12"  medium-device-size="12" small-device-size="12" >
+                                    <span class="eventValueClass">
+                                       
+                                        <lightning-button variant="base"
+                                        data-evid= {ev.recordId}
+                                        value={ev.accountName}
+                                        label={ev.accountName}
+                                        style="text-decoration-line: underline; text-decoration-color: rgba(1, 118, 211, 1);"
+                                        onclick={handleEventCardClicked}></lightning-button>
+                                    </span>
+                                    <p class="eventLabelClass">Customer name</p>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="cssClasss" size="4" large-device-size="3"  medium-device-size="3" small-device-size="4" >
+                                    <span class="eventValueClass">{ev.startDate}</span>
+                                    <p class="eventLabelClass">Meeting date</p>
+                                </lightning-layout-item> 
+                                <lightning-layout-item class="cssClasss" size="4" large-device-size="3"  medium-device-size="3" small-device-size="4">
+                                    <span class="eventValueClass">{ev.startTime}</span>
+                                    <p class="eventLabelClass">Meeting time</p>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="cssClasss" size="4" large-device-size="3"  medium-device-size="3" small-device-size="4">
+                                    <span class="eventValueClass">{ev.visitFor}</span>
+                                    <p class="eventLabelClass">Reason to meet</p>
+                                </lightning-layout-item>
+                                <lightning-layout-item class="cssClasss" size="4" large-device-size="3"  medium-device-size="3" small-device-size="4">
+                                    <span class="eventValueClass">{ev.meetingMinute}</span>
+                                    <p class="eventLabelClass">Minute of Meeting</p>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </lightning-card>                                                  
+                    </template> 
+                </div>
+                <div if:false={hasEvent}>
+                    <lightning-card>
+                        <p style="text-align:center;">No meetings were found.</p>
+                    </lightning-card>
+                </div>                           
+            </lightning-layout-item>
+        </lightning-layout>
+        <lightning-layout multiple-rows if:true={showCreateMeeting} class="meetingIntakeClass">
+            <lightning-layout-item size="12" style="font-size: 14px; font-weight: 600;">
+                <!--lightning-layout>
+                    <lightning-layout-item size="1"><lightning-button variant="base" icon-name="utility:back" onclick={getMeetingsRecords}></lightning-button></lightning-layout-item>
+                    <lightning-layout-item size="11">Create Meeting</lightning-layout-item>
+                </lightning-layout-->                
+            </lightning-layout-item>
+            <span><lightning-button variant="base" icon-name="utility:back" onclick={getMeetingsRecords}></lightning-button> <span style="font-weight: 600;font-size: 1.3rem;">Create Meeting</span> </span>
+            <lightning-layout-item size="12" class="leftPadding" style="padding-top: 2%;">
+                <label class="slds-form-element__label">
+                    <p class="inputFieldClass">Customer</p>
+                </label>
+                <lightning-radio-group 
+                          label=""
+                          options={radioOptions}
+                          value={objectChoosed}
+                          class="inputFieldClass"
+                          onchange={handleCustomerChoosed}
+                          type="radio"></lightning-radio-group>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="leftPadding">
+                <div class={whatIdErrorClass}>
+                    <label class="slds-form-element__label">
+                        <p class="inputFieldClass">Customer Name</p>
+                    </label>
+                    <template if:false={accountObjectChoosed}>
+                        <c-b-a-f-c-o-meeting-lead-search
+                                obj-name={objectApiName}
+                                search-placeholder={placeholder} 
+                                icon-name={objecticon}
+                                filter={filter}
+                                came-from-display-meeting="true"
+                                onlookupselected={handleWhatIdSelection}
+                                onlookupremoved={handleWhatIdRemoved}>
+                        </c-b-a-f-c-o-meeting-lead-search>
+                    </template>
+                    <template if:true={accountObjectChoosed}>
+                        <c-b-a-f-c-o-custom-account-search
+                                    obj-name={objectApiName}
+                                    search-placeholder={placeholder} 
+                                    icon-name={objecticon}
+                                    filter={filter}
+                                    came-from-display-meeting="true"
+                                    onlookupselected={handleWhatIdSelection}
+                                    onlookupremoved={handleWhatIdRemoved}></c-b-a-f-c-o-custom-account-search></template>
+                    <div class="slds-form-element__help" style="color: rgb(234, 0, 30);padding-left: 5%;" if:true={whatIdErrorMsg}>
+                        {whatIdErrorMsg}
+                    </div>
+                </div>                
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="leftPadding">
+                <lightning-input class="inputFieldClass" type="date" min={minTodaysDate} data-field="startDate" value={startDate} label="Meeting Date" onchange={handleDateChange}></lightning-input>
+            </lightning-layout-item> 
+            <lightning-layout-item size="12" class="leftPadding">
+                <lightning-input class="inputFieldClass" type="time" data-field="startTime" value={startTime} label="Meeting time" onchange={handletimeChange}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="leftPadding">
+                <lightning-combobox label="Purpose of visit"                             
+                            options={visitForOption}
+                            value={visitFor}
+                            data-field="visitFor"
+                            class="inputFieldClass" 
+                            onchange={handlevisitForChange}
+                            placeholder="Select"></lightning-combobox>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" style="padding-top: 4%;" class="leftPadding">
+                <lightning-button variant="brand" disabled={isLoading} class="inputFieldClass" label="Create Meeting" onclick={handleCreateMeeting}></lightning-button>
+            </lightning-layout-item>            
+        </lightning-layout>
+        <!--c-bafco-meeting-intake-form if:true={displayIntakeForm} event-id={eventId} onclose={closeMeetingDisplay} onupdate={handleRecordUpdated}></c-bafco-meeting-intake-form-->
+        <div if:true={displayIntakeForm}>
+            <span><lightning-button variant="base" icon-name="utility:back" onclick={getMeetingsRecords}></lightning-button> <span>Meeting Intake Form</span> </span>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <lightning-spinner size="large" variant="brand" if:true={isLoading1}></lightning-spinner>
+                     <lightning-layout multiple-rows if:true={fetchedRecorrd1} style="padding-bottom: 56px;">
+                         
+                         <lightning-layout-item class="paddingCss" size="12" large-device-size="6" medium-device-size="6" small-device-size="12">                   
+                            
+                            <lightning-input  label="Customer Name" value={whatName1} disabled></lightning-input>
+                         </lightning-layout-item>
+                         <lightning-layout-item size="12" class="paddingCss" large-device-size="6" medium-device-size="6" small-device-size="12">
+                            <lightning-input type="date" data-field="startDate1" value={startDate1} label="Meeting start date" onchange={handleStartDateChange}></lightning-input>
+                         </lightning-layout-item> 
+                         <lightning-layout-item size="12" class="paddingCss" large-device-size="6" medium-device-size="6" small-device-size="12">
+                               <lightning-input type="time" data-field="startTime1" value={startTime1} label="Meeting start time" onchange={handleStarttimeChange}></lightning-input>
+                         </lightning-layout-item>
+                         <!--lightning-layout-item size="12" class="paddingCss" large-device-size="6" medium-device-size="6" small-device-size="12">
+                            <lightning-input type="date" data-field="endDate1" value={endDate1} label="Meeting end date" onchange={handleEndDateChange}></lightning-input>
+                      </lightning-layout-item> 
+                      <lightning-layout-item size="12" class="paddingCss" large-device-size="6" medium-device-size="6" small-device-size="12">
+                            <lightning-input type="time" data-field="endTime1" value={endTime1} label="Meeting end time" onchange={handleEndtimeChange}></lightning-input>
+                      </lightning-layout-item-->
+                     <lightning-layout-item size="12" class="paddingCss" large-device-size="6" medium-device-size="6" small-device-size="12">
+                         <lightning-textarea data-field="meetingMinute1" placeholder="Enter Minute of Meeting..." label="Minute of meeting" value={meetinginute1} onchange={handleMeetingMinuteChange}></lightning-textarea>
+                      </lightning-layout-item>
+                      <lightning-layout-item size="12" large-device-size="6" medium-device-size="6" small-device-size="12" class="paddingCss">
+                        <lightning-combobox label="Purpose of visit"                             
+                                    options={visitForOption}
+                                    value={visitForUpdate}
+                                    data-field="visitForUpdate"
+                                    onchange={handlevisitUpdateForChange}
+                                    placeholder="Select"></lightning-combobox>
+                    </lightning-layout-item>
+                     </lightning-layout>
+                     <button class="slds-button slds-button_brand slds-align_absolute-center" onclick={SaveDataBox}>Save</button>
+               </div>
+        </div>
+        </div>
+</template>

@@ -1,0 +1,5 @@
+<aura:component implements="force:lightningQuickAction,force:hasRecordId" controller="BAFCOLRoutingDetailsController" access="global" >
+    <lightning:navigation aura:id="navService"/>
+    <aura:attribute name="pageReference" type="Object"/>
+    <aura:handler name="init" action="{!c.navigateToLC}" value="{!this}" />
+</aura:component>

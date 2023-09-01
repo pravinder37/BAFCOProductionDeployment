@@ -1,0 +1,78 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+         <!-- modal header start -->
+           <header class="slds-modal__header">
+              <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hideModalBox}>
+                 <lightning-icon icon-name="utility:close"
+                    alternative-text="close"
+                    variant="inverse"
+                    size="small" ></lightning-icon>
+                 <span class="slds-assistive-text">Close</span>
+              </button>
+              <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Select Ex-Works Charge</h2>
+           </header>
+       
+           <!-- modal body start -->
+           <div class="slds-modal__content slds-p-around_medium" style="overflow-y: scroll !important;" id="modal-content-id-1">
+            <lightning-layout>
+               <lightning-layout-item style="padding-left: 13px;" size="6">
+                  <lightning-input label="Search Ex-works Charge" value={exWorksSearchTerm} onchange={handleExWorksChange}></lightning-input>
+               </lightning-layout-item>
+               <lightning-layout-item style="padding-left: 13px;padding-top: 20px;" size="5">
+                  <lightning-button variant="brand" onclick={handleSearchClicked} label="Search"></lightning-button>
+               </lightning-layout-item>
+               <lightning-layout-item size="1">
+                  <lightning-button variant="base" icon-name="utility:refresh" onclick={handleResetClicked} label="Reset"></lightning-button>
+               </lightning-layout-item>
+            </lightning-layout>
+            <hr style="margin-bottom: 8px;"/>
+            <template if:true={noRecordFound} >
+               <p class="slds-align_absolute-center">No Record found</p>
+           </template>
+           <div if:true={noneSelected} style="color: rgb(234, 0, 30);">Please select Ex-Works.</div>
+           <template if:false={noRecordFound} >
+            <ul class={errorClass}>
+               <template for:each={exWorksList} for:item="item" >
+                  <li class="slds-accordion__list-item" key={item}>
+                     <section class="slds-accordion__section slds-is-open">
+                       <div class="slds-accordion__summary">
+                         <h2 class="slds-accordion__summary-heading">
+                           <button class="slds-button slds-button_reset slds-accordion__summary-action" aria-expanded="true" title={item.Name} onclick={handleDisplayRow} data-id={item.Id}>
+                             <lightning-input type="checkbox" label="" checked={item.selected} variant="label-hidden" value={item.Id} onchange={handleCheckboxClicked}></lightning-input>
+                             <span class="slds-accordion__summary-content">{item.Name}</span>                                    
+                             </button>
+                         </h2>
+                         <lightning-icon icon-name="utility:new" size="x-small" if:false={item.displayRow} alternative-text="Expand" title="Expand"></lightning-icon>
+                         <lightning-icon icon-name="utility:ban" size="x-small" if:true={item.displayRow} alternative-text="collapse" title="collapse"></lightning-icon>
+                        </div>
+                         <div class="slds-accordion__content" if:true={item.displayRow}>
+                           <lightning-layout multiple-rows data-id={item.Id} style="cursor: pointer;padding-left: 10%;">
+                              <lightning-layout-item size="3" if:true={item.Port_of_Loading__c}  style="background: #EEF5FF;padding: 2%;margin-left: 2%;">
+                                 Port of Loading : {item.Port_of_Loading__r.Name}
+                              </lightning-layout-item>
+                                <lightning-layout-item size="3" style="background: #EEF5FF;padding: 2%;margin-left: 2%;">
+                                 Place of Pickup : {item.Pickup_Place__c}
+                              </lightning-layout-item>
+                              <lightning-layout-item size="3" style="background: #EEF5FF;padding: 2%;margin-left: 2%;">
+                                 Loading Charge : {item.Loading_Charge__c}
+                             </lightning-layout-item>
+                           </lightning-layout>
+                         </div> 
+                     </section>
+                  </li>
+               </template>
+            </ul>
+           </template>
+           </div>
+ 
+           <!-- modal footer start-->
+           <footer class="slds-modal__footer">
+              <button class="slds-button slds-button_neutral" onclick={hideModalBox}>Cancel</button>
+              <button class="slds-button slds-button_brand" onclick={AddSelectedExWorks}>Add Selected Ex-Works</button>
+           </footer>
+        
+        </div>
+     </section>
+     <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

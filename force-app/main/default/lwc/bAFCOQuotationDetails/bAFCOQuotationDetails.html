@@ -1,0 +1,45 @@
+<template>
+    <div class="slds-m-left_large slds-m-top_large customFont">
+        <lightning-layout vertical-align="stretch" multiple-rows >
+            <lightning-layout-item size="12">
+                <b style="font-size: larger;">Comparison Chart</b>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="slds-m-top_small">
+                <lightning-layout vertical-align="stretch" multiple-rows >
+                <template for:each={quotationList} for:item="map">
+                    <lightning-layout-item size="12" key={map.key} style="font-size: 16px;">
+                        <b>{map.key}</b>
+                    </lightning-layout-item>                    
+                    <template for:each={map.value} for:item="shippingLine"  >
+                        <lightning-layout if:true={shippingLine.displayeEquip} key={shippingLine.value} class={shippingLine.cssClass} multiple-rows>
+                        <lightning-layout-item size="12" class="slds-m-top_large">
+                            <p style="font-weight: 600; font-size: 12px;">{shippingLine.equipmentName}</p>
+                        </lightning-layout-item>
+                        <br/>
+                        <lightning-layout-item  size="12" >
+                                <span style="font-weight: 500; color: #5A5A5A;"> Selling : </span><span style="color: #119c1b; background: white;">
+                                    &nbsp; &nbsp;&nbsp; {shippingLine.currencyCode} {shippingLine.sellingRate} &nbsp; &nbsp;&nbsp; </span>
+                            </lightning-layout-item>
+                            <lightning-layout-item  size="12" >
+                                <span style="font-weight: 500; color: #5A5A5A;">Profit :</span> 
+                                <span style="color: white;background: #4CAF50;margin-left: 7%;border-radius: 2px">
+                                    &nbsp; &nbsp;&nbsp; {shippingLine.currencyCode} {shippingLine.profit} &nbsp; &nbsp;&nbsp;
+                                </span>
+                                <span style="color: #4CAF50 ;background: #E8F5E9;margin-left: 5%; border-radius: 2px">
+                                    &nbsp;&nbsp;{shippingLine.margin}%&nbsp; &nbsp;&nbsp;
+                                </span>
+                            </lightning-layout-item>
+                            <lightning-layout-item  size="12" >
+                                <span style="font-weight: 500;">Valid till :</span> 
+                                <span style="color: #F44336;background: white;margin-left: 7%;border-radius: 2px;font-size: 12px;font-weight: 900;">
+                                      {shippingLine.validity} 
+                                </span>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </template>
+                </template>
+                </lightning-layout>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

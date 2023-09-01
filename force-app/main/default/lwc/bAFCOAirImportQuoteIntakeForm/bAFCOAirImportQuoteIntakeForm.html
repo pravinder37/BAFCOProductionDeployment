@@ -1,0 +1,328 @@
+<template>
+    <lightning-layout multiple-rows class="slds-gutters narrow-form" style="background-color: #f7f7f7;" >
+        <!--lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Kind of Shipment</p>
+            <span class=leadDetails>{shipmentKind}</span>
+        </lightning-layout-item-->
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Service of Type</p>
+            <span class=leadDetails>{serviceType}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">INCO Term</p>
+            <span class=leadDetails>{incoTerm}</span>            
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium" if:true={portLoading}>
+            <p class="slds-m-top_small leadLabel">Airport of Loading</p>
+            <span class=leadDetails>{portLoading}</span>            
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium" if:true={portDestination}>
+            <p class="slds-m-top_small leadLabel">AirPort of Destination</p>
+            <span class=leadDetails>{portDestination}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Commodity</p>
+            <span class=leadDetails>{commodity}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Business Type</p>
+            <span class=leadDetails>{businessType}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium" if:true={pickupPlaceName}>
+            <p class="slds-m-top_small leadLabel">Place of Pickup</p>
+            <span class=leadDetails>{pickupPlaceName}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" class="slds-col slds-m-vertical_medium" if:true={dischargePlaceName}>
+            <p class="slds-m-top_small leadLabel">Place of Discharge</p>
+            <span class=leadDetails>{dischargePlaceName}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" title={remarks} style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">Remarks</p>
+            <span class=leadDetails>{remarks}</span>
+        </lightning-layout-item>
+        <lightning-layout-item size="2" title={cargoDetails} style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" class="slds-col slds-m-vertical_medium">
+            <p class="slds-m-top_small leadLabel">cargoDetails
+                <lightning-button variant="base"
+                icon-name="utility:info" 
+                onclick={handleShowCargoDetails}></lightning-button>
+            </p>
+            <span class=leadDetails>{cargoDetails}</span>
+        </lightning-layout-item>
+    </lightning-layout>
+    <lightning-layout-item size="12" class="slds-m-left_xx-large" >
+        <lightning-layout multiple-rows style="margin-left: 70%;">
+            <lightning-layout-item size="12">
+                <lightning-button variant="base"
+                        icon-name="utility:add" 
+                        label="Add Agent" 
+                        title="Add New ShippingLine"
+                        style="font-weight: 600;float: right;"                                                
+                        onclick={handleAddAgent}></lightning-button>
+            </lightning-layout-item>
+        </lightning-layout>
+</lightning-layout-item>
+<template if:true={routingList} >
+    <lightning-layout style="background: white;">
+        <lightning-layout-item size="7">
+            <lightning-tabset class="agentTab">
+                <template if:true={routlistNotfound}>
+                    <p class="slds-align_absolute-center slds-m-top_xx-large" style="min-height: 200px;">No Rate Found</p>
+                </template>
+                <template for:each={routingList} for:item="map">                        
+                    <lightning-tab label={map.key} key={map.key} value={map.key} onactive={handleAgentActive}>
+                        <lightning-tabset class="shipLineTab" active-tab-value={shippingTabSelected}>
+                            <template for:each={map.value} for:item="shipLine">
+                                <lightning-tab label={shipLine.key2} key={shipLine.key2} value={shipLine.key2} onactive={handleShipLineActive}>
+                                    <lightning-tabset class="shipLineTab" active-tab-value={shippingEquipTabSelected}>
+                                        <template for:each={shipLine.value2} for:item="equip">
+                                            <lightning-tab label={equip.equipmentName} key={equip.equipmentName} value={equip.uniqueEquip} onactive={handleEquipmentNameActive}>
+                                                <lightning-layout multiple-rows>
+                                                    <lightning-layout-item size="12" style="padding-top: 15px;">
+                                                        <p style="font-size: 16px;"><b>Chargeable Weight : {chargeableWeight}</b></p>
+                                                    </lightning-layout-item>
+                                                    <lightning-layout-item size="3" style="padding-top: 15px;">
+                                                        <label class="slds-form-element__label">
+                                                            <p style="font-size: 16px;"><b>Transit Time</b></p>
+                                                        </label>
+                                                    </lightning-layout-item>
+                                                    <lightning-layout-item size="9" style="padding: 10px 0px 26px 26px">
+                                                        <lightning-input type="number" label="" value={transitTime} onchange={handleTransitTime} ></lightning-input>
+                                                    </lightning-layout-item>
+                                                    <lightning-layout-item size="4" ><!-- so as to make three columns --></lightning-layout-item>
+                                                    <lightning-layout-item size="4" ><b>Buying Rate</b></lightning-layout-item>
+                                                    <lightning-layout-item size="4" ><b>Selling Rate</b></lightning-layout-item>
+                                                    <lightning-layout-item size="4" class="slds-m-top_large" style="font-size: 16px;">
+                                                        <b>Total
+                                                            <lightning-button variant="base"
+                                                        icon-name="utility:info" 
+                                                        onclick={handleShowServiceCharge}></lightning-button>
+                                                        </b>
+                                                    </lightning-layout-item>
+                                                    <lightning-layout-item size="4" >
+                                                        <lightning-input type="number" disabled  data-field="BuyingRateField" style="padding-right: 10px;"                                                  
+                                                        value={buyingRateInput}></lightning-input>
+                                                    </lightning-layout-item>
+                                                    <lightning-layout-item size="4" >
+                                                        <lightning-input type="number"  data-field="totalRateField" style="padding-right: 10px;" onchange={handleTotalRateChange}                                                 
+                                                        value={totalRate}></lightning-input>
+                                                    </lightning-layout-item>
+                                                    <!--Service Charges-->
+                                <lightning-layout-item size="12" style="padding-top: 4%;">
+                                    <lightning-layout multiple-rows if:true={displayAdditionalCharge}>
+                                        <lightning-layout-item size="12">
+                                            <lightning-layout style="padding-bottom: 12px;">
+                                                <lightning-layout-item size="4"><b>Additional Charges</b></lightning-layout-item>
+                                                <lightning-layout-item size="4"><lightning-input label="Add To Buying Rate" 
+                                                    type="checkbox"
+                                                    checked={addAdditionalCharge} 
+                                                    onchange={handleaddAdditionalChange}></lightning-input>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="4"><lightning-input label="Included (Quotation PDF)" 
+                                                    type="checkbox"
+                                                    checked={includeAdditionalCharge} 
+                                                    onchange={handleincludeAdditionalChargeChange}></lightning-input>
+                                                </lightning-layout-item>
+                                            </lightning-layout>
+                                        </lightning-layout-item>
+                                         <!--Additional Service charges -->
+                                        <template for:each={additionalChargeList} for:item="item" >
+                                            <lightning-layout-item key={item} size="6" class="slds-m-top_large" style="padding-left: 7%" >
+                                                {item.name}
+                                            </lightning-layout-item>
+                                            <lightning-layout-item key={item} size="5">
+                                                <lightning-input style="padding-right: 10px;" 
+                                                    onchange={handleAdditionalChange}
+                                                    data-record-id={item.index}
+                                                    type="number"                                                
+                                                    value={item.value}></lightning-input>
+                                            </lightning-layout-item>
+                                            <lightning-layout-item size="1" key={item} style="margin-top: 3%;" >
+                                                <lightning-button-icon icon-name="utility:ban"
+                                                    size="2"                                                             
+                                                    variant="container"                                                            
+                                                    alternative-text="Remove Additional Charges" 
+                                                    data-record-id={item.index}
+                                                    title="Remove Additional Charges"
+                                                    onclick={removeAdditionalCharge}></lightning-button-icon>                                                
+                                            </lightning-layout-item>
+                                        </template>
+                                        <lightning-layout-item class="shipLineValueCSS" size="12" if:true={additionalChargeTotal}>
+                                            <lightning-input 
+                                                type="number"
+                                                variant="label-inline"
+                                                label="Total Additional Charges"
+                                                disabled
+                                                value={additionalChargeTotal}
+                                                ></lightning-input>
+                                        </lightning-layout-item>
+                                        
+                                <!--Additional charges End-->
+                                    </lightning-layout>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" style="padding-top: 4%;">
+                                    <lightning-layout multiple-rows if:true={displayExworks}>
+                                        <lightning-layout-item size="12">
+                                            <lightning-layout style="padding-bottom: 12px;">
+                                                <lightning-layout-item size="4"><b>Ex Works Charge</b></lightning-layout-item>
+                                                <lightning-layout-item size="4"><lightning-input label="Add To Buying Rate" 
+                                                    type="checkbox"
+                                                    checked={addExWorksCharge} 
+                                                    onchange={handleaddExWorksChargeChange}></lightning-input>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="4"><lightning-input label="Included (Quotation PDF)" 
+                                                    type="checkbox"
+                                                    checked={includeExWorksCharge} 
+                                                    onchange={handleincludeExWorksChargeChange}></lightning-input>
+                                                </lightning-layout-item>
+                                            </lightning-layout>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="6">{exWorksObj.Name}</lightning-layout-item>
+                                        <lightning-layout-item size="6" >
+                                            <lightning-input 
+                                                type="number"
+                                                variant="label-hidden"
+                                                value={exWorksTotal}
+                                                onchange={handleExWorksTotalChange}
+                                                ></lightning-input>
+                                        </lightning-layout-item>
+                                    </lightning-layout>
+                                </lightning-layout-item>
+                                <!--Service Charge End-->
+                                <lightning-layout-item size="12" style="padding-top: 4%;">
+                                    <lightning-layout multiple-rows>
+                                        <lightning-layout-item size="6">
+                                            <lightning-button variant="base"
+                                                        icon-name="utility:add" 
+                                                        label="Add Additional Charges" 
+                                                        title="Add Additional Charges"                                                
+                                                        onclick={handleAddAdditionalCharge}></lightning-button>
+                                        </lightning-layout-item>
+                                    </lightning-layout>
+                                </lightning-layout-item>
+                                                    </lightning-layout>
+                                            </lightning-tab>
+                                        </template>
+                                    </lightning-tabset>
+                                </lightning-tab>
+                            </template>
+                        </lightning-tabset>
+                    </lightning-tab>
+                </template>
+                </lightning-tabset>
+                </lightning-layout-item>
+                <lightning-layout-item size="5" class="customFont" > 
+                    <div class="slds-m-top_xx-large slds-m-left_xx-large slds-m-bottom_x-large" if:false={isLoading} >
+                        <lightning-layout multiple-rows style="background: #f7f7f7;">
+                            <lightning-layout-item size="12" >
+                                <b class="slds-align_absolute-center" style="font-size: 16px;padding-top: 20px;">Total Cost </b>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" >
+                               <span class="slds-align_absolute-center" style="color: #5A5A5A; ">Quantity :  {quantity}</span>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="5" class="buyingRateStyle">
+                                <span style="color: #3A88F7;font-size: 20px;">{currencyCode} {buyingRate}</span>
+                                <p class="slds-align_absolute-center" style="color: #5A5A5A;">Buying Rate</p>
+                                <p class="slds-align_absolute-center" style="color: #5A5A5A; padding-top: 2px;font-size: 11px;">(Rate Type : {rateType})</p>
+                                <p class="slds-align_absolute-center" style="color: #5A5A5A; padding-top: 2px;font-size: 11px;">(Rate Kg : {buyingRateKg})</p>
+                             </lightning-layout-item>
+                             <lightning-layout-item size="1"></lightning-layout-item>
+                             <lightning-layout-item size="5" class="sellingRateStyle">
+                                <span style="color: #4CAF50; font-size: 20px;">{currencyCode} {sellingRate}</span>
+                                <p class="slds-align_absolute-center" style="color: #4CAF50;padding-bottom: 14px;">Selling Rate</p>
+                                <p class="slds-align_absolute-center" style="color: #5A5A5A; padding-top: 2px;font-size: 11px;">(Rate Kg : {sellingRateKg})</p>
+                             </lightning-layout-item>
+                             <lightning-layout-item size="12" if:true={rmsRemarks} style="padding: 7px 0px 7px 15px;background: white;color: #5A5A5A;" >
+                                Remarks : <span>{rmsRemarks}</span>
+                             </lightning-layout-item>
+                             <lightning-layout-item size="12" class="profitButton">
+                                <span class="profitLabel">
+                                    {profitLabel}
+                                </span>
+                             </lightning-layout-item>
+                             <lightning-layout-item size="12" >
+                                 <span style="font-size: 11px; font-weight: 400;">Margin : </span>
+                                 <span style="color: #3A88F7;">{margin} %</span>
+                                <span class="slds-m-left_xx-large" style="font-size: 11px;color: #434343;">
+                                   Valid till : 
+                                 </span>
+                                 <span style="font-size: 12px; background: white; color: red;">{validity}</span>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" >
+                                <lightning-textarea label="Remarks" value={quoteRemarks} onchange={handleRemarksChange} placeholder="Your Text here..."></lightning-textarea>
+                            </lightning-layout-item></lightning-layout>                    
+                    </div>
+                    <lightning-spinner variant="brand" size="large" if:true={isLoading}></lightning-spinner>
+                    <lightning-layout-item size="12" style="margin-left: 10%;">
+                        <lightning-layout multiple-rows>
+                            <lightning-layout-item size="6"><lightning-button  
+                                variant="brand" 
+                                label="Select For Quotation" 
+                                title="Select For Quotation"
+                                disabled={quotationSaved} 
+                                onclick={handleGenerateQuotaion}></lightning-button></lightning-layout-item>
+                            <lightning-layout-item size="6"><lightning-button  
+                                variant="brand" 
+                                style="margin-left: 10%;"
+                                label="Choose Template" 
+                                title="Choose Template"
+                                onclick={handleTemplateView}></lightning-button></lightning-layout-item>
+                            <lightning-layout-item size="12" style="margin-top: 3%; margin-left: 35%"><lightning-button  
+                                variant="brand" 
+                                label="Add Ex-works" 
+                                title="Add Ex-works"
+                                onclick={handleAddWorks}></lightning-button></lightning-layout-item>
+                        </lightning-layout>
+                    </lightning-layout-item>       
+                </lightning-layout-item>    
+                </lightning-layout>
+                </template>
+<template if:true={showNewServiceCharge}>
+    <c-b-a-f-c-o-import-add-service-charge default-currency-code={currencyCode} onupdate={updateServiceCharges} service-charge-list={serviceChargeList} onclose={handleCloseNewServiceCharge}></c-b-a-f-c-o-import-add-service-charge>
+</template>
+<template if:true={showAdditionalChargeModal}>
+    <c-b-a-f-c-o-additional-charge-modal onaddselected={handleAddSelected} onclose={handleCloseAdditionalModal}></c-b-a-f-c-o-additional-charge-modal>
+</template>
+<template if:true={showAdditionalChargetemplate}>
+    <c-b-a-f-c-o-additional-charge-template onclose={handleCloseTemplatePopup} onaddselected={handleTemplateSelected}></c-b-a-f-c-o-additional-charge-template>
+</template>
+<template if:true={displayExWorksModal}>
+    <c-b-a-f-c-o-select-ex-works onaddselected={handleAddExWorks} onclose={handleCloseExworks}></c-b-a-f-c-o-select-ex-works>
+</template>
+<template if:true={displayAddAgent}>
+    <c-b-a-f-c-o-import-add-agent onclose={handleHideAgentModal} onaddagent={handleAddAgentSelected}></c-b-a-f-c-o-import-add-agent>
+</template>
+<template if:true={addAirlineModel}>
+    <c-b-a-f-c-o-add-shippingline-model
+    is-air="true"
+    onclose={handlecloseAddShippLine}
+    onaddshippline={handleAddShipLine}
+    ></c-b-a-f-c-o-add-shippingline-model>
+</template>
+<template if:true={showAddRatesModel}>
+    <c-b-a-f-c-o-add-r-m-s-model 
+    port-loading={portLoading}
+    port-destination={portDestination}
+    commodity={commodity}
+    acct-name={acctName}
+    airline={airLine}
+    equipment-type={shippingEquipTabSelected}
+    pickup-place={pickupPlace}
+    discharge-place={dischargePlace}
+    business-type="Import"
+    inco-term-id = {incoTermId}
+    inco-term={incoTerm}
+    route-id={routeId}
+    agent-object={agentObject}
+    came-from-import="true"
+    is-air={isAir}
+    onclose={handleCloseAddRates}
+    onsuccess={handledAddRateSave}
+     ></c-b-a-f-c-o-add-r-m-s-model>
+</template>
+<template if:true={showServiceChargeModal}>
+    <c-b-a-f-c-o-service-charges-help-component is-air={isAir} rms-id={rmsId} onclose={handleCloseModal}></c-b-a-f-c-o-service-charges-help-component>
+</template>
+<template if:true={displayCargoDetails}>
+    <c-b-a-f-c-o-display-cargo-details route-id={routeId} onclose={handleCloseCargoDetailsPopUp}></c-b-a-f-c-o-display-cargo-details>
+</template>
+</template>

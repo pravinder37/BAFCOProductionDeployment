@@ -1,0 +1,138 @@
+<template>
+    <lightning-layout multiple-rows class="customFont">
+        <lightning-layout-item size="12" large-device-size="10" medium-device-size="10" small-device-size="12">
+            <p 
+                style="font-size: 24px; margin-top: 12px; font-weight: 900; "
+                class="customFont">
+                Create Enquiry
+            </p>
+        </lightning-layout-item>        
+    </lightning-layout>
+    <lightning-layout multiple-rows style="max-width: 90%;">
+        <lightning-layout-item style="padding-top: 13px;" size='12' large-device-size="4" medium-device-size="4" small-device-size="12" class="customFont mobilePadding">
+            <label class="slds-form-element__label customFont">
+                <b>Business Type</b>
+            </label>                    
+            <lightning-combobox label="" 
+                            variant="label-hidden"
+                            required
+                            options={pickListvalues}
+                            value={businessTypeSelected} 
+                            onchange={handleBusinessTypeChange}
+                            aria-describedby="form-error-01"
+                            class={quoteTypeErrorClass}
+                            style="font-weight: 600;line-height: 30px;letter-spacing: 0em;text-align: left;font-size: 12px;"
+                            placeholder="Select"></lightning-combobox>
+                            <div class="slds-form-element__help" id="form-error-01" style="color: rgb(194, 57, 52);" if:true={quoteTypeErrorMsg}>
+                                {quoteTypeErrorMsg}
+                            </div>
+        </lightning-layout-item>
+        <lightning-layout-item size='12' style="padding-left: 2%;padding-top: 13px;" large-device-size="4" medium-device-size="4" small-device-size="12" class="customFont mobilePadding">
+            <lightning-input type="date"  data-field='closeDateField' label="Close Date" value={closeDate} min={minDate} onchange={handelCloseDate}></lightning-input>
+        </lightning-layout-item>
+        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12">
+            <div class={customerErrorClass}>
+                <label class="slds-form-element__label">
+                    <p style="padding: 0px 20px 0px 20px;" class="labelStyle">Commercial User</p>
+               </label>
+               <c-b-a-f-c-o-custom-look-up-component
+                                   obj-name="User"
+                                   search-placeholder="Search Commercial User" 
+                                   icon-name="standard:user"
+                                   filter="Profile.Name = 'Commercial Profile'"
+                                   onlookupselected={handleCommercialUserSelection}
+                                   onlookupremoved={handleCommercialUserRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                                   <div class="slds-form-element__help"  style="color: rgb(234, 0, 30); padding-left: 20px;" if:true={customerErrorClass}>
+                                    Complete this field.
+                                </div>
+            </div>
+        </lightning-layout-item>
+    </lightning-layout>
+    <div if:true={leadEnquiryList}>
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12">
+                <lightning-accordion>
+                    <template for:each={leadEnquiryList} for:item="lead">
+                        <lightning-accordion-section label={lead.routeName} key={lead.routeName} value={lead.routeName} style="font-weight: 500;" class="customFont">
+                            <lightning-button-menu slot="actions" alternative-text="Show menu" icon-size="x-small" menu-alignment="auto">
+                                <lightning-menu-item value={lead.leadIndex} prefix-icon-name="utility:ban" label="Remove Route" onclick={handleRemoveRouteOption}></lightning-menu-item>
+                            </lightning-button-menu>
+                            <c-b-a-f-c-o-lead-enquiry-entry-intake 
+                            copy-from-above={lead.copyFromAbove}
+                            lead-index={lead.leadIndex}
+                            routing-regular={lead.routingRegular}
+                            shipment-kind={lead.shipmentKind}
+                            service-type={lead.serviceType}
+                            inco-term={lead.incoTerm}
+                            inco-term-name={lead.incoTermName}
+                            port-loading-name={lead.portLoadingName}
+                            port-loading={lead.portLoading}
+                            port-destination-name={lead.portDestinationName}
+                            port-destination={lead.portDestination}
+                            shipping-line={lead.shippingLine}
+                            shipping-line-name={lead.shippingLineName}
+                            commodity={lead.commodity}
+                            min-date={minDate}
+                            cargo-readiness={lead.cargoReadiness}
+                            commodity-name={lead.commodityName}
+                            show-pickup-place-field={lead.showPickupPlaceField}
+                            place-of-pickup={lead.placeOfPickup}
+                            place-of-discharge={lead.placeOfDischarge}
+                            show-discharge-place-field={lead.showDischargePlaceField}
+                            cargo-weights={lead.cargoWeights}
+                            dangerous-goods={lead.dangerousGoods}
+                            show-d-g-class-field={lead.showDGClassField}
+                            dg-class={lead.dgClass}
+                            business-type={businessTypeSelected}
+                            remarks={lead.remarks}
+                            lead-enquiry-list={leadEnquiryList}
+                            place-of-pickup-name={lead.placeOfPickupName}
+                            place-of-discharge-name={lead.placeOfDischargeName}
+                            container-record={lead.containerRecord}
+                            shipment-kind-class={lead.shipmentKindClass}
+                            service-type-class={lead.serviceTypeClass}
+                            inco-term-class={lead.incoTermClass}
+                            port-of-loading-class={lead.portOfLoadingClass}
+                            port-of-destination-class={lead.portOfDestinationClass}
+                            commodity-class={lead.commodityClass}
+                            cargoweight-class={lead.cargoweightClass}
+                            discharge-place-class={lead.dischargePlaceClass}
+                            pickup-place-class={lead.pickupPlaceClass}
+                            disable-add-route ={lead.disableAddRoute}
+                            onupdate={handleEnquiryListUpdate}
+                            oncontainertypeupdate={handleContainerTypeUpdate}
+                            oncontainerqtyupdate={handleContainerQTYUpdate}
+                            onremovecontainertype={handleContainerTypeRemove}
+                            onaddcontainertype={handleAddContainerType}
+                            oncopycontainertype={handleCopyContainerData}
+                            onaddemptycontainertype={handleaddEmptycontainertype}
+                            onresetform={handleResetFormClicked}
+                            account-id={quoteId}
+                            is-edit={isEdit}
+                             ></c-b-a-f-c-o-lead-enquiry-entry-intake>                
+                        </lightning-accordion-section>
+                    </template> 
+                </lightning-accordion>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" large-device-size="12" medium-device-size="12" small-device-size="12" if:false={dontShowAddNewRoute} class="addNewRouteCss">
+                <lightning-button   variant="brand" 
+                                label="Add New Route" 
+                                title="Add new Route" 
+                                disabled={disableAddRoute}                                   
+                                onclick={addRouteEnquiry}></lightning-button>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+    <lightning-layout class="slds-align_absolute-center slds-m-around_large">
+        <lightning-spinner variant="brand" size="large" if:true={isLoading}></lightning-spinner>
+        <lightning-layout-item>
+            <lightning-button 
+                            variant="brand"
+                            label="Submit to Commercial team" 
+                            title="submit commercial team"
+                            disabled={isLoading}
+                            onclick={handleSubmit}></lightning-button>
+        </lightning-layout-item>
+    </lightning-layout>
+   
+</template>

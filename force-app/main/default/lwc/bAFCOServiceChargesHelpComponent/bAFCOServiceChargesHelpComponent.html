@@ -1,0 +1,532 @@
+<template>    
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="width: 90% !important;max-width: 90% !important;">
+                <!-- modal header start -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={handleModalClose}>
+                        <lightning-icon icon-name="utility:close"
+                        alternative-text="close"
+                        variant="inverse"
+                        size="small" ></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium slds-hyphenate">Shipping Line, Origin & Destination Charges</h2>
+                </header>
+                <!-- modal body start -->
+                <div class="slds-modal__content slds-p-around_medium" style="overflow-y: scroll !important;">
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <lightning-spinner alternative-text="Loading" size="large" if:true={isLoading}></lightning-spinner>
+                        <lightning-layout multiple-rows>
+                            <lightning-layout-item size="12" if:false={isAir} class="slds-p-bottom_medium">
+                                <span style="font-size: 15px;">Sea Freight : </span>
+                                <span>{seaFreight}</span>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" if:true={isAir} class="slds-p-bottom_medium">
+                                <span style="font-size: 15px;">Rate/Kg : </span>
+                                <span>{rateKg}</span>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" if:false={isAir} class="slds-p-bottom_medium">
+                                <span style="font-size: 15px;">Shipping Line  : </span>
+                                <span>{shippingLineName}</span>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" if:true={isAir} class="slds-p-bottom_medium">
+                                <span style="font-size: 15px;">Airline  : </span>
+                                <span>{airLineName}</span>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" class="slds-p-bottom_medium">
+                                <span style="font-size: 15px;">Buying Rate : </span>
+                                <span style="text-decoration: underline;color:#1a0dab;cursor: pointer;text-align:right;" onclick={handleRmsNameClicked}>{rmsName}</span>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                        <lightning-layout multiple-rows>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12">
+                            <p class="slds-align_absolute-center">Shipping Line Charges</p>
+                        <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-table_fixed-layout">
+                            <thead class="slds-border_bottom">
+                                <tr class="">
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Type">
+                                                Type
+                                        </div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Value">
+                                                Value  <span>({shipLine.currencyCode})</span> 
+                                        </div>
+                                    </th>                                   
+                                </tr>
+                            </thead>
+                            <tbody>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>Bunker surcharge</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{BunkerSurchargeValue}</b></div>
+                                        </td>                               
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>BAF</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{BAFValue}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>ISPS</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{ISPSValue}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>OTHC</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{OTHCValue}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>Seal Charges</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{SealChargesValue}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>Container Maintenance Charge</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{CMCValue}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>Equipment Imbalance Charge</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{EICValue}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>DTHC</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{DTHCValue}</b></div>
+                                        </td>                              
+                                    </tr>
+
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>Carriage Congestion Surcharg</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{shipLine.carriageCongestionSurcharg}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>Carrier Security Fees</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{shipLine.carrierSecurityFees}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>Cleaning Charges</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{shipLine.cleaningCharges}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>DG Surcharge</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{shipLine.DGSurcharge}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>Inland Fuel Surcharge</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{shipLine.inlandFuelSurcharge}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>Inland Handling Fees</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{shipLine.inlandHandlingFees}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>Inland Haulage</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{shipLine.inlandhaulage}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>Low Sulphur Surcharge</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{shipLine.lowSulphurSurcharge}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>Operational Recovery Surcharge</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{shipLine.operationalRecoverySurcharge}</b></div>
+                                        </td>                              
+                                    </tr>
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>Overweight surcharge</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{shipLine.overweightsurcharge}</b></div>
+                                        </td>                              
+                                    </tr>
+
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>War Risk Surcharge</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{shipLine.warRiskSurcharge}</b></div>
+                                        </td>                              
+                                    </tr>
+
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Type">
+                                            <div class="slds-truncate"><b>Total</b></div>
+                                        </td>
+                                        <td data-label="Charge" scope="row">
+                                            <div class="slds-truncate"><b>{TotalValue}</b></div>
+                                        </td>                              
+                                    </tr>
+                            </tbody>
+                        </table>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12">
+                        <p class="slds-align_absolute-center">Origin Charges</p>
+                        <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-table_fixed-layout">
+                            <thead class="slds-border_bottom">
+                                <tr class="">
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Type">
+                                                Type
+                                        </div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Value">
+                                                Value <span>({incoChargesList.currencyCode})</span> 
+                                        </div>
+                                    </th>                                   
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Bayan</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.bayan}</b></div>
+                                    </td>                               
+                                </tr>                                
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Fasah fee</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.fasahFee}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Inspection</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.inspection}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Lift on-Lift off</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.liftOnLiftOff}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Origin Customs clearance</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.originCustomsclearance}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Origin Loading Charges</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.originLoadingCharges}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Port Shuttling</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.portShuttling}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Tabadul</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.tabadul}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Xray</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.xray}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Loading Charges</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.loadingCharge}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>BL Fees</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.bLFees}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Export Service Fees</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.exportServiceFees}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Fuel Surcharge</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.fuelSurcharge}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Insurance Charges</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.insuranceCharges}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Lashing Charges</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.lashingCharges}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Origin Detention Demurrage Charges</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.originDetentionDemurrageCharges}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>OTHC</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.OTHC}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Pickup Charges</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.pickupCharges}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Reefer Plugin Charges</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.reeferPluginCharges}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Tarpaulin Charges</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.tarpaulinCharges}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Truckidling Charges</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.truckidlingCharges}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>VGM</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.vGM}</b></div>
+                                    </td>                               
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Total</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{incoChargesList.total}</b></div>
+                                    </td>                               
+                                </tr>
+                            </tbody>
+                        </table>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12">
+                        <p class="slds-align_absolute-center">Destination Charges</p>
+                        <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-table_fixed-layout">
+                            <thead class="slds-border_bottom">
+                                <tr class="">
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Type">
+                                                Type
+                                        </div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Value">
+                                                Value <span>({destinationChargesList.currencyCode})</span> 
+                                        </div>
+                                    </th>                                   
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Bayan Charges</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{destinationChargesList.bayanCharges}</b></div>
+                                    </td>   
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Custom Clearance</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{destinationChargesList.customClearance}</b></div>
+                                    </td>   
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>DO Charges</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{destinationChargesList.doCharges}</b></div>
+                                    </td>   
+                                </tr>
+                                <!--tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>DTHC</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{destinationChargesList.DTHC}</b></div>
+                                    </td>   
+                                </tr-->
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Fasah Charges</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{destinationChargesList.fasahCharges}</b></div>
+                                    </td>   
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Gate Pass Charges Charges</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{destinationChargesList.gatePassCharges}</b></div>
+                                    </td>   
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>LOLO Charges</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{destinationChargesList.LOLOCharges}</b></div>
+                                    </td>   
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Transportation</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{destinationChargesList.transportation}</b></div>
+                                    </td>   
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Type">
+                                        <div class="slds-truncate"><b>Total</b></div>
+                                    </td>
+                                    <td data-label="Charge" scope="row">
+                                        <div class="slds-truncate"><b>{destinationChargesList.total}</b></div>
+                                    </td>   
+                                </tr>
+                            </tbody>
+                        </table>
+                    </lightning-layout-item>
+                    </lightning-layout>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open">
+        </div>
+    </template>

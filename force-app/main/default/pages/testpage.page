@@ -1,0 +1,3 @@
+<apex:page renderAs="pdf">
+    tets
+</apex:page>

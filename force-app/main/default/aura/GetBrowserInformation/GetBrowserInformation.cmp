@@ -1,0 +1,12 @@
+<aura:component implements="lightning:availableForFlowActions">
+    
+        <aura:attribute name='formFactor' type='string'/>
+        <aura:attribute name='Android' type='boolean'/>
+        <aura:attribute name='iOS' type='boolean'/>
+        <aura:attribute name='iPad' type='boolean'/>
+        <aura:attribute name='iPhone' type='boolean'/>
+        <aura:attribute name='Phone' type='boolean'/>
+        <aura:attribute name='Tablet' type='boolean'/>
+        <aura:attribute name='WindowsPhone' type='boolean'/>
+
+</aura:component>

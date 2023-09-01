@@ -1,0 +1,197 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+         <!-- modal header start -->
+           <header class="slds-modal__header">
+              <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hideModalBox}>
+                 <lightning-icon icon-name="utility:close"
+                    alternative-text="close"
+                    variant="inverse"
+                    size="small" ></lightning-icon>
+                 <span class="slds-assistive-text">Close</span>
+              </button>
+              <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Cargo Details</h2>
+           </header>
+       
+           <!-- modal body start -->
+           <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="overflow-y: scroll !important;">
+            <lightning-spinner variant="brand" size="large" if:true={isLoading}></lightning-spinner>
+               <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                  <thead>
+                     <tr>
+                        <th>Package</th>
+                        <th>Length</th>
+                        <th>Width</th>
+                        <th>Height</th>
+                        <th>CBM (KGs)</th>
+                        <th>UOM</th>
+                        <th>Units</th>
+                        <th>Gross Weight (KGs)</th>
+                        <th>Volumetric Weight (KGs)</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <template for:each={routeEquipList} for:item="prod">
+                        <tr key={prod}>
+                           <td>{prod.index}</td>
+                           <td>{prod.Length__c}</td>
+                           <td>{prod.Width__c}</td>
+                           <td>{prod.Height__c}</td>
+                           <td>{prod.CBM__c}</td>
+                           <td>{prod.UOM__c}</td>
+                           <td>{prod.Units__c}</td>
+                           <td>{prod.Weight_Kgs__c}</td>
+                           <td>{prod.Volumetric_weight_Kgs__c}</td>
+                        </tr>
+                     </template>
+                  </tbody>
+               </table>
+               <lightning-layout multiple-rows>
+                  <lightning-layout-item size="6" large-device-size="6" medium-device-size="6" small-device-size="6">
+                     <lightning-input label="Total CBM (Kgs) " type="number" step="0.001" value={totalCBM} disabled></lightning-input>
+                 </lightning-layout-item>
+                 <lightning-layout-item style="padding-left: 20px;" size="6" large-device-size="6" medium-device-size="6" small-device-size="6">
+                     <lightning-input label="Total Gross Weight (KGs)" value={totalGross} disabled></lightning-input>
+                 </lightning-layout-item>
+                 <lightning-layout-item size="6" large-device-size="6" medium-device-size="6" small-device-size="6">
+                  <lightning-input label="Total Volumetric Weight (KGs)" value={totalVolumeWeight} disabled></lightning-input>
+              </lightning-layout-item>
+               </lightning-layout>
+           </div>
+ 
+           <!-- modal footer start-->
+           <footer class="slds-modal__footer">
+            <button if:true={isOrder} class="slds-button slds-button_brand" onclick={hideEditClicked}>Edit</button>
+              <button class="slds-button slds-button_neutral" onclick={hideModalBox}>Cancel</button>
+           </footer>
+        
+        </div>
+        <template if:true={isShowModal}>
+         <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+         <div class="slds-modal__container">
+         <header class="slds-modal__header">
+               <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hideModalBox2}>
+                  <lightning-icon icon-name="utility:close"
+                     alternative-text="close"
+                     variant="inverse"
+                     size="small" ></lightning-icon>
+                  <span class="slds-assistive-text">Close</span>
+               </button>
+               <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Edit Cargo Details</h2>
+            </header>
+         
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2" style="overflow-y: scroll !important;">
+                  <!----Placed here-->
+                  <lightning-layout multiple-rows>
+                     <lightning-layout-item size="12">
+                        <lightning-button-icon icon-name="utility:add"
+                                             variant="container"
+                                             style="float: right;"
+                                             class="slds-m-top_large"  
+                                             alternative-text="add containerType" 
+                                             title="add containerType"
+                                             onclick={handleAddContainer}></lightning-button-icon>
+                     </lightning-layout-item>
+                  </lightning-layout>
+                  
+                  <div if:true={routeEquipList} style="white-space: nowrap;">
+                     <lightning-layout multiple-rows style="width: 90% !important;">
+                         <template for:each={routeEquipList} for:item="contr">
+                             <lightning-layout-item size="12" key={contr}>
+                                 <lightning-layout multiple-rows>
+                                     <lightning-layout-item size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
+                                         <lightning-combobox label="UOM"
+                                             data-record-id={contr.index} 
+                                             style="padding-right: 20px;font-weight: 700;"
+                                             options={UOMOption}                                                
+                                             value={contr.UOM__c} 
+                                             class={contr.UOMErrorClass}
+                                             onchange={handleUOMChange}
+                                             placeholder="Select"></lightning-combobox>
+                                     </lightning-layout-item>
+                                     <lightning-layout-item size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
+                                         <lightning-input type="number" label="Length"
+                                                 onchange={handlelengthChange}
+                                                 step="0.01"
+                                                 data-record-id={contr.index} 
+                                                 disabled={contr.CBMChanged} 
+                                                 style="padding-right: 20px;font-weight: 700;"
+                                                 class={contr.lengthErrorClass}
+                                                 value={contr.Length__c}></lightning-input>
+                                     </lightning-layout-item>
+                                     <lightning-layout-item  size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
+                                         <lightning-input type="number" label="Width"
+                                                 step="0.01"
+                                                 onchange={handleWidthChange}
+                                                 disabled={contr.CBMChanged} 
+                                                 data-record-id={contr.index}  
+                                                 style="padding-right: 20px;font-weight: 700;"
+                                                 class={contr.widthErrorClass}
+                                                 value={contr.Width__c}></lightning-input>
+                                     </lightning-layout-item>
+                                     <lightning-layout-item  size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
+                                         <lightning-input type="number" label="Height"
+                                                 onchange={handleHeightChange}
+                                                 step="0.01"
+                                                 disabled={contr.CBMChanged} 
+                                                 data-record-id={contr.index}  
+                                                 style="padding-right: 20px;font-weight: 700;"
+                                                 class={contr.heightErrorClass}
+                                                 value={contr.Height__c}></lightning-input>
+                                     </lightning-layout-item>
+                                     <lightning-layout-item size="6" large-device-size="4" medium-device-size="4" small-device-size="6" >
+                                         <lightning-input type="number" label="CBM (KGs)"
+                                                 onchange={handleCBMChange}
+                                                 disabled={contr.disableCBM}
+                                                 step="0.001"
+                                                 data-record-id={contr.index}  
+                                                 style="padding: 0px 20px 0px 0px;font-weight: 700;"
+                                                 class={contr.CBMErrorClass}
+                                                 value={contr.CBM__c}></lightning-input>
+                                     </lightning-layout-item>
+                                     <lightning-layout-item size="6" large-device-size="4" medium-device-size="4" small-device-size="6" >
+                                         <lightning-input type="number" label="Gross Weight (KGs)"
+                                                 onchange={handleWeightChange}
+                                                 step="0.01"
+                                                 data-record-id={contr.index}  
+                                                 style="padding: 0px 20px 0px 0px;font-weight: 700;"
+                                                 class={contr.WeightErrorClass}
+                                                 value={contr.Weight_Kgs__c}></lightning-input>
+                                     </lightning-layout-item>
+                                     <lightning-layout-item size="6" large-device-size="4" medium-device-size="4" small-device-size="6" >
+                                         <lightning-input type="number" label="Units"
+                                                 onchange={handleUnitsChange}
+                                                 data-record-id={contr.index}  
+                                                 style="padding: 0px 20px 0px 0px;font-weight: 700;"
+                                                 class={contr.unitsErrorClass}
+                                                 value={contr.Units__c}></lightning-input>
+                                     </lightning-layout-item>
+                                     <lightning-layout-item size="4" style ="padding:25px 0px 0px 15px;" large-device-size="4" medium-device-size="4" small-device-size="4" >
+                                         <lightning-button-icon icon-name="utility:ban"
+                                             variant="container"
+                                             class="slds-m-top_large"  
+                                             alternative-text="remove containerType" 
+                                             title="remove containerType"
+                                             data-record-id={contr.index}
+                                             onclick={handleRemoveContainer}></lightning-button-icon>
+                                     </lightning-layout-item>
+                                 </lightning-layout>
+                                 <hr/>
+                             </lightning-layout-item>
+                         </template>
+                     </lightning-layout>
+                 </div>
+                  <!---Ended -->
+            </div>
+         
+            <footer class="slds-modal__footer">
+               <button class="slds-button slds-button_brand" onclick={updateDataClicked}>Update</button>
+               <button class="slds-button slds-button_neutral" onclick={hideModalBox2}>Cancel</button>
+            </footer>
+         </div>
+         </section>
+         <div class="slds-backdrop slds-backdrop_open"></div>
+         </template>
+     </section>
+     <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

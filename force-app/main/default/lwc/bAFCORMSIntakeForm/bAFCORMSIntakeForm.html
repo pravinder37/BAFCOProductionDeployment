@@ -1,0 +1,751 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container" style="width: 70% !important;max-width: 70% !important;">
+            <!-- Modal/Popup Box LWC header here -->
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                    <lightning-icon icon-name="utility:close"
+                        alternative-text="close"
+                        variant="inverse"
+                        size="small" ></lightning-icon>
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Add Rates</h2>
+            </header>
+            <!-- Modal/Popup Box LWC body starts here -->
+            <div style="overflow-y: scroll !important; min-height: 200px !important;" class="slds-modal__content slds-p-around_medium customFont" id="modal-content-id-1">
+                <lightning-spinner variant="brand" size="large" if:true={isLoading}></lightning-spinner>
+                <lightning-accordion active-section-name="rmsDetail">
+                    <lightning-accordion-section name="rmsDetail" label="Sea Freight Detail">
+                        <lightning-layout multiple-rows >
+                           <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <div class={loadingPortError}>
+                                <label class="slds-form-element__label">
+                                    <p style="padding-left: 22px"><span style="color: red;">*</span>Port of loading</p>
+                                </label>
+                                <c-b-a-f-c-o-custom-look-up-component
+                                                obj-name="Port__c"
+                                                search-placeholder="Search Port of loading" 
+                                                icon-name="standard:account"
+                                                onlookupselected={handlePortSelection}
+                                                onlookupremoved={handlePortRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                                <div class="slds-form-element__help" id="form-error-25" style="color: rgb(194, 57, 52);padding-left: 20px;" if:true={loadingPortError}>
+                                    Complete this field.
+                                </div>
+                            </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <div class={loadingDischargeError}>
+                                <label class="slds-form-element__label">
+                                    <p style="padding-left: 22px">Port of destination</p>
+                                </label>
+                                <c-b-a-f-c-o-custom-look-up-component
+                                                obj-name="Port__c"
+                                                search-placeholder="Search Port of destination" 
+                                                icon-name="standard:account"
+                                                onlookupselected={handleDestinationSelection}
+                                                onlookupremoved={handleDestinationRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                                <div class="slds-form-element__help"  style="color: rgb(194, 57, 52);padding-left: 20px;" if:true={loadingDischargeError}>
+                                    Complete this field.
+                                </div>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <div class={commodityError}>
+                                <label class="slds-form-element__label">
+                                    <p style="padding-left: 22px">Commodity</p>
+                                </label>
+                                <c-b-a-f-c-o-custom-look-up-component
+                                                obj-name="Commodity__c"
+                                                search-placeholder="Search commodity" 
+                                                icon-name="standard:account"
+                                                onlookupselected={handleCommoditySelection}
+                                                onlookupremoved={handleCommodityRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                                <div class="slds-form-element__help"  style="color: rgb(194, 57, 52);padding-left: 20px;" if:true={commodityError}>
+                                    Complete this field.
+                                </div>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <div class={shippingLineError}>
+                                <label class="slds-form-element__label">
+                                    <p style="padding-left: 22px">Shipping Line</p>
+                                </label>
+                                <c-b-a-f-c-o-custom-look-up-component
+                                                obj-name="Shipping_Line__c"
+                                                search-placeholder="Search shipping line" 
+                                                icon-name="standard:account"
+                                                onlookupselected={handleShippingLineSelection}
+                                                onlookupremoved={handleShippingRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                                <div class="slds-form-element__help"  style="color: rgb(194, 57, 52);padding-left: 20px;" if:true={shippingLineError}>
+                                    Complete this field.
+                                </div>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <div class={incoTermError}>
+                                <label class="slds-form-element__label">
+                                    <p style="padding-left: 22px">Inco Term</p>
+                                </label>
+                                <c-b-a-f-c-o-custom-look-up-component
+                                                obj-name="INCO_Term__c"
+                                                search-placeholder="Search inco term" 
+                                                icon-name="standard:account"
+                                                onlookupselected={handleIncoTermSelection}
+                                                onlookupremoved={handleIncoRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                                                <div class="slds-form-element__help"  style="color: rgb(194, 57, 52);padding-left: 20px;" if:true={incoTermError}>
+                                                    Complete this field.
+                                                </div>
+                                            </div>
+                            </lightning-layout-item>
+                            <!--lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <label class="slds-form-element__label">
+                                    <p style="padding-left: 22px">Equipment Type</p>
+                                </label>
+                                <c-b-a-f-c-o-custom-look-up-component
+                                                obj-name="Equipment_Type__c"
+                                                search-placeholder="Search Equipment" 
+                                                icon-name="standard:account"
+                                                onlookupselected={handleEquipmentSelection}
+                                                onlookupremoved={handleEquipmentRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                            </lightning-layout-item-->
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 38px 0px 38px;">
+                                <div class={equipmentTypeError}>
+                                <!--lightning-combobox label="Equipment Type" 
+                                        options={equipmentTypeOption}
+                                        value={equipmentType}
+                                        class="customFont" 
+                                        onchange={handleEquipmentChange}
+                                        placeholder="Select"></lightning-combobox-->
+                                        <c-multi-select-combobox
+                                        label="Options"
+                                        name="options"
+                                        custom-class={equipmentTypeError}
+                                        options={equipmentTypeOption}
+                                        onchange={handleEquipChange}
+                                      ></c-multi-select-combobox>
+                                        <div class="slds-form-element__help"  style="color: rgb(194, 57, 52);padding-left: 20px;" if:true={equipmentTypeErrorMsg}>
+                                            {equipmentTypeErrorMsg}
+                                        </div>
+                                    </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding-left: 40px;">
+                                <lightning-combobox label="Rate Type" 
+                                        options={rateTypeOption}
+                                        value={rateType} 
+                                        class={rateTypeError} 
+                                        onchange={handleRateTypeChange}
+                                        placeholder="Select"></lightning-combobox>
+                                        <div class="slds-form-element__help"  style="color: rgb(194, 57, 52);" if:true={rateTypeError}>
+                                            Complete this field.
+                                        </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 34px 0px 40px;">
+                                <lightning-input name="Validity"
+                                    label="Validity"
+                                    value={validity}
+                                    class={validityError} 
+                                    type="date"
+                                    onchange={handleValidityChange}></lightning-input>
+                                    <div class="slds-form-element__help"  style="color: rgb(194, 57, 52);" if:true={validityError}>
+                                        Complete this field.
+                                    </div>
+                            </lightning-layout-item>                            
+                            <!--lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 34px 0px 40px;">
+                                <lightning-input name="seaFreight"
+                                    type="number"
+                                    label="Sea Freight"
+                                    value={seaFreight}
+                                    class={seaFreightError}
+                                    onchange={handleSeaFreightChange}></lightning-input>
+                                    <div class="slds-form-element__help"  style="color: rgb(194, 57, 52);" if:true={seaFreightError}>
+                                        Complete this field.
+                                    </div>
+                            </lightning-layout-item-->
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding-left: 40px;">
+                                <lightning-combobox label="Business Type" 
+                                        options={businessTypeOption}
+                                        value={businessType}
+                                        class={businessTypeError} 
+                                        onchange={handleBusinessTypeChange}
+                                        placeholder="Select"></lightning-combobox>
+                                        <div class="slds-form-element__help"  style="color: rgb(194, 57, 52);" if:true={businessTypeError}>
+                                            Complete this field.
+                                        </div>
+                            </lightning-layout-item> 
+                            <lightning-layout-item size="4" style="padding: 0px 40px">
+                                <lightning-input label="Free Time POL" 
+                                        type="Number"
+                                        value={FreeTime} 
+                                        onchange={handleFreeTimeChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="4" style="padding: 0px 40px">
+                                <lightning-input label="Free Time POD" 
+                                        type="Number"
+                                        value={FreeTimePOD} 
+                                        onchange={handleFreeTimePODChange}></lightning-input>
+                            </lightning-layout-item>                             
+                            <lightning-layout-item size="4" style="padding: 20px 40px 0px 40px;" if:false={twoEquipSelected}>
+                                <lightning-input label="All-in Rate" 
+                                        type="checkbox"
+                                        checked={allInRate} 
+                                        onchange={handleAllInRateChange}></lightning-input>
+                                <lightning-input label="FOB All-In" 
+                                        type="checkbox"
+                                        checked={FOBAllIn} 
+                                        onchange={handleFOBAllInChange}></lightning-input>
+                                <lightning-input label="Ex-Works All-In" 
+                                        type="checkbox"
+                                        checked={ExWorksIn} 
+                                        onchange={handleExWorksChange}></lightning-input>
+                                <lightning-input label="Only Ocean Freight" 
+                                        type="checkbox"
+                                        checked={oceanfreightCheckbox} 
+                                        onchange={handleoceanfreightCheckboxChange}></lightning-input>
+                            </lightning-layout-item>                            
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;" if:true={displayAgentField}>
+                                <label class="slds-form-element__label">
+                                    <p style="padding-left: 22px">Agent</p>
+                                </label>
+                                <c-b-a-f-c-o-custom-look-up-component
+                                                obj-name="Agent__c"
+                                                search-placeholder="Search agent" 
+                                                icon-name="standard:account"
+                                                onlookupselected={handleAgentSelection}
+                                                onlookupremoved={handleAgentRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="4" style="padding: 0px 40px">
+                                <lightning-textarea label="Remarks" 
+                                        value={remarks} 
+                                        onchange={handleRemarksChange}></lightning-textarea>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <label class="slds-form-element__label">
+                                    <p style="padding-left: 22px">Customer Name</p>
+                                </label>
+                                <c-b-a-f-c-o-custom-look-up-component
+                                                obj-name="Account"
+                                                search-placeholder="Search customer name" 
+                                                icon-name="standard:account"
+                                                onlookupselected={handleCustomerSelection}
+                                                onlookupremoved={handleCustomerRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                            </lightning-layout-item>
+                            <lightning-layout-item if:true={displayElem1} size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input name="seaFreight"
+                                    type="number"
+                                    label={elem1Label}
+                                    value={elem1Value}
+                                    class={elem1seaFreightError}
+                                    onchange={handleElem1SeaFreightChange}></lightning-input>
+                                    <div class="slds-form-element__help"  style="color: rgb(194, 57, 52);" if:true={elem1seaFreightError}>
+                                        Complete this field.
+                                    </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item if:true={displayElem2} size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input name="seaFreight"
+                                    type="number"
+                                    label={elem2Label}
+                                    value={elem2Value}
+                                    class={elem2seaFreightError}
+                                    onchange={handleElem2SeaFreightChange}></lightning-input>
+                                    <div class="slds-form-element__help"  style="color: rgb(194, 57, 52);" if:true={elem2seaFreightError}>
+                                        Complete this field.
+                                    </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item if:true={displayContractNumber} size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input name="seaFreight"
+                                    type="text"
+                                    label='Contract Number'
+                                    value={contractNumber}
+                                    onchange={handlecontractNumberChange}></lightning-input>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </lightning-accordion-section>
+                    <lightning-accordion-section name="shippingLineDetail" label="Shipping Line Charges" if:true={displayShippingCharge}>
+                        <lightning-layout multiple-rows >
+                            <lightning-layout-item size="4" style="padding: 0px 20px 0px 20px;">
+                                <lightning-combobox label="Curency Code" 
+                                                options={curencyCodeOption}
+                                                value={shipp.currencyCode} 
+                                                onchange={handleShippCurrencyCodeSelection}
+                                                placeholder="Select"></lightning-combobox>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="4" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input disabled label="Exchange Rate" value={shippExchangeRate}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="4" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input disabled={disableShippOffSet} onchange={handleShippOffsetChange} label="Off Set Value" value={shipp.offSet}></lightning-input>
+                            </lightning-layout-item>
+                        <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="BAF"
+                                value={BAF}
+                                disabled={shippTotalChanged}
+                                onchange={handleBAFChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Bunker Surcharge"
+                                value={BunkerSurcharge}
+                                disabled={shippTotalChanged}
+                                onchange={handleBunkerSurchargeChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="ISPS"
+                                value={ISPS}
+                                disabled={shippTotalChanged}
+                                onchange={handleISPSChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="OTHC"
+                                value={shipp.OTHC}
+                                disabled={shippTotalChanged}
+                                onchange={handleOTHCChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Container Maintenance Charge"
+                                value={CMC}
+                                disabled={shippTotalChanged}
+                                onchange={handleCMCChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Equipment Imbalance Charge"
+                                value={EIC}
+                                disabled={shippTotalChanged}
+                                onchange={handleEICChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Seal Charges"
+                                value={sealCharges}
+                                disabled={shippTotalChanged}
+                                onchange={handlesealChargesChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="DTHC"
+                                value={DTHC}
+                                disabled={shippTotalChanged}
+                                onchange={handleDTHCChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Carriage Congestion Surcharg"
+                                value={shipp.carriageCongestionSurcharg}
+                                disabled={shippTotalChanged}
+                                onchange={handlecarriageCongestionSurchargChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Carrier Security Fees"
+                                value={shipp.carrierSecurityFees}
+                                disabled={shippTotalChanged}
+                                onchange={handlecarrierSecurityFeesChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Cleaning Charges"
+                                value={shipp.cleaningCharges}
+                                disabled={shippTotalChanged}
+                                onchange={handlecleaningChargesChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="DG Surcharge"
+                                value={shipp.DGSurcharge}
+                                disabled={shippTotalChanged}
+                                onchange={handleDGSurchargehange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Inland Fuel Surcharge"
+                                value={shipp.inlandFuelSurcharge}
+                                disabled={shippTotalChanged}
+                                onchange={handleinlandFuelSurchargeChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Inland Handling Fees"
+                                value={shipp.inlandHandlingFees}
+                                disabled={shippTotalChanged}
+                                onchange={handleinlandHandlingFeesChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Inland Haulage"
+                                value={shipp.inlandhaulage}
+                                disabled={shippTotalChanged}
+                                onchange={handleinlandhaulageChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Low Sulphur Surcharge"
+                                value={shipp.lowSulphurSurcharge}
+                                disabled={shippTotalChanged}
+                                onchange={handleLSSChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Operational Recovery Surcharge"
+                                value={shipp.operationalRecoverySurcharge}
+                                disabled={shippTotalChanged}
+                                onchange={handleORSChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Over Weight Surcharge"
+                                value={shipp.overweightsurcharge}
+                                disabled={shippTotalChanged}
+                                onchange={handleoverweightsurchargeChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="War Risk Surcharge"
+                                value={shipp.warRiskSurcharge}
+                                disabled={shippTotalChanged}
+                                onchange={handlewarRiskSurchargeChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="4" medium-device-size="4"  small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Total"
+                                value={shippTotal}
+                                onchange={handleshippTotalChange}></lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    </lightning-accordion-section>
+                    <lightning-accordion-section name="incoChargesDetail" label="Origin Charges" if:true={displayOriginCharge}>
+                        <lightning-layout multiple-rows >
+                            <lightning-layout-item size="4" style="padding: 0px 20px 0px 20px;">
+                                <lightning-combobox label="Curency Code" 
+                                                options={curencyCodeOption}
+                                                value={incoCharges.currencyCode} 
+                                                onchange={handleINCOCurrencyCodeSelection}
+                                                placeholder="Select"></lightning-combobox>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="4" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input disabled label="Exchange Rate" value={incoExchangeRate}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="4" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input disabled={disableIncoOffSet} onchange={handleIncoOffsetChange} label="Off Set Value" value={incoCharges.offSet}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Bayan"
+                                    value={bayan}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handlebayanChange}></lightning-input>
+                            </lightning-layout-item>                            
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Fasah Fee"
+                                    value={fasahFee}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handlefasahFeeChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Inspection"
+                                    value={inspection}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handleinspectionChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Lift On Lift Off"
+                                    value={liftOnLiftOff}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handleliftOnLiftOffChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Origin Customs Clearance"
+                                    value={originCustomsclearance}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handleoriginCustomsclearanceChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Origin Loading Charges"
+                                    value={originLoadingCharges}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handleoriginLoadingChargesChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Port Shuttling"
+                                    value={portShuttling}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handleportShuttlingChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Tabadul"
+                                    value={tabadul}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handletabadulChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Xray"
+                                    value={xray}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handlexrayChange}></lightning-input>
+                            </lightning-layout-item>                           
+                            <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Loading Charge"
+                                    value={loadingCharge}
+                                    onchange={handleLoadingChargeChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="BL Fees"
+                                    value={bLFees}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handlebLFeesChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Export Service Fees"
+                                    value={exportServiceFees}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handleexportServiceFeesChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Fuel Surcharge"
+                                    value={fuelSurcharge}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handlefuelSurchargeChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Insurance Charges"
+                                    value={insuranceCharges}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handleinsuranceChargesChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Lashing Charges"
+                                    value={lashingCharges}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handlelashingChargesChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Origin Detention Demurrage Charges"
+                                    value={originDetentionDemurrageCharges}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handleoriginDetentionDemurrageChargesChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="OTHC"
+                                    value={OTHC}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handleOTHChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Pickup Charges"
+                                    value={pickupCharges}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handlepickupChargesChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Reefer Plugin Charges"
+                                    value={reeferPluginCharges}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handlereeferPluginChargesChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Tarpaulin Charges"
+                                    value={tarpaulinCharges}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handletarpaulinChargesChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Truckidling Charges"
+                                    value={truckidlingCharges}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handletruckidlingChargesChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="VGM"
+                                    value={vGM}
+                                    disabled={incoChargeTotalChange}
+                                    onchange={handlevGMChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item  size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input 
+                                    type="number"
+                                    label="Total"
+                                    value={incoTotal}
+                                    onchange={handletotalChange}></lightning-input>
+                            </lightning-layout-item>
+                            <!--lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" style="padding: 0px 20px 0px 20px;">
+                                <lightning-combobox
+                                    name="Direction"
+                                    label="Direction"
+                                    value={directionValue}
+                                    placeholder="Select direction"
+                                    options={DirectionOptions}
+                                    onchange={handleDirectionChange} ></lightning-combobox>
+                            </lightning-layout-item-->
+                        </lightning-layout>
+                    </lightning-accordion-section>
+                    <lightning-accordion-section name="destinChargesDetail" label="Destination Charges" if:true={displayDestinCharge}>
+                        <lightning-layout multiple-rows >
+                            <lightning-layout-item size="4" style="padding: 0px 20px 0px 20px;">
+                                <lightning-combobox label="Curency Code" 
+                                                options={curencyCodeOption}
+                                                value={destinCharges.currencyCode} 
+                                                onchange={handleDestinCurrencyCodeSelection}
+                                                placeholder="Select"></lightning-combobox>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="4" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input disabled label="Exchange Rate" value={destinExchangeRate}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="4" style="padding: 0px 20px 0px 20px;">
+                                <lightning-input disabled={disableShippOffSet} onchange={handleDestinOffSetChange} label="Off Set Value" value={destinCharges.offSet}></lightning-input>
+                            </lightning-layout-item>
+                        <lightning-layout-item  size="4" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Bayan Charge"
+                                disabled={destinTotalChanged}
+                                value={destinCharges.bayanCharges}
+                                onchange={handleDestinbayanChargesChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item  size="4" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Custom Clearance"
+                                disabled={destinTotalChanged}
+                                value={destinCharges.customClearance}
+                                onchange={handleDestincustomClearanceChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item  size="4" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Do Charges"
+                                disabled={destinTotalChanged}
+                                value={destinCharges.doCharges}
+                                onchange={handleDestindoChargesChange}></lightning-input>
+                        </lightning-layout-item>
+                        <!--lightning-layout-item  size="4" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="DTHC"
+                                disabled={destinTotalChanged}
+                                value={destinCharges.DTHC}
+                                onchange={handleDestinDTHCChange}></lightning-input>
+                        </lightning-layout-item-->
+                        <lightning-layout-item  size="4" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Fasah Charges"
+                                disabled={destinTotalChanged}
+                                value={destinCharges.fasahCharges}
+                                onchange={handleDestinfasahChargesChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item  size="4" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Gate Pass Charges"
+                                disabled={destinTotalChanged}
+                                value={destinCharges.gatePassCharges}
+                                onchange={handleDestingatePassChargesChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item  size="4" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="LOLO Charges"
+                                disabled={destinTotalChanged}
+                                value={destinCharges.LOLOCharges}
+                                onchange={handleDestinLOLOChargesChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item  size="4" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Transportaion"
+                                disabled={destinTotalChanged}
+                                value={destinCharges.transportation}
+                                onchange={handleDestintransportationChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item  size="4" style="padding: 0px 20px 0px 20px;">
+                            <lightning-input 
+                                type="number"
+                                label="Total"
+                                value={destinCharges.total}
+                                onchange={handleDestitotalChange}></lightning-input>
+                        </lightning-layout-item></lightning-layout>
+                    </lightning-accordion-section>
+                </lightning-accordion>
+            </div>
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick={closeModal} title="Cancel">Cancel</button>
+                <!--button class="slds-button slds-button_brand" onclick={submitDetails} title="OK">Save Rates</button-->
+                <lightning-button 
+                            variant="brand"
+                            style="padding-left: 5px;"
+                            label="Save Rates" 
+                            title="Save Rates"
+                            disabled={isLoading}
+                            onclick={submitDetails}></lightning-button>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

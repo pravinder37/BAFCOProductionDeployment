@@ -1,0 +1,5 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+	<div class="background" style="background: white;">
+        <c:bAFCODisplayRMSRecords/>
+    </div>
+</aura:component>

@@ -1,0 +1,53 @@
+<aura:component implements="force:hasRecordId,lightning:hasPageReference,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable"
+                access="global">
+ <aura:attribute name="refRecordId" type="String" />
+    <aura:attribute name="refBusinessType" type="String" />
+    <aura:attribute name="refRecordTypeType" type="String" />
+    <aura:attribute name="cameReviseCompt" type="Boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:html tag="style">
+        .slds-modal__container{
+        max-width: 60rem !important;
+        width:60% !important;
+        }
+        .slds-modal__content{
+            overflow-y:hidden !important;
+            height:unset !important;
+            max-height:unset !important;
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.refRecordTypeType == 'FCL'}">
+        <aura:if isTrue="{!v.refBusinessType == 'Export'}">
+            <div style="background: white;">
+                <c:bAFCOParentComponent enquiryID="{!v.refRecordId}" cameReviseCompt ="{!v.cameReviseCompt}"/>
+            </div>	
+        </aura:if>
+        <aura:if isTrue="{!v.refBusinessType == 'Import'}">
+            <div style="background: white;">
+                <c:bAFCOImportQuoteParent enquiryId="{!v.refRecordId}"/>
+            </div>	
+        </aura:if>
+    </aura:if>
+    <aura:if isTrue="{!v.refRecordTypeType == 'Local Operation'}">
+        <div style="background: white;">
+        	<c:bAFCOLocalOperationQuoteParent optyId="{!v.refRecordId}" businessType="{!v.refBusinessType}" />
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.refRecordTypeType == 'LCL'}"> 
+        <div style="background: white;">
+            <c:bAFCOAirQuoteParent optyId="{!v.refRecordId}" businessType="{!v.refBusinessType}" />
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.refRecordTypeType == 'Air Freight'}">
+         <aura:if isTrue="{!v.refBusinessType == 'Export'}">
+            <div style="background: white;">
+                <c:bAFCOAirExportQuoteParent optyId="{!v.refRecordId}" businessType="{!v.refBusinessType}" />
+            </div>	
+        </aura:if>
+        <aura:if isTrue="{!v.refBusinessType == 'Import'}">
+            <div style="background: white;">
+                <c:bAFCOAirImportQuoteParent optyId="{!v.refRecordId}" businessType="{!v.refBusinessType}" />
+            </div>	
+        </aura:if>
+    </aura:if>
+</aura:component>

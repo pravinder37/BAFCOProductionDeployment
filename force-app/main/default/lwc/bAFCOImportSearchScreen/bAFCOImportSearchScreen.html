@@ -1,0 +1,184 @@
+<template>
+    <lightning-spinner size="large" variant="brand" if:true={isLoading}></lightning-spinner>
+    <div style="background: white;">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12" style="padding-top: 22px;" large-device-size="3" medium-device-size="3" small-device-size="12">
+                <div class={selectedAgentError}>
+                    <label class="slds-form-element__label">
+                        <p style="padding-left: 22px">Customer Name</p>
+                    </label>
+                    <c-b-a-f-c-o-custom-look-up-component
+                                    obj-name="Account"
+                                    search-placeholder="Search customer name" 
+                                    icon-name="standard:account"
+                                    onlookupselected={handleAgentSelection}
+                                    onlookupremoved={handleAgentRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                    <div class="slds-form-element__help" style="color: rgb(234, 0, 30); padding-left: 20px; font-weight: 600;" if:true={selectedAgentError}>
+                        Complete this field
+                    </div>
+                </div>
+            </lightning-layout-item>
+            <!--lightning-layout-item size="12" style="padding-top: 22px;" large-device-size="3" medium-device-size="3" small-device-size="12">
+                <lightning-input type="date" label="Vessel ETD (From)" data-field="fromVesselETD" value={fromVesselETD} onchange={handleFromVesselETDChange} ></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" style="padding-top: 22px;padding-left: 12px" large-device-size="3" medium-device-size="3" small-device-size="12">
+                <lightning-input type="date" label="Vessel ETD (To)" data-field="toVesselETD" value={toVesselETD} onchange={handleToVesselETDChange} ></lightning-input>
+            </lightning-layout-item-->
+            <lightning-layout-item size="12" style="padding-top: 22px;" large-device-size="3" medium-device-size="3" small-device-size="12">
+                <lightning-input label="Order Number" data-field="orderNumber" value={orderNumber} onchange={handleOrderNumberChange} ></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" style="padding-top: 22px;" large-device-size="3" medium-device-size="3" small-device-size="12">
+                <label class="slds-form-element__label">
+                    <p style="padding-left: 22px">Port Of Loading</p>
+                </label>
+                <c-b-a-f-c-o-custom-look-up-component
+                                obj-name="Port__c"
+                                search-placeholder="Search loading port" 
+                                icon-name="standard:account"
+                                onlookupselected={handleLoadingPortSelection}
+                                onlookupremoved={handleLoadingPortRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                
+            </lightning-layout-item>
+            <lightning-layout-item size="12" style="padding-top: 22px;" large-device-size="3" medium-device-size="3" small-device-size="12">
+                <label class="slds-form-element__label">
+                    <p style="padding-left: 22px">Port Of Destination</p>
+                </label>
+                <c-b-a-f-c-o-custom-look-up-component
+                                obj-name="Port__c"
+                                search-placeholder="Search destination port" 
+                                icon-name="standard:account"
+                                onlookupselected={handleDestinationPortSelection}
+                                onlookupremoved={handleDestinationPortRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                
+            </lightning-layout-item>
+            <lightning-layout-item size="12"  style="padding-top: 42px;padding-left: 12px" large-device-size="3" medium-device-size="3" small-device-size="12">
+                <lightning-button label="Search" variant="brand" onclick={handleSearchItem}></lightning-button>
+            </lightning-layout-item>
+            <lightning-layout-item style="padding: 20px;" size="12" large-device-size="12" medium-device-size="12" small-device-size="12" if:true={noRecord}>
+                <lightning-card>
+                    <p style="text-align:center;">No Records were found.</p>
+                </lightning-card>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" style="padding: 20px 0px 20px 0px;" large-device-size="12" medium-device-size="12" small-device-size="12" if:false={noRecord}>
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th>Order Item Name</th>
+                            <th>Quotation Name</th>
+                            <th>Customer Name</th>
+                            <th>Order Number</th>
+                            <th>Agent Name</th>
+                            <th>POL</th>
+                            <th>POD</th>
+                            <th>Shipping Line</th>
+                            <th>Quotation Validity</th>
+                            <th>Vessel ETD</th>
+                            <th>Buying Rate</th>
+                            <th>Quantity</th>
+                            <th>Selling Rate</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={quoteList} for:item="item">
+                            <tr key={item} class="slds-hint-parent">
+                                <td><a data-value={item.Id} onclick={handleOrderItemClicked}>{item.Name}</a></td>
+                                <td if:true={item.Order__r.Quotation__c}><a data-value={item.Order__r.Quotation__c} onclick={handleQuotationClicked}>{item.Order__r.Quotation__r.Name}</a></td>
+                                <td if:false={item.Order__r.Quotation__c}>-</td>
+                                <td if:true={item.Order__r.Account_Order__c}>{item.Order__r.Account_Order__r.Name}</td><td if:false={item.Order__r.Account_Order__c}>-</td>
+                                <td if:true={item.Order__c}>{item.Order__r.Name}</td><td if:false={item.Order__c}>-</td>
+                                <td if:true={item.Agent__c}>{item.Agent__r.Name}</td>
+                                <td if:false={item.Agent__c}>-</td>
+                                <td if:true={item.Port_of_Loading_Order__c}>{item.Port_of_Loading_Order__r.Name}</td>
+                                <td if:false={item.Port_of_Loading_Order__c}>-</td>
+                                <td if:true={item.Port_of_Discharge_Order__c}>{item.Port_of_Discharge_Order__r.Name}</td>
+                                <td if:false={item.Port_of_Discharge_Order__c}>-</td>
+                                <td if:true={item.Shipping_Line__c}>{item.Shipping_Line__r.Name}</td>
+                                <td if:false={item.Shipping_Line__c}>-</td>
+                                <td if:true={item.Order__r.Quotation__c}><lightning-formatted-date-time value={item.Order__r.Quotation__r.Quotation_Validity__c}></lightning-formatted-date-time></td>
+                                <td if:false={item.Order__r.Quotation__c}>-</td>
+                                <td><lightning-formatted-date-time value={item.Vessel_ETD__c}></lightning-formatted-date-time></td>
+                                <td>{item.Buying_Rate__c}</td>
+                                <td>{item.Quantity__c}</td>
+                                <td>{item.Total_Order__c}</td>
+                                <td>
+                                    <span>
+                                        <lightning-button variant="base"
+                                                        icon-name="utility:edit" 
+                                                        value={item.Id}
+                                                        style="padding-left: 4px;"
+                                                        onclick={handleEditItem}></lightning-button>
+                                    </span>
+                                    <span>
+                                        <lightning-button variant="base"
+                                                        icon-name="utility:new" 
+                                                        value={item.Order__r.Quotation__c}
+                                                        style="padding-left: 4px;"
+                                                        onclick={handleNewQuote}></lightning-button>
+                                    </span>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </lightning-layout-item>
+        </lightning-layout>
+        <template if:true={displayModal}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                 <!-- modal header start -->
+                   <header class="slds-modal__header">
+                      <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hideModalBox}>
+                         <lightning-icon icon-name="utility:close"
+                            alternative-text="close"
+                            variant="inverse"
+                            size="small" ></lightning-icon>
+                         <span class="slds-assistive-text">Close</span>
+                      </button>
+                      <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Update Order Item</h2>
+                   </header>
+               
+                   <!-- modal body start -->
+                   <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height: 260px;">
+                    <lightning-spinner size="large" variant="brand" if:true={isLoading2}></lightning-spinner>
+                         <lightning-layout multiple-rows>
+                            <lightning-layout-item size="6" style="padding-left: 22px">
+                                <lightning-input type="number" label="Buying Rate" data-field="buyingRateField" value={buyingRate} onchange={handleBuyingRateChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="6" style="padding-left: 22px">
+                                <lightning-input type="number" style="padding-left: 4px;" data-field="totalRateField" label="Selling rate" value={totalSellingRate} onchange={handleSellingTotalChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="6" style="padding-left: 22px">
+                                <lightning-input type="date" value={quotationValidity} label="Quotation Validity" data-field="quotationValidityField" onchange={handleQuotationValidityChange}></lightning-input>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="6">
+                                <div class={selectedShippLineError}>
+                                <label class="slds-form-element__label">
+                                    <p style="padding-left: 22px">Shipping Line</p>
+                                </label>
+                                <c-b-a-f-c-o-custom-look-up-component
+                                                obj-name="Shipping_Line__c"
+                                                search-placeholder="Search shipping line" 
+                                                icon-name="standard:opportunity"
+                                                onlookupselected={handleShippingLineSelection}
+                                                onlookupremoved={handleShippingLineRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                                                <div class="slds-form-element__help" style="color: rgb(234, 0, 30); padding-left: 20px; font-weight: 600;" if:true={selectedShippLineError}>
+                                                    Complete this field
+                                                </div>
+                                            </div>
+                            </lightning-layout-item>
+                         </lightning-layout>
+                   </div>
+         
+                   <!-- modal footer start-->
+                   <footer class="slds-modal__footer">
+                      <button class="slds-button slds-button_neutral" onclick={hideModalBox}>Cancel</button>
+                      <button class="slds-button slds-button_brand" onclick={handleUpdateItemClicked}>Update</button>
+                   </footer>
+                
+                </div>
+             </section>
+             <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </div>
+</template>

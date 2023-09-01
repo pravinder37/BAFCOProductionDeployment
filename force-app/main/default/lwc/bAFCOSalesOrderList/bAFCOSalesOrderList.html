@@ -1,0 +1,131 @@
+<template>
+    <lightning-spinner variant="brand" size="large" if:true={isLoading}> </lightning-spinner>
+    <div class="slds-m-left_large slds-m-top_large customFont">
+        <lightning-layout vertical-align="stretch" multiple-rows >
+            <lightning-layout-item size="12">
+                <b style="font-size: larger;">Selected for Order Creation</b>
+            </lightning-layout-item>
+            <lightning-layout-item size="12">
+                <lightning-accordion active-section-name={activeSection}>
+                    <template for:each={displaySelectedQuoteItem} for:item="item">
+                        <lightning-accordion-section name={item.routeName} label={item.routeName} key={item.routeId}>
+                            <template for:each={item.equipment} for:item="equip">
+                                <span key={equip} if:true={equip.displayKey}>{equip.key}</span>
+                                <lightning-layout key={equip} multiple-rows>
+                                <template for:each={equip.value} for:item="shipLine">
+                                    <lightning-layout multiple-rows key={shipLine} style="padding: 5px 0px 5px 10px;margin:2% 0% 10%;" class="slds-border_top slds-border_bottom slds-border_left slds-border_right" if:true={shipLine.checkBoxSelected}>
+                                        <lightning-layout-item size="6" >
+                                            <lightning-layout multiple-rows >
+                                                <lightning-layout-item size="12" >
+                                                    <span>{shipLine.shipName}</span>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="12" >
+                                                    <span>Selling :</span><span style="color: #4CAF50;"> {shipLine.currencyCode} {shipLine.sellingTotal}</span>
+                                                </lightning-layout-item> 
+                                            </lightning-layout> 
+                                        </lightning-layout-item >
+                                        <lightning-layout-item size="6" style="padding-left: 10px;"  >Qty: <p>{shipLine.Qty}</p></lightning-layout-item>
+                                    </lightning-layout>                                               
+                                </template>
+                            </lightning-layout>
+                            </template>
+                        </lightning-accordion-section>
+                    </template>
+                </lightning-accordion>
+            </lightning-layout-item>            
+        </lightning-layout>
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12" if:true={displayShipConsignee}>
+                <lightning-button label =' + Add Shipper & Consignee'
+                                  variant="Base"
+                                  onclick={handleAddShipperConsignee}></lightning-button>
+            </lightning-layout-item>
+        </lightning-layout>
+            <lightning-layout multiple-rows>
+                <lightning-layout-item size="8" style="padding: 0px 20px 0px 20px;">
+                    <lightning-input 
+                                label="Customer Refrence Number"
+                                value={custRefNumber}
+                                onchange={handleCustomerNumberChange}></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="8" style="padding: 0px 20px 0px 20px;">
+                    <lightning-input 
+                                label="Booking Refrence Number"
+                                value={bookRefNumber}
+                                onchange={handleBookingNumberChange}></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="8" style="padding: 0px 20px 0px 20px;">
+                    <lightning-input 
+                                label="BBMS Job Number"
+                                value={bbmsJobNumber}
+                                onchange={handleBBMSChange}></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="8" if:true={displayShipConsignee}>
+                    <!---    -->
+                    <label class="slds-form-element__label">
+                        <p style="padding: 0px 20px 0px 20px;" class="labelStyle">Operation Executive</p>
+                    </label>
+                    <c-b-a-f-c-o-custom-look-up-component
+                                    obj-name="Operations_Executive__c"
+                                    search-placeholder="Search operation executive" 
+                                    icon-name="standard:account"
+                                    onlookupselected={handleOperationExecSelection}
+                                    onlookupremoved={handleOperationExecRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                </lightning-layout-item>
+                <lightning-layout-item size="6">
+                    <lightning-input name="Validity"
+                                             label="Validity"
+                                            value={validityDate}
+                                            data-field='dateField'
+                                            min={minDate}
+                                            type="date"
+                                            onchange={handleValidityChange}></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" style="padding-top: 24px;padding-left: 9px;">
+                    <button class="slds-button slds-button_brand"  onclick={hideCreateOrder}>Create Order</button>
+                </lightning-layout-item>
+            </lightning-layout>
+            <div class="slds-form-element__help" id="form-error-01" style="color: rgb(194, 57, 52);" if:true={errorMsg}>
+                {errorMsg}
+            </div>
+        <template if:true={displayAddConsigneeModal} >
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                 <!-- modal header start -->
+                   <header class="slds-modal__header">
+                      <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hideModalDoneBox}>
+                         <lightning-icon icon-name="utility:close"
+                            alternative-text="close"
+                            variant="inverse"
+                            size="small" ></lightning-icon>
+                         <span class="slds-assistive-text">Close</span>
+                      </button>
+                      <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Add Shipper & Consignee</h2>
+                   </header>
+               
+                   <!-- modal body start -->
+                   <div class="slds-modal__content slds-p-around_medium" style="overflow-y: scroll !important;" id="modal-content-id-1">
+                    <lightning-accordion active-section-name="consignee">
+                        <lightning-accordion-section name="consignee" label="Consignee">
+                            <c-b-a-f-c-o-order-add-consignee onconsigneeupdate={handleConsigneeUpdate} parent-consignee-list={consigneeList}></c-b-a-f-c-o-order-add-consignee>
+                        </lightning-accordion-section>
+                        <lightning-accordion-section name="shipper" label="Shipper">
+                            <c-b-a-f-c-o-order-add-shipper onshipperupdate={handleShipperUpdate} parent-shipper-list={shipperList} ></c-b-a-f-c-o-order-add-shipper>
+                        </lightning-accordion-section>
+                    </lightning-accordion>
+                   </div>
+         
+                   <!-- modal footer start-->
+                   <footer class="slds-modal__footer">
+                      <button class="slds-button slds-button_neutral" onclick={hideModalCancelBox}>Cancel</button>
+                      <button class="slds-button slds-button_brand" onclick={hideModalDoneBox}>Done</button>
+                   </footer>
+                
+                </div>
+             </section>
+             <div class="slds-backdrop slds-backdrop_open"></div>
+          <!-- modal end -->
+            
+        </template>
+    </div>
+</template>

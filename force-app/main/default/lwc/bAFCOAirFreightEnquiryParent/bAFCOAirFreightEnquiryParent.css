@@ -1,0 +1,13 @@
+.slds-modal__container {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 90rem;
+    min-width: 30rem;
+}
+@font-face {
+    font-family: "MontserratCustomfont";
+    src: url('/resource/Montserrat/static/Montserrat-Medium.ttf') format('TrueType');
+}
+*{
+    font-family: "MontserratCustomfont";
+}
