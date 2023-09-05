@@ -152,7 +152,8 @@
                             <lightning-input type="time" data-field="endTime1" value={endTime1} label="Meeting end time" onchange={handleEndtimeChange}></lightning-input>
                       </lightning-layout-item-->
                      <lightning-layout-item size="12" class="paddingCss" large-device-size="6" medium-device-size="6" small-device-size="12">
-                         <lightning-textarea data-field="meetingMinute1" placeholder="Enter Minute of Meeting..." label="Minute of meeting" value={meetinginute1} onchange={handleMeetingMinuteChange}></lightning-textarea>
+                         <lightning-textarea data-field="meetingMinute1" placeholder="Enter Minute of Meeting..." maxlength="255" message-when-too-long="A maximum of 255 characters are allowed." label="Minute of meeting" value={meetinginute1} onchange={handleMeetingMinuteChange}></lightning-textarea>
+                         <span>Characters left : {wordCounter}</span>
                       </lightning-layout-item>
                       <lightning-layout-item size="12" large-device-size="6" medium-device-size="6" small-device-size="12" class="paddingCss">
                         <lightning-combobox label="Purpose of visit"                             

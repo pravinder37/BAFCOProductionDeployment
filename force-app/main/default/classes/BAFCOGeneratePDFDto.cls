@@ -52,6 +52,7 @@ public class BAFCOGeneratePDFDto {
         @AuraEnabled public decimal totalCBM{get;set;}
         @AuraEnabled public decimal totalGrossWeight{get;set;}
         @AuraEnabled public decimal totalVolumetricWeight{get;set;}
+        @AuraEnabled public decimal totalWM{get;set;}
         @AuraEnabled
         public BAFCOImportRMSDto.destinChargeObj destinChargeObj { get; set; }
         @AuraEnabled
@@ -87,6 +88,7 @@ public class BAFCOGeneratePDFDto {
         @AuraEnabled public String perShipment{get;set;}
         @AuraEnabled public String total{get;set;}
         @AuraEnabled public Decimal podFreeTime{get;set;}
+        @AuraEnabled public Decimal sellingRate{get;set;}
     }
     public class ContainerExportList{
         @AuraEnabled public string quoteNo{get;set;}

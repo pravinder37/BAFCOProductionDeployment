@@ -20,9 +20,9 @@
                 if(isAir == true){
                     let urlEvent = $A.get("e.force:navigateToURL");
                     if(device == 'PHONE'){
-                     /*   urlEvent.setParams({
+                        urlEvent.setParams({
                             "url":"/apex/BAFCOQuotePDFMobile?showShippLine="+showShippLine+'&showCharges='+showCharges+'&recordId='+recordId+'&device='+device
-                        });*/
+                        });
                     }
                     else{
                         urlEvent.setParams({

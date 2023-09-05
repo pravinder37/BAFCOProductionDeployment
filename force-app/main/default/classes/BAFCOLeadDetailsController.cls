@@ -354,17 +354,18 @@ Equipment_Type__r.Name, Sea_Freight__c, Validity__c, Agent__r.Name, Shipping_Lin
     }
     @AuraEnabled 
     public static List<Route_Equipment__c> getRouteEquipmentDetails(String routeId){
-        return [SELECT Volumetric_weight_Kgs__c,Route__r.Total_Volumetric_Weight__c,Weight_Kgs__c,CBM__c ,Route__r.Total_CBM__c,Route__r.Total_Gross_Weight_KGs__c,Id, Length__c, Width__c, Height__c, Units__c, UOM__c, Name FROM Route_Equipment__c where Route__c =: routeId];
+        return [SELECT WM__c,Route__r.Total_WM__c,Volumetric_weight_Kgs__c,Route__r.Total_Volumetric_Weight__c,Weight_Kgs__c,CBM__c ,Route__r.Total_CBM__c,Route__r.Total_Gross_Weight_KGs__c,Id, Length__c, Width__c, Height__c, Units__c, UOM__c, Name FROM Route_Equipment__c where Route__c =: routeId];
     }
     @AuraEnabled 
     public static void updateRouteEquipmentDetails(List<Route_Equipment__c> routeEquipList, List<String> containerRemoveList,
-                                                  Decimal totalCBMUpdate,Decimal totalGrossUpdate,Decimal totalVolumeWeightUpdate,String routeId){
+                                                  Decimal totalCBMUpdate,Decimal totalGrossUpdate,Decimal totalVolumeWeightUpdate,Decimal totalWM,String routeId){
         if(routeEquipList.size() > 0) {
             upsert routeEquipList;
             Route__c routeObj = new Route__c();
             routeObj.Total_CBM__c = totalCBMUpdate;
             routeObj.Total_Gross_Weight_KGs__c = totalGrossUpdate;
             routeObj.Total_Volumetric_Weight__c = totalVolumeWeightUpdate;
+            routeObj.Total_WM__c = totalWM;
             routeObj.Id = routeId;
             update routeObj;
         }

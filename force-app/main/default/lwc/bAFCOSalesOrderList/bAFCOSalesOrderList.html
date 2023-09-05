@@ -24,7 +24,7 @@
                                                 </lightning-layout-item> 
                                             </lightning-layout> 
                                         </lightning-layout-item >
-                                        <lightning-layout-item size="6" style="padding-left: 10px;"  >Qty: <p>{shipLine.Qty}</p></lightning-layout-item>
+                                        <lightning-layout-item size="6" if:false={shipLine.hideQtyField} style="padding-left: 10px;"  >Qty: <p>{shipLine.Qty}</p></lightning-layout-item>
                                     </lightning-layout>                                               
                                 </template>
                             </lightning-layout>
@@ -71,6 +71,17 @@
                                     icon-name="standard:account"
                                     onlookupselected={handleOperationExecSelection}
                                     onlookupremoved={handleOperationExecRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                </lightning-layout-item>
+                <lightning-layout-item size="8" if:true={displayShipConsignee}>
+                    <label class="slds-form-element__label">
+                        <p style="padding: 0px 20px 0px 20px;" class="labelStyle">Nominated Agent</p>
+                    </label>
+                    <c-b-a-f-c-o-custom-look-up-component
+                                    obj-name="Agent__c"
+                                    search-placeholder="Search nominated agent" 
+                                    icon-name="standard:account"
+                                    onlookupselected={handleNominatedAgentSelection}
+                                    onlookupremoved={handleNominatedAgentRemoved}></c-b-a-f-c-o-custom-look-up-component>
                 </lightning-layout-item>
                 <lightning-layout-item size="6">
                     <lightning-input name="Validity"

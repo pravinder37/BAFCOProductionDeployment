@@ -304,12 +304,14 @@ export default class BAFCOLeadEnquiryEntryIntake extends LightningElement {
         this.updateEnquiryList();
     }
     handleIncoTermSelection(e){
+        console.log('******************** '+JSON.stringify(e.detail))
         let incoTermID = e.detail.Id;
         this.incoTerm = incoTermID;
         this.incoTermName = e.detail.Name
+        let isDefault = e.detail.defaultSelected != undefined ? true:false
         if(this.incoTermName == 'Clearance and Delivery' || this.incoTermName == 'Local Operation') this.handleLocalInco();
         else if((this.incoTermName != 'Clearance and Delivery' && this.incoTermName != 'Local Operation') && this.isEdit != 'true' && this.regularRouteSelected == false){
-            this.serviceType = '';
+            if(!isDefault) this.serviceType = '';
             this.disableServiceType = false
         }
         this.incoTermClass ='';

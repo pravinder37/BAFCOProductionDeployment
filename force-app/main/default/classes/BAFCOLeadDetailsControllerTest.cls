@@ -1,7 +1,7 @@
 @isTest
 public class BAFCOLeadDetailsControllerTest {
     @TestSetup
-    static void setup() {
+    static void setup() { 
         Lead__c ld = new Lead__c();
         ld.Business_Type__c = 'Import';
         insert ld;
@@ -47,6 +47,7 @@ public class BAFCOLeadDetailsControllerTest {
         Shipping_Line__c shipLine = new  Shipping_Line__c();
         shipLine.Name = 'ShipLine';
         shipLine.BSLS_ID__c = 'test';
+        shipLine.Code__c = 'test';
         Insert shipLine;
         
         Equipment_Type__c equip = new Equipment_Type__c();
@@ -63,6 +64,23 @@ public class BAFCOLeadDetailsControllerTest {
         rmsObj.Equipment_Type__c = equip.id;
         rmsObj.Validity__c = System.today().addDays(15);
         insert rmsObj;
+        
+        integer year =  Date.Today().Year();
+        string s1=string.valueof(year).right(2);
+        Integer Year1= Integer.valueof(s1);
+        Quotation__c quoteObj = new Quotation__c();
+        quoteObj.Name__c= 'Quote/'+Year1+'/'+1;
+        quoteObj.opportunity__c = opty.id;
+        quoteObj.Customer_Name__c = 'test';
+        quoteObj.Account__c = acc.id;
+        Insert quoteObj;
+        
+        Route__c route = new Route__c();
+        route.Opportunity_Enquiry__c = opty.id;
+        route.Port_of_Destination__c = portObj.id;
+        route.Port_of_loading__c =portObj.id;
+        route.Commodity__c = comd.id;
+        insert route;
         
     }
     testmethod static void getLeadDetailsTest01(){
@@ -176,19 +194,18 @@ public class BAFCOLeadDetailsControllerTest {
     }
     testMethod static void getMonthName(){
         test.startTest(); 
-        BAFCOLeadDetailsController.getMonthName(1);
-        BAFCOLeadDetailsController.getMonthName(2);
-        BAFCOLeadDetailsController.getMonthName(3);
-        BAFCOLeadDetailsController.getMonthName(4);
-        BAFCOLeadDetailsController.getMonthName(5);
-        BAFCOLeadDetailsController.getMonthName(6);
-        BAFCOLeadDetailsController.getMonthName(7);
-        BAFCOLeadDetailsController.getMonthName(8);
-        BAFCOLeadDetailsController.getMonthName(9);
-        BAFCOLeadDetailsController.getMonthName(10);
-        BAFCOLeadDetailsController.getMonthName(11);
-        BAFCOLeadDetailsController.getMonthName(12);
+        for(Integer i = 1 ; i<=12 ; i++)
+            BAFCOLeadDetailsController.getMonthName(i);
          BAFCOLeadDetailsController.getMonthName(null);
         test.stopTest();
+    }
+    testMethod static void getQuoteDetail(){
+        BAFCOLeadDetailsController.getQuoteDetail([Select id from Quotation__c limit 1].id);
+    }
+    testMethod static void getRouteEquipmentDetailsTest(){
+        BAFCOLeadDetailsController.getRouteEquipmentDetails([Select id from Route__c limit 1].id);
+    }
+    testMethod static void insertAccountDetails(){
+        BAFCOLeadDetailsController.insertAccountDetails('accountName','contName','0000000','test@emial.com');
     }
 }

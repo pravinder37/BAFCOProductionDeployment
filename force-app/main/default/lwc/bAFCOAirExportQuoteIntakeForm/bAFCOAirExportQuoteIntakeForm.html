@@ -108,13 +108,13 @@
                                                         <lightning-layout multiple-rows if:true={displayAdditionalCharge}>
                                                             <lightning-layout-item size="12">
                                                                 <lightning-layout style="padding-bottom: 12px;">
-                                                                    <lightning-layout-item size="4"><b>Additional Charges</b></lightning-layout-item>
-                                                                    <lightning-layout-item size="4"><lightning-input label="Add To Buying Rate" 
+                                                                    <lightning-layout-item size="6"><b>Additional Charges</b></lightning-layout-item>
+                                                                    <!--lightning-layout-item size="4"><lightning-input label="Add To Buying Rate" 
                                                                         type="checkbox"
                                                                         checked={addAdditionalCharge} 
                                                                         onchange={handleaddAdditionalChange}></lightning-input>
-                                                                    </lightning-layout-item>
-                                                                    <lightning-layout-item size="4"><lightning-input label="Included (Quotation PDF)" 
+                                                                    </lightning-layout-item-->
+                                                                    <lightning-layout-item size="6"><lightning-input label="Included (Quotation PDF)" 
                                                                         type="checkbox"
                                                                         checked={includeAdditionalCharge} 
                                                                         onchange={handleincludeAdditionalChargeChange}></lightning-input>
@@ -123,15 +123,22 @@
                                                             </lightning-layout-item>
                                                              <!--Additional Service charges -->
                                                             <template for:each={additionalChargeList} for:item="item" >
-                                                                <lightning-layout-item key={item} size="6" class="slds-m-top_large" style="padding-left: 7%" >
+                                                                <lightning-layout-item key={item} size="5" class="slds-m-top_large" style="padding-left: 7%" >
                                                                     {item.name}
                                                                 </lightning-layout-item>
-                                                                <lightning-layout-item key={item} size="5">
+                                                                <lightning-layout-item key={item} size="3">
                                                                     <lightning-input style="padding-right: 10px;" 
                                                                         onchange={handleAdditionalChange}
                                                                         data-record-id={item.index}
                                                                         type="number"                                                
                                                                         value={item.value}></lightning-input>
+                                                                </lightning-layout-item>
+                                                                <lightning-layout-item key={item} size="3">
+                                                                    <lightning-input style="padding-right: 10px;" 
+                                                                        onchange={handleSellingAdditionalChange}
+                                                                        data-record-id={item.index}
+                                                                        type="number"                                                
+                                                                        value={item.sellingCharge}></lightning-input>
                                                                 </lightning-layout-item>
                                                                 <lightning-layout-item size="1" key={item} style="margin-top: 3%;" >
                                                                     <lightning-button-icon icon-name="utility:ban"
@@ -143,13 +150,21 @@
                                                                         onclick={removeAdditionalCharge}></lightning-button-icon>                                                
                                                                 </lightning-layout-item>
                                                             </template>
-                                                            <lightning-layout-item class="shipLineValueCSS" size="12" if:true={additionalChargeTotal}>
+                                                            <lightning-layout-item class="labelStyle" style="padding-left: 7%;padding-top: 3%" size="4"  if:true={displayAdditionalTotal}>
+                                                                Total Additional Charges
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item class="selllingFieldCSS" style="padding-left: 8%;padding-right: 2%;" size="4"  if:true={displayAdditionalTotal}>
                                                                 <lightning-input 
                                                                     type="number"
-                                                                    variant="label-inline"
-                                                                    label="Total Additional Charges"
                                                                     disabled
                                                                     value={additionalChargeTotal}
+                                                                    ></lightning-input>
+                                                            </lightning-layout-item>
+                                                            <lightning-layout-item style="padding-right: 10%;" size="4"  if:true={displayAdditionalTotal}>
+                                                                <lightning-input 
+                                                                    type="number"
+                                                                    disabled
+                                                                    value={sellingadditionalChargeTotal}
                                                                     ></lightning-input>
                                                             </lightning-layout-item>
                                                             
@@ -350,10 +365,10 @@
             <c-b-a-f-c-o-import-add-service-charge default-currency-code={currencyCode} onupdate={updateServiceCharges} service-charge-list={serviceChargeList} onclose={handleCloseNewServiceCharge}></c-b-a-f-c-o-import-add-service-charge>
         </template>
         <template if:true={displayExWorksModal}>
-            <c-b-a-f-c-o-select-ex-works onaddselected={handleAddExWorks} onclose={handleCloseExworks}></c-b-a-f-c-o-select-ex-works>
+            <c-b-a-f-c-o-select-ex-works is-air={isAir} onaddselected={handleAddExWorks} onclose={handleCloseExworks}></c-b-a-f-c-o-select-ex-works>
         </template>
         <template if:true={displayCargoDetails}>
-            <c-b-a-f-c-o-display-cargo-details route-id={routeId} onclose={handleCloseCargoDetailsPopUp}></c-b-a-f-c-o-display-cargo-details>
+            <c-b-a-f-c-o-display-cargo-details route-id={routeId}  onclose={handleCloseCargoDetailsPopUp}></c-b-a-f-c-o-display-cargo-details>
         </template>
     </template>  
 </template>

@@ -12,7 +12,7 @@ public class BAFCOEditOpportunityController {
         dto.commercialUserName = opty.Commercial_User__r.name;
         Integer routeIndex = 1;
         List<BAFCORoutingDetailsDto> routingList = new List<BAFCORoutingDetailsDto>();
-        for(Route__c routeObj : [Select Airline__r.Name,Cargo_Readiness__c,Opportunity_Enquiry__r.Recordtype.name,Pickup_Place__c,(Select Cargo_Details__c,Units__c,Palletized__c,Stackable__c,Weight_Kgs__c,CBM__c,Height__c,Width__c,Length__c,id,Quantity__c,Equipment_Type__r.name from Route_Equipments__r),Regular_Routing_Lookup__c,Discharge_Place__c,Place_of_Pickup__c,Dangerous_Goods__c,Remarks__c,id,Commodity__r.name,INCO_Term__r.name,Cargo_Weight__c,DG_Class__c,Port_of_loading__r.name,Port_of_Destination__r.name,Shipping_Line__r.name,Service_Type__c,Airport_of_Destination__r.name,Airport_of_Loading__r.name from Route__c where Opportunity_Enquiry__c =: optyId]){
+        for(Route__c routeObj : [Select Total_WM__c,Total_CBM__c,Total_Volumetric_Weight__c,Total_Gross_Weight_KGs__c,Opportunity_Enquiry__c,Airline__r.Name,Cargo_Readiness__c,Opportunity_Enquiry__r.Recordtype.name,Pickup_Place__c,(Select Cargo_Details__c,Units__c,Palletized__c,Stackable__c,Weight_Kgs__c,CBM__c,Height__c,Width__c,Length__c,id,Quantity__c,Equipment_Type__r.name from Route_Equipments__r),Regular_Routing_Lookup__c,Discharge_Place__c,Place_of_Pickup__c,Dangerous_Goods__c,Remarks__c,id,Commodity__r.name,INCO_Term__r.name,Cargo_Weight__c,DG_Class__c,Port_of_loading__r.name,Port_of_Destination__r.name,Shipping_Line__r.name,Service_Type__c,Airport_of_Destination__r.name,Airport_of_Loading__r.name from Route__c where Opportunity_Enquiry__c =: optyId]){
             BAFCORoutingDetailsDto routeDto = new BAFCORoutingDetailsDto();
             routeDto.routeName = 'Route '+routeIndex;
             if(routeObj.Commodity__c != null){
@@ -64,8 +64,13 @@ public class BAFCOEditOpportunityController {
             routeDto.placeOfPickup = routeObj.Pickup_Place__c;
             routeDto.placeOfDischarge = routeObj.Discharge_Place__c;
             routeDto.routeId = routeObj.id;
+            routeDto.optyId = routeObj.Opportunity_Enquiry__c;
             routeDto.cargoReadiness = String.valueOf(routeObj.Cargo_Readiness__c);
             routeDto.routingRegular = routeObj.Regular_Routing_Lookup__c;
+            routeDto.totalGross = routeObj.Total_Gross_Weight_KGs__c;
+            routeDto.totalVolumeWeight = routeObj.Total_Volumetric_Weight__c;
+            routeDto.totalCBM = routeObj.Total_CBM__c;
+            routeDto.totalWM = routeObj.Total_WM__c;
             List<BAFCORoutingDetailsDto.containerRecord> containerList = new List<BAFCORoutingDetailsDto.containerRecord>();
             if(routeObj.Route_Equipments__r.size() > 0){
                 Integer containerIndex = 1;

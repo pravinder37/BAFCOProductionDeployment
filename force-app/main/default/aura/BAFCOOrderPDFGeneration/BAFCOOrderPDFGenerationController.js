@@ -20,9 +20,9 @@
                 if(isAir == true){
                     let urlEvent = $A.get("e.force:navigateToURL");
                     if(device == 'PHONE'){
-                       /* urlEvent.setParams({
+                        urlEvent.setParams({
                             "url":"/apex/BAFCOOrderPDFMobile?showShippLine="+showShippLine+'&showCharges='+showCharges+'&recordId='+recordId+'&device='+device+'&recordType='+recordType
-                        });*/
+                        });
                     }
                     else{
                         urlEvent.setParams({

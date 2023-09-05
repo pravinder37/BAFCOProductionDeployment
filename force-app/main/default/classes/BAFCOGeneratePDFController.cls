@@ -123,7 +123,7 @@ public without sharing class BAFCOGeneratePDFController {
                 this.dto.phone = '-';
                 this.dto.email ='-';
             }
-            List<Quotation_Item__c> quoteItem = [Select Add_to_Buying_Additional__c,Total_Volumetric_Weight__c,Airline__r.name,Total_Gross_Weight__c,Total_CBM__c,Quotation__r.Name,Agent__r.Name,Selling_Rate_Kg__c,CurrencyIsoCode,(Select Charge_NAme__r.Name,Charge_value__c,Buying_Rate__c,Charge_Name_text__c from Quotation_Charges__r where isAdditional_Charge__c = true),Shipping_Linee__r.name,Quantity__c,Commodity__c,Airport_of_Loading__r.name,Airport_of_Destination__r.name,Quotation__r.isAir__c,Quotation__r.isLCL__c,Tab_View__c,Tank_Rental_Charges__c,Freight_Difference_FD__c,Carrier_container_repositioning_charges__c,Alternate_depot_release_charges__c,Included_PDF_ShippingLine__c,Included_PDF_Origin__c,Included_PDF_Ex_works__c,Included_PDF_Destination__c,Included_PDF_Additional__c,Route__r.Service_Type__c,Ex_Works_Charge__c,Ex_Works_Charge_Name__r.name,Place_of_Discharge__r.Name,Place_of_Pickup__r.Name,Port_of_Discharge__r.name,Port_of_Loading__r.name,BAF__c,Bayan__c,Bayan_cancellation_charge__c,Bunker_surcharge__c,Cleaning_charges__c,
+            List<Quotation_Item__c> quoteItem = [Select Total_WM__c,Add_to_Buying_Additional__c,Total_Volumetric_Weight__c,Airline__r.name,Total_Gross_Weight__c,Total_CBM__c,Quotation__r.Name,Agent__r.Name,Selling_Rate_Kg__c,CurrencyIsoCode,(Select Charge_NAme__r.Name,Charge_value__c,Buying_Rate__c,Charge_Name_text__c from Quotation_Charges__r where isAdditional_Charge__c = true),Shipping_Linee__r.name,Quantity__c,Commodity__c,Airport_of_Loading__r.name,Airport_of_Destination__r.name,Quotation__r.isAir__c,Quotation__r.isLCL__c,Tab_View__c,Tank_Rental_Charges__c,Freight_Difference_FD__c,Carrier_container_repositioning_charges__c,Alternate_depot_release_charges__c,Included_PDF_ShippingLine__c,Included_PDF_Origin__c,Included_PDF_Ex_works__c,Included_PDF_Destination__c,Included_PDF_Additional__c,Route__r.Service_Type__c,Ex_Works_Charge__c,Ex_Works_Charge_Name__r.name,Place_of_Discharge__r.Name,Place_of_Pickup__r.Name,Port_of_Discharge__r.name,Port_of_Loading__r.name,BAF__c,Bayan__c,Bayan_cancellation_charge__c,Bunker_surcharge__c,Cleaning_charges__c,
                                                  CMC__c,Container_movement_charges__c,Container_stripping__c,
                                                  Destination_Customs_Clearance__c,Destination_Loading_Charges__c,DTHC__c,EIC__c,Equipment_Type__c,
                                                  Fasah_fee__c,Free_time_certificate_charges__c,Fumigation__c,Inspection__c,Insurance_charges__c,
@@ -147,7 +147,7 @@ public without sharing class BAFCOGeneratePDFController {
                     routeId.add(item.Route__c);
                 }
                 system.debug('routeId '+routeId);
-                for(Route_Equipment__c rEquip : [SELECT Volumetric_weight_Kgs__c,Route__r.Total_Volumetric_Weight__c,Weight_Kgs__c,CBM__c ,Route__r.Total_CBM__c,Route__r.Total_Gross_Weight_KGs__c,Id, Length__c, Width__c, Height__c, Units__c, UOM__c, Name FROM Route_Equipment__c where Route__c in : routeId]){
+                for(Route_Equipment__c rEquip : [SELECT WM__c,Volumetric_weight_Kgs__c,Route__r.Total_Volumetric_Weight__c,Weight_Kgs__c,CBM__c ,Route__r.Total_CBM__c,Route__r.Total_Gross_Weight_KGs__c,Id, Length__c, Width__c, Height__c, Units__c, UOM__c, Name FROM Route_Equipment__c where Route__c in : routeId]){
                     if(!rIdtoEquipMap.containsKey(rEquip.Route__c)){
                         rIdtoEquipMap.put(rEquip.Route__c,new list<Route_Equipment__c>());
                     }
@@ -157,6 +157,7 @@ public without sharing class BAFCOGeneratePDFController {
                 List<BAFCOGeneratePDFDto.serviceChargeList> quoteItemDto = new List<BAFCOGeneratePDFDto.serviceChargeList>();
                 List<BAFCOGeneratePDFDto.ContainerExportList> containerExportDtoList = new List<BAFCOGeneratePDFDto.ContainerExportList>();
                 List<Route_Equipment__c> routeEquipList= new List<Route_Equipment__c>();
+                if(rIdtoEquipMap.size() > 0 )routeEquipList.addAll(rIdtoEquipMap.get(quoteItem[0].Route__c));
                 for(Quotation_Item__c item : quoteItem){
                     
                     BAFCOGeneratePDFDto.ContainerExportList conExportDto = new BAFCOGeneratePDFDto.ContainerExportList();
@@ -177,7 +178,7 @@ public without sharing class BAFCOGeneratePDFController {
                     itemDto.placeOfPickup = item.Pickup_Place__c;
                     itemDto.placeOfDischarge = item.Discharge_Place__c; 
                     itemDto.currencyCode = item.CurrencyIsoCode;
-                    if(rIdtoEquipMap.size() > 0 )routeEquipList.addAll(rIdtoEquipMap.get(item.Route__c));
+                    //if(rIdtoEquipMap.size() > 0 )routeEquipList.addAll(rIdtoEquipMap.get(item.Route__c));
                     if(item.Quotation__r.isAir__c == true){
                         itemDto.portOfLoading = item.Airport_of_Loading__r.name;
                         itemDto.portOfDestination = item.Airport_of_Destination__r.name;
@@ -191,6 +192,12 @@ public without sharing class BAFCOGeneratePDFController {
                         itemDto.portOfLoading = item.Port_of_Loading__r.name;
                         itemDto.portOfDestination = item.Port_of_Discharge__r.name;
                         itemDto.equipmentType = item.Equipment_Type__r.name;
+                    }
+                    if(item.Quotation__r.isAir__c == true || item.Quotation__r.isLCL__c == true){
+                        itemDto.totalCBM = item.Total_CBM__c;
+                        itemDto.totalGrossWeight = item.Total_Gross_Weight__c;
+                        itemDto.totalVolumetricWeight = item.Total_Volumetric_Weight__c;
+                        itemDto.totalWM = item.Total_WM__c;
                     }
                     itemDto.shippingLine = item.Shipping_Linee__r.name;
                     itemDto.total = item.CurrencyIsoCode+' '+ item.Total__c;

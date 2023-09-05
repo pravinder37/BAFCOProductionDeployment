@@ -247,8 +247,10 @@ public without sharing  class BAFCOLRoutingDetailsController {
     @AuraEnabled
     public static String submitRoutingList(List<BAFCORoutingDetailsDto> routingList, String businessType, String quoteId,String closeDate, String commercialUserId,String isEdit,List<String> containerRemoveList,List<String> routeRemoveList, String optyId) {
         List<Route__c> routeList = new List<Route__c>();
+        List<Opportunity> optyList = new List<Opportunity>();
         String incoTermSelected = '';
         Boolean has20ISOContainer = false;
+        Map<String,Id> optyIndexToIdMap = new Map<String,Id>();
         if(routingList.size() > 0){
             incoTermSelected = routingList[0].incoTermName;
             List<Id> containerId = new List<Id>();
@@ -259,67 +261,79 @@ public without sharing  class BAFCOLRoutingDetailsController {
             }
         }
         system.debug('incoTermSelected '+incoTermSelected);
-        Opportunity optyObj = new Opportunity();
+       /* Opportunity optyObj = new Opportunity();
         if(isEdit == 'true'){
             optyObj.id = optyId;
             optyObj.CloseDate = date.valueOf(closeDate);
             optyObj.Commercial_User__c = commercialUserId != '' ? commercialUserId : null;
             update optyObj;
         }
-        else{
+        else{*/
             Account acc = [Select id,name,ownerId from Account where id=: quoteId];
             User userObj = [Select id,isActive from user where id =: acc.OwnerId];
-            optyObj.Name = acc.Name +' - '+String.valueOf(date.today()).split(' ')[0];
-            optyObj.AccountId = acc.Id ;
-            optyObj.OwnerId = userObj.IsActive == true ? acc.OwnerId : userinfo.getUserId();
-            optyObj.Business_Type__c = businessType;
-            try{
-                optyObj.StageName = 'Qualification';
-                optyObj.CloseDate = date.valueOf(closeDate);
-                optyObj.Commercial_User__c = commercialUserId != '' ? commercialUserId : null;
+            for(BAFCORoutingDetailsDto dto : routingList){
+                Opportunity optyObj1 =new Opportunity();
+                optyObj1.Name = acc.Name +' - '+String.valueOf(date.today()).split(' ')[0];
+                optyObj1.AccountId = acc.Id ;
+                optyObj1.OwnerId = userObj.IsActive == true ? acc.OwnerId : userinfo.getUserId();
+                optyObj1.Business_Type__c = businessType;
+                optyObj1.StageName = 'Qualification';
+                optyObj1.CloseDate = date.valueOf(closeDate);
+                optyObj1.Commercial_User__c = commercialUserId != '' ? commercialUserId : null;
                 if(incoTermSelected == 'Clearance and Delivery' || incoTermSelected == 'Local Operation') {
                     Id LocalOperationRecId = Schema.SObjectType.Opportunity.getRecordTypeInfosByName()
                         .get('Local Operation')
                         .getRecordTypeId();
-                    optyObj.RecordTypeId = LocalOperationRecId;
-                    if(businessType == 'Import') optyObj.Service_Type__c = 'Local Operation Import';
-                    else if(businessType == 'Export') optyObj.Service_Type__c = 'Local Operation Export';
+                    optyObj1.RecordTypeId = LocalOperationRecId;
+                    if(businessType == 'Import') optyObj1.Service_Type__c = 'Local Operation Import';
+                    else if(businessType == 'Export') optyObj1.Service_Type__c = 'Local Operation Export';
                 }
                 else{
                     Id FCLRecId = Schema.SObjectType.Opportunity.getRecordTypeInfosByName()
                         .get('FCL')
                         .getRecordTypeId();
-                    optyObj.RecordTypeId = FCLRecId;
+                    optyObj1.RecordTypeId = FCLRecId;
                     if(businessType == 'Import') {
-                        if(has20ISOContainer == true) optyObj.Service_Type__c = 'ISO Import';
-                        else optyObj.Service_Type__c = 'Sea Import';
+                        if(has20ISOContainer == true) optyObj1.Service_Type__c = 'ISO Import';
+                        else optyObj1.Service_Type__c = 'Sea Import';
                     }
                     else if(businessType == 'Export') {
-                        if(has20ISOContainer == true) optyObj.Service_Type__c = 'ISO Export';
-                        else optyObj.Service_Type__c = 'Sea Export';
+                        if(has20ISOContainer == true) optyObj1.Service_Type__c = 'ISO Export';
+                        else optyObj1.Service_Type__c = 'Sea Export';
                     }
                 }
-                try{
-                    insert optyObj; 
-                }
-                catch(exception e){
-                    system.debug('exception '+e);
-                }
-                
-                Task tsk = new Task();
-                tsk.Subject = 'Provide Quotation';
-                tsk.Status = 'Open';
-                tsk.OwnerId = commercialUserId != '' ? commercialUserId : UserInfo.getUserId();
-                tsk.WhatId = optyObj.Id;
-                tsk.IsReminderSet = true;
-                tsk.ActivityDate = Date.valueOf(DateTime.now());
-                insert tsk;
-                system.debug('optyObj '+optyObj);
+                optyObj1.Index__c = String.valueof(dto.leadIndex);
+                optyObj1.id = dto.optyId != '' ? dto.optyId : null;
+                optyList.add(optyObj1);
             }
-            catch(Exception e){
-                System.debug('Excepiton '+e.getMessage());
+            if(optyList.size() >0) {
+                upsert optyList;
+                List<Id> optyIds = new List<Id>();
+                for(Opportunity obj : optyList){
+                    optyIndexToIdMap.put(obj.Index__c, obj.Id);
+                    optyIds.add(obj.id);
+                }
+                Map<Id,task> taskMap = new Map<Id,task>();
+                List<Task> taskList = new List<Task>();
+                for(Task tsk : [select id,WhatId from Task where WhatId in : optyIds]){
+                    taskMap.put(tsk.WhatId,tsk);
+                }
+                system.debug('taskMap '+taskMap);
+                for(Opportunity obj : optyList){
+                    Task tsk = new Task();
+                    tsk.Subject = 'Provide Quotation';
+                    tsk.Status = 'Open';
+                    tsk.OwnerId = commercialUserId != '' ? commercialUserId : UserInfo.getUserId();
+                    tsk.WhatId = obj.Id;
+                    tsk.IsReminderSet = true;
+                    tsk.ActivityDate = Date.valueOf(DateTime.now());
+                    if(taskMap != null && !taskMap.containskey(obj.id)) taskList.add(tsk);
+                    system.debug('taskList'+taskList);
+                }
+                If(taskList.size() > 0) Insert taskList;
+                system.debug('optyIndexToIdMap '+optyIndexToIdMap);
             }
-        }
+        //}
         Map<String,String> routeIndexToIdMap =  new Map<String,String>();
         List<Route_Equipment__c> routeEquipList = new List<Route_Equipment__c>();
         for(BAFCORoutingDetailsDto dto : routingList){
@@ -338,7 +352,7 @@ public without sharing  class BAFCOLRoutingDetailsController {
             routeObj.Dangerous_Goods__c = dto.dangerousGoods;
             routeObj.Index__c = String.valueOf(dto.leadIndex);
             if(!String.isBlank(dto.incoTerm)) routeObj.INCO_Term__c = dto.incoTerm  ;
-            routeObj.Opportunity_Enquiry__c = optyObj.id;
+            routeObj.Opportunity_Enquiry__c = optyIndexToIdMap.get(dto.leadIndex);
             routeObj.DG_Class__c = dto.dgClass;
             if(!String.isBlank(dto.placeOfPickup)) routeObj.Pickup_Place__c = dto.placeOfPickup;
             if(!String.isBlank(dto.placeOfDischarge)) routeObj.Discharge_Place__c = dto.placeOfDischarge;
@@ -384,7 +398,7 @@ public without sharing  class BAFCOLRoutingDetailsController {
             }
             delete routeToDel;
         }
-        return optyObj.id;
+       return optyList[0].id;
     }
     @AuraEnabled
     public static BAFCOIncoChargesDto getIncoCharges(String rmsId, String incoTerm){
@@ -589,6 +603,10 @@ public without sharing  class BAFCOLRoutingDetailsController {
                 String nn = dto2.name + ' : '+dto2.value+' '+dto.currencyCode;
                 OperationalChargeSelling = OperationalChargeSelling + nn + '\n ';
             }
+            if(dto2.sellingCharge > 0){
+                String nn = dto2.name + ' : '+dto2.sellingCharge+' ' +dto.currencyCode;
+                OperationalChargeSelling = OperationalChargeSelling + nn + '\n ';
+            }
         }
         if(dto.exWorksObj != null && dto.exWorksObj.Name != null){
             if(dto.addExWorksCharge == true ){
@@ -611,7 +629,7 @@ public without sharing  class BAFCOLRoutingDetailsController {
         else newObj.Charge_Value__c = value;
         newObj.Charge_Name_text__c = exWorksName;
         newObj.isExWorks__c = true;
-        Insert newObj;
+        if(value > 0 && newObj.Charge_Name_text__c != null)Insert newObj;
     }
     public static Quotation_item__c assignAdditionalChargeIntoQuoteItem(List<BAFCOGenerteQuoteDto.AdditionalCharge> additionalChargeList, Quotation_item__c quoteItemObj,BAFCOGenerteQuoteDto dto){
         Map<String,id> additionalChargeMap = new Map<String,id>();
@@ -621,6 +639,7 @@ public without sharing  class BAFCOLRoutingDetailsController {
             additionalChargeMap.put(addnObj.name,addnObj.id);
         }
         List<Quotation_Charges__c> chargeList = new List<Quotation_Charges__c>();
+        system.debug('additionalChargeList '+additionalChargeList);
         for(BAFCOGenerteQuoteDto.AdditionalCharge dto2 : additionalChargeList){
             Quotation_Charges__c newObj = new Quotation_Charges__c();
             newObj.Quotation_Item__c = quoteItemObj.id;
@@ -634,6 +653,11 @@ public without sharing  class BAFCOLRoutingDetailsController {
                 String nn = dto2.name + ' : '+dto2.value+' ' +dto.currencyCode;
                 OperationalChargeSelling = OperationalChargeSelling + nn + '\n ';
             }
+            if(dto2.sellingCharge > 0){
+                newObj.Charge_Value__c = dto2.sellingCharge;
+                String nn = dto2.name + ' : '+dto2.sellingCharge+' ' +dto.currencyCode;
+                OperationalChargeSelling = OperationalChargeSelling + nn + '\n ';
+            }
             newObj.isAdditional_Charge__c = true;
             if(additionalChargeMap.containsKey(dto2.name)){
                 newObj.Charge_Name__c = additionalChargeMap.get(dto2.name);
@@ -641,6 +665,7 @@ public without sharing  class BAFCOLRoutingDetailsController {
             }
             chargeList.add(newObj);
         }
+        system.debug('chargeList '+chargeList);
         if(chargeList.size() > 0) insert chargeList;
         return quoteItemObj;
         
@@ -830,6 +855,7 @@ public without sharing  class BAFCOLRoutingDetailsController {
     }
     @AuraEnabled
     public static List<Route_Equipment__c> getRouteEquipType( String routeId){
+        system.debug('routeId '+routeId);
         return [Select Id, Equipment_Type__r.name,Quantity__c from Route_Equipment__c where Route__c =:routeId ];
     }
     @AuraEnabled
@@ -983,9 +1009,10 @@ public without sharing  class BAFCOLRoutingDetailsController {
         return dto;
     }
     @AuraEnabled
-    public static List<Loading_Charge__c> getExWorksOnLoad(){
+    public static List<Loading_Charge__c> getExWorksOnLoad(Boolean isAir){
         List<Loading_Charge__c> exWorksList = new List<Loading_Charge__c>();
-        exWorksList = [Select Id,Name,Port_of_Loading__r.Name,Pickup_Place__c,Loading_Charge__c from Loading_Charge__c];
+        if(isAir == true) exWorksList = [Select Airport_of_Loading__r.name,Id,Name,Port_of_Loading__r.Name,Pickup_Place__c,Loading_Charge__c from Loading_Charge__c where RecordType.name = 'Air'];
+        else exWorksList = [Select Id,Name,Port_of_Loading__r.Name,Pickup_Place__c,Loading_Charge__c from Loading_Charge__c where RecordType.name = 'Sea'];
         if(exWorksList.size() > 0 ) return exWorksList;
         else return null;
     }

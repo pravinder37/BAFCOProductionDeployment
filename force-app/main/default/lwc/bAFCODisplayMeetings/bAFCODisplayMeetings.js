@@ -34,6 +34,7 @@ export default class BAFCODisplayMeetings extends NavigationMixin(LightningEleme
     @track accountObjectChoosed = false;
     @track visitForUpdate = '';
     @track filter='Recordtype.name =\'Default\'';
+    @track wordCounter = 255;
     get radioOptions() {
         return [
             { label: 'Lead', value: 'Lead' },
@@ -293,6 +294,9 @@ export default class BAFCODisplayMeetings extends NavigationMixin(LightningEleme
                 this.endDate1 = JSON.parse(JSON.stringify(result.endDate))
                 this.endTime1 = this.formatTime1(result.endTime)
                 this.meetinginute1 = result.meetingMinute  
+                let charlength = this.meetinginute1.length;
+                if(charlength > 0 ) this.wordCounter = 255 - charlength
+                else if(charlength == 0) this.wordCounter = 255;
                 this.visitForUpdate = result.visitForUpdate
                 console.log('*********** '+result.relatedEnquiryId)
                 if(result.objectName == 'Lead') this.filter1 = 'Lead = \''+result.whatId+'\'';
@@ -444,7 +448,11 @@ export default class BAFCODisplayMeetings extends NavigationMixin(LightningEleme
         Field.reportValidity();
     } 
     handleMeetingMinuteChange(e){
-        this.meetinginute1 = e.detail.value
+        this.meetinginute1 = e.detail.value;
+        let length = this.meetinginute1.length;
+        console.log('length '+length)
+        if(length > 0 ) this.wordCounter = 255 - length
+        else if(length == 0) this.wordCounter = 255;
         let Field = this.template.querySelector("[data-field='meetingMinute1']");
         Field.setCustomValidity(''); 
         Field.reportValidity();

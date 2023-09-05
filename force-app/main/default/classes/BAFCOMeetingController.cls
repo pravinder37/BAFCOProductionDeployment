@@ -175,6 +175,8 @@ public with Sharing class BAFCOMeetingController {
         public String visitFor{get;set;}
         @AuraEnabled 
         public String meetingMinute{get;set;}
+        @AuraEnabled 
+        public String createdBy{get;set;}
     }
     public class EventRecord{
         @AuraEnabled 

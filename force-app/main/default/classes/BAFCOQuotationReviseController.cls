@@ -225,7 +225,7 @@ public class BAFCOQuotationReviseController {
             BAFCOAllQuotationItemDto.additionalChargeList obj = new BAFCOAllQuotationItemDto.additionalChargeList();
             obj.Name = quoteCharge.Charge_Name__r.name;
             system.debug('item.Service_Type__c  '+item.Service_Type__c );
-            if(item.Quotation__r.Quotation_Type__c == 'Sea Import'){
+            if(item.Quotation__r.Quotation_Type__c == 'Sea Import' || item.Quotation__r.Quotation_Type__c == 'Air Export' || item.Quotation__r.Quotation_Type__c == 'Air Import'){
                 obj.value = quoteCharge.Charge_Value__c;
             	obj.buyingCharge = quoteCharge.Buying_Rate__c;
                 
@@ -243,4 +243,5 @@ public class BAFCOQuotationReviseController {
         }
         return itemDto;
     }
+    
 }

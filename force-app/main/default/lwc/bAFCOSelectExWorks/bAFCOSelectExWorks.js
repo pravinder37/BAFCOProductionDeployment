@@ -1,4 +1,4 @@
-import { LightningElement,track } from 'lwc';
+import { LightningElement,track,api } from 'lwc';
 import getExWorksOnLoad from '@salesforce/apex/BAFCOLRoutingDetailsController.getExWorksOnLoad';
 export default class BAFCOSelectExWorks extends LightningElement {
     @track exWorksList =[];
@@ -7,14 +7,16 @@ export default class BAFCOSelectExWorks extends LightningElement {
     noneSelected = false
     exWorksSearchTerm = '';
     totalRecords = [];
+    @api isAir = false;
     connectedCallback(){
+        console.log('isAir ',this.isAir)
         this.getExWorksOnLoad();
     }
     hideModalBox(){
         this.dispatchEvent(new CustomEvent('close'));
     }
     getExWorksOnLoad(){
-        getExWorksOnLoad()
+        getExWorksOnLoad({isAir : this.isAir})
         .then(result=>{
             console.log('getExWorksOnLoad result'+JSON.stringify(result,null,2));
             if(result != null) {

@@ -19,6 +19,7 @@ export default class BAFCOSalesOrderList extends NavigationMixin(LightningElemen
     @track consigneeList = [];
     @track shipperList = [];
     @track OperationExec = null;
+    @track nominatedAgent  = null;
     //@track agentProfitShare = null;
     connectedCallback(){
         let todaysDate = new Date();
@@ -84,11 +85,12 @@ export default class BAFCOSalesOrderList extends NavigationMixin(LightningElemen
                         ele2.value.forEach(ele3=>{
                             console.log('ele3.checkBoxSelected '+ele3.checkBoxSelected);
                             console.log('ele3.checkBoxSelected '+ele3.Qty);
+                            console.log('ele3.*******  '+JSON.stringify(ele3,null,2));
                             if(ele3.checkBoxSelected == undefined){
                                 allValid = false;
                                 console.log('came here 2')
                             }                            
-                            else if(ele3.checkBoxSelected == true && (ele3.Qty == undefined || ele3.Qty <= 0)){
+                            else if(ele3.checkBoxSelected == true && (ele3.hihideQtyField == false && (ele3.Qty == undefined || ele3.Qty <= 0) )){
                                 validQty = false;
                                 allValid = false;
                                 console.log('came here 3')
@@ -129,7 +131,8 @@ export default class BAFCOSalesOrderList extends NavigationMixin(LightningElemen
                         bbmsJobNumber : this.bbmsJobNumber,
                         consigneeList : this.consigneeList,
                         shipperList : this.shipperList,
-                        OperationExec : this.OperationExec
+                        OperationExec : this.OperationExec,
+                        nominatedAgent : this.nominatedAgent
                     })
                 .then(result=>{
                     console.log('createOrder result',JSON.stringify(result,null,2))
@@ -208,5 +211,11 @@ export default class BAFCOSalesOrderList extends NavigationMixin(LightningElemen
     }
     handleOperationExecRemoved(e){
         this.OperationExec = null
+    }
+    handleNominatedAgentSelection(e){
+        this.nominatedAgent = e.detail.Id
+    }
+    handleNominatedAgentRemoved(e){
+        this.nominatedAgent = null
     }
 }

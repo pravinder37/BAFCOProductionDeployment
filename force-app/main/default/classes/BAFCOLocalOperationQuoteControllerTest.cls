@@ -37,6 +37,7 @@ public class BAFCOLocalOperationQuoteControllerTest {
         Shipping_Line__c shipLine = new  Shipping_Line__c();
         shipLine.Name = 'ShipLine';
         shipLine.BSLS_ID__c = 'test';
+        shipLine.Code__c = 'tesst';
         Insert shipLine;
         
         Equipment_Type__c equip = new Equipment_Type__c();
@@ -110,6 +111,7 @@ public class BAFCOLocalOperationQuoteControllerTest {
         Insert rEquip;
         Agent__c agentObj = new Agent__c();
         agentObj.name =  'test';
+        agentObj.Type__c = 'WACO';
         insert agentObj;
         List<RMS__c> rmsList = new List<RMS__c>();
         RMS__c rmsObj = new RMS__c();

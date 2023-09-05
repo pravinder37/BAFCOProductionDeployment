@@ -52,6 +52,14 @@
                     <template for:each={allRouteList} for:item="equip">
                         <lightning-tab label={equip.Equipment_Type__r.Name} key={equip.key} value={equip.Equipment_Type__c} onactive={handleEquipMentActive}>
                             <lightning-layout multiple-rows>
+                                <lightning-layout-item size="12">
+                                    <lightning-combobox label="Curency Code" 
+                                    variant="label-inline"
+                                                        options={curencyCodeOption}
+                                                        value={currencyCode} 
+                                                        onchange={handleCurrencyCodeSelection}
+                                                        placeholder="Select"></lightning-combobox>
+                                </lightning-layout-item>
                                 <lightning-layout-item size="4" ><!-- so as to make three columns --></lightning-layout-item>
                                 <lightning-layout-item size="4" ><b>Buying Rate</b></lightning-layout-item>
                                  <lightning-layout-item size="4" ><b>Selling Rate</b></lightning-layout-item>

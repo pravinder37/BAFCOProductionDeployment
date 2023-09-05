@@ -28,6 +28,32 @@
                                                 </div>
                         </div>
                     </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                            <label class="slds-form-element__label">
+                                <p style="padding-left: 22px">Operations Executive</p>
+                            </label>
+                            <c-b-a-f-c-o-custom-look-up-component
+                                                obj-name="Operations_Executive__c"
+                                                search-placeholder="Search shipping line" 
+                                                icon-name="standard:opportunity"
+                                                onlookupselected={handleOpEXSelection}
+                                                onlookupremoved={handleOpExRemoved}></c-b-a-f-c-o-custom-look-up-component>
+                                                
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6" style="padding-left: 22px;">
+                        <lightning-combobox
+                                label="Status"
+                                value={status}
+                                placeholder="Select Progress"
+                                options={statusOption}
+                                onchange={handleStatusChange} ></lightning-combobox>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <lightning-input type="number" style="padding-left: 22px;" data-field="qtyField" label="Quantity" value={qty} onchange={handleQtyChange}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6" style="padding-left: 22px;">
+                        <lightning-textarea  label={remarkLabel} value={remark} onchange={handleRemarkChange} ></lightning-textarea>
+                    </lightning-layout-item>
             </lightning-layout>
             <!--hr style="margin-top: 4%; margin-bottom: 2%;"/-->
             <div style="margin-top: 10px; text-align :right;">

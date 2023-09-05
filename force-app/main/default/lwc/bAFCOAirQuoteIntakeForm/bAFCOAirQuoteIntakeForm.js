@@ -182,6 +182,7 @@ export default class BAFCOAirQuoteIntakeForm extends NavigationMixin(LightningEl
     @track addServiceCharge = true;
     @track disableBuyingRate = false;
     @track rmsNotFound = false; 
+    @track displayCargoDetails = false;
 
     connectedCallback(){
         console.log('cargoDetails ',this.cargoDetails);
@@ -220,24 +221,9 @@ export default class BAFCOAirQuoteIntakeForm extends NavigationMixin(LightningEl
         .then(result=>{
             console.log('getRouteListOnload result : ',JSON.stringify(result,null,2))
             this.allRouteList = result;
-            if(this.isAir == true){
-                this.allRouteList.forEach(elem=>{
-                    if(elem.RMS__r == undefined){
-                        const evt = new ShowToastEvent({
-                            title: 'Routes without rate found.',
-                            message: 'This enquiry has routes for which buying rate is not available. Kindly add all buying rates before selecting any item for quotation.',
-                            variant: 'info',
-                            mode: 'sticky'
-                        });
-                        this.dispatchEvent(evt);
-                    }
-                })
-            }
             let tempList = [];
             if(result != null){
-                result.forEach(elem=>{
-                    tempList.push({key:elem.Tab_View__c,value:[]})
-                })
+                tempList.push({key:result[0].uniqueEquip,value:[]})
             }
             this.toHoldData = tempList;
         })
@@ -246,6 +232,7 @@ export default class BAFCOAirQuoteIntakeForm extends NavigationMixin(LightningEl
         })
     }
     handleEquipMentActive(e){
+        console.log('came handleEquipMentActive');
         this.shippingEquipTabSelected = e.target.value;
         this.resetCalculation();
         this.assignTabsData();
@@ -499,59 +486,13 @@ export default class BAFCOAirQuoteIntakeForm extends NavigationMixin(LightningEl
         this.profitLabel = this.currencyCode+' '+profit +' Profit.';
     }
     assignTabsData(){
+        console.log('came assignTabsData');
         let tempList3 = [];
         let buyingRateInputInital = 0;
         let index = this.toHoldData.findIndex(x=>x.key == this.shippingEquipTabSelected);
-        let index2  = this.allRouteList.findIndex(x=>x.Tab_View__c == this.shippingEquipTabSelected);
-        let seletedEquipName1 = this.allRouteList[index2].Tab_View__c;
+        let index2  = this.allRouteList.findIndex(x=>x.uniqueEquip == this.shippingEquipTabSelected);
+        let seletedEquipName1 = this.allRouteList[index2].uniqueEquip;
         console.log('**** '+JSON.stringify(this.allRouteList[index2],null,2))
-        let weight = this.allRouteList[index2].Weight_Kgs__c > 0 ? this.allRouteList[index2].Weight_Kgs__c :0;
-        console.log('**** weight '+JSON.stringify(weight))
-        let cbm = this.allRouteList[index2].CBM__c > 0 ? this.allRouteList[index2].CBM__c : 0;
-        this.chargeableWeight = weight > cbm ? weight : (cbm > 0 ? cbm : 1);
-        let isFdAccount = false;
-        isFdAccount = this.allRouteList[index2].Route__r.Opportunity_Enquiry__r.Account.FD__c;
-        console.log('*** '+this.isAir)
-        if(this.isAir == true){
-            if(this.allRouteList[index2].RMS__r != undefined){
-                let chargeableBuyingRate = 0;
-                let rmsObj = this.allRouteList[index2].RMS__r[0];
-                chargeableBuyingRate = rmsObj.Rate_Kg__c > 0 ? rmsObj.Rate_Kg__c : null;
-                if(chargeableBuyingRate != null ) buyingRateInputInital = chargeableBuyingRate * this.chargeableWeight
-                this.buyingRateInput = buyingRateInputInital ;
-            }
-            else{
-                this.rmsNotFound = true;
-            }
-            tempList3.push({
-                'name':'Total Ex-Works Charges',
-                'value':null,
-                'index':this.additionalChargeIndex
-            })
-            this.additionalChargeIndex++;
-            this.additionalChargeList = tempList3;
-            this.displayAdditionalCharge = true
-        }
-        if(seletedEquipName1 == '20ISO'){
-            tempList3.push({
-                'name':'Tank Rental Charges',
-                'value':null,
-                'index':this.additionalChargeIndex
-            })
-            this.additionalChargeIndex++;
-            this.additionalChargeList = tempList3;
-            this.displayAdditionalCharge = true
-        }
-        if(isFdAccount == true){
-            tempList3.push({
-                'name':'Freight Difference(FD)',
-                'value':null,
-                'index':this.additionalChargeIndex
-            })
-            this.additionalChargeIndex++;
-            this.additionalChargeList = tempList3;
-            this.displayAdditionalCharge = true
-        }
         if(this.toHoldData[index].value.length == 0){
             let tempList = [];
             tempList.push({
@@ -618,11 +559,11 @@ export default class BAFCOAirQuoteIntakeForm extends NavigationMixin(LightningEl
             this.addDestinCharge = this.toHoldData[index].value[0].addDestinCharge;
             this.addAdditionalCharge = this.toHoldData[index].value[0].addAdditionalCharge;
             this.addExWorksCharge = this.toHoldData[index].value[0].addExWorksCharge;
-            if(this.airShippline != ''){
+            /*if(this.airShippline != ''){
                 let childObj = this.template.querySelector('c-b-a-f-c-o-custom-look-up-component');
                 let obj={Id:this.airShippline,Name:this.airShipplineName}
                 if(childObj != null) childObj.handleDefaultSelected(obj);
-            }
+            }*/
         }
         this.updateBuyingRate();
     }
@@ -920,5 +861,11 @@ export default class BAFCOAirQuoteIntakeForm extends NavigationMixin(LightningEl
         this.updateTabsData();
         this.updateBuyingRate();
         this.handleUpdateCalculation();
+    }
+    handleShowCargoDetails(){
+        this.displayCargoDetails = true;
+    }
+    handleCloseCargoDetailsPopUp(){
+        this.displayCargoDetails = false;
     }
 }

@@ -8,59 +8,68 @@ public without sharing class BAFCOAirEnquiryController {
     @AuraEnabled
     public static String submitRoutingList(List<BAFCORoutingDetailsDto> routingList, String businessType, String quoteId,
     String closeDate, String commercialUserId,String isEdit,List<String> containerRemoveList,List<String> routeRemoveList,
-    String optyId,Decimal totalCBM, Decimal totalGross,Decimal totalVolumeWeight) {
+    String optyId) {
         List<Route__c> routeList = new List<Route__c>();
+        List<Opportunity> optyList = new List<Opportunity>();
+        Map<String,Id> optyIndexToIdMap = new Map<String,Id>();
         Boolean isAir = false;
-        system.debug('routingList '+routingList);
-        Opportunity optyObj = new Opportunity();
-        if(isEdit == 'true'){
-            optyObj.id = optyId;
-            optyObj.CloseDate = date.valueOf(closeDate);
-            optyObj.Commercial_User__c = commercialUserId != '' ? commercialUserId : null;
-            update optyObj;
-        }
-        else{
-            Account acc = [Select id,name,ownerId from Account where id=: quoteId];
-            User userObj = [Select id,isActive from user where id =: acc.OwnerId];
-            optyObj.Name = acc.Name +' - '+String.valueOf(date.today()).split(' ')[0];
-            optyObj.AccountId = acc.Id;
-            optyObj.OwnerId = userObj.IsActive == true ? acc.OwnerId : userinfo.getUserId();
-            optyObj.Business_Type__c = businessType;
-            try{
-                optyObj.StageName = 'Qualification';
-                optyObj.CloseDate = date.valueOf(closeDate);
-                optyObj.Commercial_User__c = commercialUserId != '' ? commercialUserId : null;                
-                Id LCLRecId = Schema.SObjectType.Opportunity.getRecordTypeInfosByName()
-                    .get('LCL')
-                    .getRecordTypeId();
-                Id AirRecId = Schema.SObjectType.Opportunity.getRecordTypeInfosByName()
-                    .get('Air Freight')
-                    .getRecordTypeId();
-                if(routingList[0].isAir == true) {
-                    isAir = true;
-                    optyObj.RecordTypeId = AirRecId;
-                    if(businessType == 'Import') optyObj.Service_Type__c = 'Air Import';
-                	else if(businessType == 'Export') optyObj.Service_Type__c = 'Air Export';
-                }
-                else {
-                    isAir = false;
-                    optyObj.RecordTypeId = LCLRecId;
-                    if(businessType == 'Import') optyObj.Service_Type__c = 'LCL Import';
-                	else if(businessType == 'Export') optyObj.Service_Type__c = 'LCL Export';
-                }
-                insert optyObj;
-                Task tsk = new Task();
-                tsk.Subject = 'Provide Quotation';
-                tsk.Status = 'Open';
-                tsk.OwnerId = commercialUserId != '' ? commercialUserId : UserInfo.getUserId();
-                tsk.WhatId = optyObj.Id;
-                tsk.IsReminderSet = true;
-                tsk.ActivityDate = Date.valueOf(DateTime.now());
-                insert tsk;
-                system.debug('optyObj '+optyObj);
+        Account acc = [Select id,name,ownerId from Account where id=: quoteId];
+        User userObj = [Select id,isActive from user where id =: acc.OwnerId];
+        for(BAFCORoutingDetailsDto dto : routingList){
+            Opportunity optyObj1 =new Opportunity();
+            optyObj1.Name = acc.Name +' - '+String.valueOf(date.today()).split(' ')[0];
+            optyObj1.AccountId = acc.Id;
+            optyObj1.OwnerId = userObj.IsActive == true ? acc.OwnerId : userinfo.getUserId();
+            optyObj1.Business_Type__c = businessType;
+            optyObj1.StageName = 'Qualification';
+            optyObj1.CloseDate = date.valueOf(closeDate);
+            optyObj1.Commercial_User__c = commercialUserId != '' ? commercialUserId : null;                
+            Id LCLRecId = Schema.SObjectType.Opportunity.getRecordTypeInfosByName()
+                .get('LCL')
+                .getRecordTypeId();
+            Id AirRecId = Schema.SObjectType.Opportunity.getRecordTypeInfosByName()
+                .get('Air Freight')
+                .getRecordTypeId();
+            if(routingList[0].isAir == true) {
+                isAir = true;
+                optyObj1.RecordTypeId = AirRecId;
+                if(businessType == 'Import') optyObj1.Service_Type__c = 'Air Import';
+                else if(businessType == 'Export') optyObj1.Service_Type__c = 'Air Export';
             }
-            catch(Exception e){
-                System.debug('Excepiton '+e.getMessage());
+            else {
+                isAir = false;
+                optyObj1.RecordTypeId = LCLRecId;
+                if(businessType == 'Import') optyObj1.Service_Type__c = 'LCL Import';
+                else if(businessType == 'Export') optyObj1.Service_Type__c = 'LCL Export';
+            }
+            optyObj1.Index__c = String.valueof(dto.leadIndex);
+            optyObj1.id = dto.optyId != '' ? dto.optyId : null;
+            optyList.add(optyObj1);
+            if(optyList.size() >0) {
+                upsert optyList;
+                List<Id> optyIds = new List<Id>();
+                for(Opportunity obj : optyList){
+                    optyIndexToIdMap.put(obj.Index__c, obj.Id);
+                    optyIds.add(obj.id);
+                }
+                Map<Id,task> taskMap = new Map<Id,task>();
+                for(Task tsk : [select id,WhatId from Task where WhatId in : optyIds]){
+                    taskMap.put(tsk.WhatId,tsk);
+                }
+                system.debug('taskMap '+taskMap);
+                List<Task> taskList = new List<Task>();
+                for(Opportunity obj : optyList){
+                    Task tsk = new Task();
+                    tsk.Subject = 'Provide Quotation';
+                    tsk.Status = 'Open';
+                    tsk.OwnerId = commercialUserId != '' ? commercialUserId : UserInfo.getUserId();
+                    tsk.WhatId = obj.Id;
+                    tsk.IsReminderSet = true;
+                    tsk.ActivityDate = Date.valueOf(DateTime.now());
+                    if(taskMap != null && !taskMap.containskey(obj.id)) taskList.add(tsk);
+                }
+                If(taskList.size() > 0) Insert taskList;
+                system.debug('optyIndexToIdMap '+optyIndexToIdMap);
             }
         }
         Map<String,String> routeIndexToIdMap =  new Map<String,String>();
@@ -77,16 +86,17 @@ public without sharing class BAFCOAirEnquiryController {
             String ObjectName = '';
             routeObj.Regular_Routing_Lookup__c = dto.routingRegular != '' ? dto.routingRegular : null;            
             routeObj.Service_Type__c = dto.serviceType;
-            routeObj.Total_Gross_Weight_KGs__c = totalGross;
-            routeObj.Total_Volumetric_Weight__c = totalVolumeWeight;
-            routeObj.Total_CBM__c = totalCBM;
+            routeObj.Total_Gross_Weight_KGs__c = dto.totalGross;
+            routeObj.Total_Volumetric_Weight__c = dto.totalVolumeWeight;
+            routeObj.Total_CBM__c = dto.totalCBM;
+            routeObj.Total_WM__c = dto.totalWM;
             system.debug('submitRoutingList '+dto.isAir);
             if(dto.isAir == true){
                 if(!String.isBlank(dto.portLoading)) routeObj.Airport_of_Loading__c = dto.portLoading;
                 if(!String.isBlank(dto.portDestination)) routeObj.Airport_of_Destination__c = dto.portDestination;  
                 if(!String.isBlank(dto.shippingLine)) routeObj.Airline__c = dto.shippingLine;
-                routeObj.Total_CBM__c = totalCBM;
-                routeObj.Total_Gross_Weight_KGs__c = totalGross;
+                routeObj.Total_CBM__c = dto.totalCBM;
+                routeObj.Total_Gross_Weight_KGs__c = dto.totalGross;
             }
             else{
                 if(!String.isBlank(dto.portLoading)) routeObj.Port_of_loading__c = dto.portLoading;
@@ -97,7 +107,7 @@ public without sharing class BAFCOAirEnquiryController {
             routeObj.Dangerous_Goods__c = dto.dangerousGoods;
             routeObj.Index__c = String.valueOf(dto.leadIndex);
             if(!String.isBlank(dto.incoTerm)) routeObj.INCO_Term__c = dto.incoTerm  ;
-            routeObj.Opportunity_Enquiry__c = optyObj.id;
+            routeObj.Opportunity_Enquiry__c = optyIndexToIdMap.get(dto.leadIndex);
             routeObj.DG_Class__c = dto.dgClass;
             if(!String.isBlank(dto.placeOfPickup)) routeObj.Pickup_Place__c = dto.placeOfPickup;
             if(!String.isBlank(dto.placeOfDischarge)) routeObj.Discharge_Place__c = dto.placeOfDischarge;
@@ -128,12 +138,13 @@ public without sharing class BAFCOAirEnquiryController {
                 if(isAir == true){
                     routeQuipobj.Stackable__c = stackableParent;
                     routeQuipobj.Palletized__c = palletizedParent;
-                    routeQuipobj.UOM__c = contr.uomValue;
                 }else{
                     routeQuipobj.Stackable__c = contr.stackable;
                     routeQuipobj.Palletized__c = contr.palletized;
                 }
+                routeQuipobj.UOM__c = contr.uomValue;
                 routeQuipobj.Units__c = contr.units;
+                routeQuipobj.WM__c = contr.wm;
                 routeQuipobj.Cargo_Details__c = contr.cargoDetails;       
                 routeQuipobj.Route__c = routeIndexToIdMap.get(dto.leadIndex);
                 routeQuipobj.id = contr.id != '' ? contr.id : null;
@@ -161,14 +172,33 @@ public without sharing class BAFCOAirEnquiryController {
             }
             delete routeToDel;
         }
-        return optyObj.id;
+        return optyList[0].id;
     }
     @AuraEnabled
-    public static List<Route_Equipment__c> getRouteListOnload(String routeId){
-        if(routeId != null){
-            return [Select (Select id,Rate_Kg__c from RMS__r order by createddate desc),CBM__c, Weight_Kgs__c,Units__c,id,Name,Tab_View__c,Quantity__c,Route__r.Opportunity_Enquiry__r.Account.FD__c from Route_Equipment__c where Route__c =: routeId ];
+    public static List<BAFCORMSDto> getRouteListOnload(String routeId){
+        List<BAFCORMSDto> dtoList = new List<BAFCORMSDto>();
+        BAFCORMSDto dto = new BAFCORMSDto();
+        Integer uniqueEquip = 0;
+        Route__c routeObj = [Select id,Total_CBM__c,Total_Gross_Weight_KGs__c,Total_WM__c,CurrencyIsoCode from Route__c where id =: routeId];
+        Decimal largest = 0;
+        if(routeObj.Total_CBM__c >= routeObj.Total_Gross_Weight_KGs__c && routeObj.Total_CBM__c >= routeObj.Total_WM__c){
+            largest = routeObj.Total_CBM__c ;
         }
-        return null;
+        else if(routeObj.Total_Gross_Weight_KGs__c >= routeObj.Total_CBM__c && routeObj.Total_Gross_Weight_KGs__c >= routeObj.Total_WM__c){
+            largest = routeObj.Total_Gross_Weight_KGs__c ;
+        }
+        else{
+            largest =  routeObj.Total_WM__c;
+        }
+        dto.seaFreight = largest;
+        dto.uniqueEquip = uniqueEquip;
+        uniqueEquip = uniqueEquip+1;
+        dto.currencyCode = routeObj.CurrencyIsoCode;
+        dto.equipmentName ='Total Gross Weight :'+routeObj.Total_Gross_Weight_KGs__c+ 'Total CBM Weight :'+routeObj.Total_CBM__c+' Total CBM : '+routeObj.Total_WM__c;
+        dto.chargeableWeight = largest;
+        dto.equipmentId = routeObj.id;
+        dtoList.add(dto);
+        return dtoList;
     }
     @AuraEnabled 
     public static List<BAFCORoutingDetailsDto> getQuoteLineItemRoute(String quoteId){
@@ -304,7 +334,7 @@ public without sharing class BAFCOAirEnquiryController {
     }
     @auraEnabled 
     public static Route__c getAirRouteEquipment(string routeId){
-        return [Select Id,Total_Gross_Weight_KGs__c,Total_CBM__c,Total_Volumetric_Weight__c  from Route__c where Id =:routeId limit 1];
+        return [Select Id,Total_Gross_Weight_KGs__c,Total_CBM__c,Total_Volumetric_Weight__c,Total_WM__c  from Route__c where Id =:routeId limit 1];
     }
     @AuraEnabled 
     public static Map<String,Map<String,List<BAFCORMSDto>>> getRouteListAirImport(String routeId){
@@ -684,6 +714,7 @@ public without sharing class BAFCOAirEnquiryController {
         quoteItemObj.Tab_View__c = dto.selectedEquipment;  
         quoteItemObj.Transit_Time__c = dto.transitTime;
         quoteItemObj.Airline__c = airlineId;
+        quoteItemObj.Buying_Input__c = dto.buyingRateInput;
         quoteItemObj.Airport_of_Loading__c = dto.portLoadingId;
         quoteItemObj.Airport_of_Destination__c = dto.portDestinationId;
         quoteItemObj.Buying_Rate__c = dto.quoteBuyingRate > 0 ? dto.quoteBuyingRate : null;
@@ -766,308 +797,18 @@ public without sharing class BAFCOAirEnquiryController {
     public static List<sObject> search(String searchTerm, string myObject, String filter) {
         String myQuery = null;
         if(filter != null && filter != ''){
-            myQuery = 'Select Id, Name from '+myObject+' Where Name_Code__c Like  \'%' + searchTerm + '%\' AND '+filter+' LIMIT  5';
+            myQuery = 'Select Id, Name,Name_Code__c from '+myObject+' Where Name_Code__c Like  \'%' + searchTerm + '%\' AND '+filter+' LIMIT  5';
         }
         else {
             if(searchTerm == null || searchTerm == ''){
-                myQuery = 'Select Id, Name from '+myObject+' Where LastViewedDate != NULL ORDER BY LastViewedDate DESC LIMIT  5';
+                myQuery = 'Select Id, Name,Name_Code__c from '+myObject+' Where LastViewedDate != NULL ORDER BY LastViewedDate DESC LIMIT  5';
             }
             else {
-                myQuery = 'Select Id, Name from '+myObject+' Where Name_Code__c Like  \'%' + searchTerm + '%\' LIMIT  5';
+                myQuery = 'Select Id,Name_Code__c, Name from '+myObject+' Where Name_Code__c Like  \'%' + searchTerm + '%\' LIMIT  5';
             }
         }
         system.debug('myQuery '+myQuery);
         List<sObject> lookUpList = database.query(myQuery);
         return lookUpList;
-    }
-    /*public class airCharges{
-        @AuraEnabled public  Decimal x45{get;set;}
-        @AuraEnabled public  Decimal x100{get;set;}
-        @AuraEnabled public  Decimal x300{get;set;}
-        @AuraEnabled public  Decimal x500{get;set;}
-        @AuraEnabled public  Decimal x1000{get;set;}
-        @AuraEnabled public  Decimal x3000{get;set;}
-        @AuraEnabled public  Decimal x5000{get;set;}
-        @AuraEnabled public  Decimal x10000{get;set;}
-        @AuraEnabled public  Decimal x15000{get;set;}
-        @AuraEnabled public  Decimal x20000{get;set;}
-        
-    }*/
-    public static void testDummy(){
-        Integer a=10;
-        Integer b=5;
-        Integer c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-         c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-         c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-         c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-         c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-         c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-         c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
-        c= a+b;
     }
 }

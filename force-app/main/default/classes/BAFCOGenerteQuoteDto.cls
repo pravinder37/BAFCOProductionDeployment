@@ -74,6 +74,7 @@ public class BAFCOGenerteQuoteDto {
         @AuraEnabled
         public Decimal value { get; set; }
         @AuraEnabled public Boolean includeAdditionalCharge {get;set;} //used in pdf generation 
+        @AuraEnabled public decimal sellingCharge {get;set;}
     }
     public class serviceChargeList{
         @AuraEnabled

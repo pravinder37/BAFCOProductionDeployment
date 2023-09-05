@@ -45,7 +45,11 @@
             <span class=leadDetails>{cargoReadiness}</span>
         </lightning-layout-item>
         <lightning-layout-item size="2" title={cargoDetails} style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" class="slds-col slds-m-vertical_medium">
-            <p class="slds-m-top_small leadLabel">cargoDetails</p>
+            <p class="slds-m-top_small leadLabel">cargoDetails
+                <lightning-button variant="base"
+                icon-name="utility:info" 
+                onclick={handleShowCargoDetails}></lightning-button>
+            </p>
             <span class=leadDetails>{cargoDetails}</span>
         </lightning-layout-item>
     </lightning-layout>
@@ -67,7 +71,7 @@
             <lightning-layout-item size="7">
                 <lightning-tabset>
                     <template for:each={allRouteList} for:item="equip">
-                        <lightning-tab label={equip.Tab_View__c} key={equip.key} value={equip.Tab_View__c} onactive={handleEquipMentActive}>
+                        <lightning-tab label={equip.equipmentName} key={equip.key} value={equip.uniqueEquip} onactive={handleEquipMentActive}>
                             <lightning-layout multiple-rows if:false={rmsNotFound}>
                                 <lightning-layout-item size="12" style="padding-top: 15px;">
                                     <p style="font-size: 16px;"><b>Chargeable Weight : {chargeableWeight}</b></p>
@@ -101,11 +105,11 @@
                                     <b>Total</b>
                                 </lightning-layout-item>
                                 <lightning-layout-item size="4" >
-                                    <lightning-input type="number" disabled={disableBuyingRate} data-id={equip.Tab_View__c} data-field="BuyingRateField" style="padding-right: 10px;" onchange={handlebuyingRateChange}                                                 
+                                    <lightning-input type="number" disabled={disableBuyingRate} data-id={equip.uniqueEquip} data-field="BuyingRateField" style="padding-right: 10px;" onchange={handlebuyingRateChange}                                                 
                                     value={buyingRateInput}></lightning-input>
                                 </lightning-layout-item>
                                 <lightning-layout-item size="4" >
-                                    <lightning-input type="number" data-id={equip.Tab_View__c} data-field="totalRateField" style="padding-right: 10px;" onchange={handleTotalRateChange}                                                 
+                                    <lightning-input type="number" data-id={equip.equipmentName} data-field="totalRateField" style="padding-right: 10px;" onchange={handleTotalRateChange}                                                 
                                     value={totalRate}></lightning-input>
                                 </lightning-layout-item>
                                 <!--Service Charges-->
@@ -326,5 +330,8 @@
         onclose={handleCloseAddRates}
         onsuccess={handledAddRateSave}
          ></c-b-a-f-c-o-add-r-m-s-model>
+    </template>
+    <template if:true={displayCargoDetails}>
+        <c-b-a-f-c-o-display-cargo-details route-id={routeId} came-from-lcl="true" onclose={handleCloseCargoDetailsPopUp}></c-b-a-f-c-o-display-cargo-details>
     </template>
 </template>

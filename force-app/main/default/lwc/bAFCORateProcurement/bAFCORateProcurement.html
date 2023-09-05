@@ -16,7 +16,7 @@
            <!-- modal body start -->
            <div class="slds-modal__content slds-p-around_medium customFont " id="modal-content-id-1" >
             <lightning-layout multiple-rows>
-               <lightning-layout-item size="12" style="padding-right: 35%;">
+               <lightning-layout-item size="12" style="padding-right: 35%;" if:false={cameFromImport}>
                   <label class="slds-form-element__label">
                      <p style="padding-left: 22px">Shipping Line </p>
                  </label>
@@ -39,20 +39,23 @@
                               onlookupremoved={handleAgentRemoved}></c-b-a-f-c-o-custom-look-up-component>
            </lightning-layout-item>
               <lightning-layout-item size="12" style="padding: 4% 0% 5% 3%;">
-               <lightning-layout-item size="6">
-                  <lightning-button variant="brand"
-                              label="Copy content for Email/Whatsapp" 
-                              disabled={disableWhatsApp}
-                              title="Copy content for Email/Whatsapp"                                            
-                              onclick={handleCopyClicked}></lightning-button>
-              </lightning-layout-item>
-              <lightning-layout-item size="6" style="padding: 2% 0% 0% 5%;">
-                  <lightning-button variant="brand"
-                                  label="Create follow Up task" 
-                                  disabled={disableFollowUp}
-                                  title="Create follow Up task"                                                
-                                  onclick={handleCreateFollowUpClicked}></lightning-button>
-              </lightning-layout-item>
+               <lightning-layout multiple-rows>
+                  <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" >
+                     <lightning-button variant="brand"
+                                 label="Copy content for Email/Whatsapp" 
+                                 disabled={disableWhatsApp}
+                                 title="Copy content for Email/Whatsapp"                                            
+                                 onclick={handleCopyClicked}></lightning-button>
+                 </lightning-layout-item>
+                 <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" style="padding-left: 5%;" >
+                     <lightning-button variant="brand"
+                                     label="Create follow Up task" 
+                                     disabled={disableFollowUp}
+                                     title="Create follow Up task"                                                
+                                     onclick={handleCreateFollowUpClicked}></lightning-button>
+                 </lightning-layout-item>
+               </lightning-layout>
+               
               </lightning-layout-item>
                 
             </lightning-layout>

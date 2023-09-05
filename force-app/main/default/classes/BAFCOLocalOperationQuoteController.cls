@@ -20,6 +20,7 @@ public class BAFCOLocalOperationQuoteController {
          if(quotationId == ''  || quotationId == null || (cameReviseCompt  == true && sameRoute == true)){
             Opportunity enqObj  = [SELECT Accountid,Business_Type__c,Id,No_of_Quotes__c,(Select id,name,Name__c from Quotations__r order by createdDate)  FROM Opportunity where id =: optyId];            
             quoteObj.Opportunity__c = optyId;
+            quoteObj.CurrencyIsoCode = dto.currencyCode;
             quoteObj.Account__c = enqObj.accountid;
              if(enqObj.Business_Type__c == 'Export') {
                  if(dto.isLCL == true) {
@@ -75,6 +76,13 @@ public class BAFCOLocalOperationQuoteController {
         }
         Quotation_Item__c quoteItemObj = new Quotation_Item__c();
         quoteItemObj.Route__c = routeId;
+        Route__c routeDetails = BAFCOAirEnquiryController.getAirRouteEquipment(routeId);
+        if(routeDetails!=NULL){
+            quoteItemObj.Total_CBM__c = routeDetails.Total_CBM__c;
+            quoteItemObj.Total_Gross_Weight__c = routeDetails.Total_Gross_Weight_KGs__c;
+            quoteItemObj.Total_Volumetric_Weight__c = routeDetails.Total_Volumetric_Weight__c;
+            quoteItemObj.Total_WM__c = routeDetails.Total_WM__c;
+        }
         //quoteItemObj.Port_of_Discharge__c = rmsObj.Port_Of_Discharge__c;
         //quoteItemObj.Port_of_Loading__c = rmsObj.Port_Of_Loading__c;
         if(dto.isLCL != true && dto.isAir != true) quoteItemObj.Equipment_Type__c = dto.selectedEquipment;

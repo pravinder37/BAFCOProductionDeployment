@@ -3,7 +3,7 @@ import createRateProcument from '@salesforce/apex/BAFCOLRoutingDetailsController
 import getRouteEquipType from '@salesforce/apex/BAFCOLRoutingDetailsController.getRouteEquipType';
 export default class BAFCORateProcurement extends LightningElement {
     disableWhatsApp = false;
-    disableFollowUp = true;
+    disableFollowUp = false;
     @api portLoading = '';
     @api commodity ='';
     //@api shippingLine = '';
@@ -13,9 +13,12 @@ export default class BAFCORateProcurement extends LightningElement {
     @api enquiryId;
     @api cameFromImport = false;
     @track agentName = '';
-    @track procurementShippingLine = '';
+    @track procurementShippingLine = null;
     @track equipmentType = '';
     @track pickListvalues=[];
+    connectedCallback(){
+        console.log('routeId '+this.routeId)
+    }
     hideModalBox(){
         this.dispatchEvent(new CustomEvent('close'));
     }
@@ -24,7 +27,7 @@ export default class BAFCORateProcurement extends LightningElement {
       this.disableFollowUp = false;
   }
   handleShippRemoved(e){
-    this.procurementShippingLine = '';
+    this.procurementShippingLine = null;
     this.disableFollowUp = true;
   }
     handleCopyClicked(){
@@ -55,7 +58,7 @@ export default class BAFCORateProcurement extends LightningElement {
     getRouteEquipType(){
         getRouteEquipType({routeId : this.routeId})
         .then(result =>{
-            //console.log('getRouteEquipType '+JSON.stringify(result,null,2));
+            console.log('getRouteEquipType '+JSON.stringify(result,null,2));
             let temp = [];
             result.forEach(element => {
                 temp.push({

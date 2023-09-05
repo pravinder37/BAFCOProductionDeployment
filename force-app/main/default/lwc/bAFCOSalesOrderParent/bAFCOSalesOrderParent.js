@@ -3,6 +3,8 @@ import getquoteDetails from '@salesforce/apex/BAFCOQuotationReviseController.get
 import getRouteItem from '@salesforce/apex/BAFCOSalesOrderController.getRouteItem';
 import getQuoteLineItem from '@salesforce/apex/BAFCOSalesOrderController.getQuoteLineItem';
 import CONTAINER from '@salesforce/resourceUrl/AddContainer';
+import getQuotationCharge from '@salesforce/apex/BAFCOSalesOrderController.getQuotationCharge';
+import updateQuotationCharges from '@salesforce/apex/BAFCOSalesOrderController.updateQuotationCharges';
 export default class BAFCOSalesOrderParent extends LightningElement {
     @api quoteID ='';
     @track quoteObj;
@@ -27,6 +29,17 @@ export default class BAFCOSalesOrderParent extends LightningElement {
     displayCargoDetails = false;
     cargoDatails = '';
     @track isAirFreight = false;
+    isLCL = 'false';
+    @track displayQuotChargeIcon = false;
+    @track displayQuotPop = false;
+    @track quoteItemId = null;
+    @track isLoading = false;
+    @track quotationChargeList = [];
+    @track editClicked = false;
+    @track quoteIndex = 0;
+    @track toDeleteQuotationList = [];
+    @track hideQuantityField = false;
+    @track updateChargeCurrency = '';
     connectedCallback(){
         document.title = 'Create Order';
         console.log('quotes ',this.quoteID)
@@ -70,6 +83,7 @@ export default class BAFCOSalesOrderParent extends LightningElement {
             let tempList = [];
             this.salesOrderList.forEach(elem=>{
                 if(elem.value.Opportunity_Enquiry__r.RecordType.Name == 'Air Freight') this.isAirFreight = true;
+                if(elem.value.Opportunity_Enquiry__r.RecordType.Name == 'LCL') this.isLCL = 'true';
                 tempList.push({
                     routeName : elem.key,
                     routeId: elem.value.Id,
@@ -96,7 +110,10 @@ export default class BAFCOSalesOrderParent extends LightningElement {
                 this.equipList.push({value:conts[key], key:key,routeId: this.selectedRouteId});
             }
             console.log('equipList '+JSON.stringify(this.equipList,null,2));
-
+            if(this.equipList[0].value[0].quotationType == 'Air Export') {
+                this.displayQuotChargeIcon = true;
+                this.hideQuantityField = true;
+            }
             //reassign Data after change
             if(this.selectedDatalist.length > 0){
                 this.selectedDatalist.forEach(elem => {
@@ -135,7 +152,7 @@ export default class BAFCOSalesOrderParent extends LightningElement {
         this.salesOrderList.forEach(elem=>{
             if(elem.key == routeName){
                 this.selectedRouteId = elem.value.Id;
-                if(elem.value.Opportunity_Enquiry__r.RecordType.Name == 'Air Freight'){
+                if(elem.value.Opportunity_Enquiry__r.RecordType.Name == 'Air Freight' || elem.value.Opportunity_Enquiry__r.RecordType.Name == 'LCL' ){
                     this.displayCargoDetails = true;
                     if(elem.value.Route_Equipments__r != undefined){
                         let tempList = elem.value.Route_Equipments__r;
@@ -219,6 +236,7 @@ export default class BAFCOSalesOrderParent extends LightningElement {
                     if(elem.equipment.length == 0){
                         let tempList = [];
                         tempList.push({
+                            hideQtyField : shipValue.quotationType == 'Air Export' ? true : false,
                             shipName: shipline,
                             Qty:shipValue.Qty,
                             agentShare:shipValue.agentShare,
@@ -339,6 +357,7 @@ export default class BAFCOSalesOrderParent extends LightningElement {
                         if(index == -1){
                             let tempList = [];
                             tempList.push({
+                                hideQtyField : shipValue.quotationType == 'Air Export' ? true : false,
                                 shipName: shipline,
                                 sellingTotal: sellingTotal,
                                 Qty:shipValue.Qty,
@@ -568,6 +587,7 @@ export default class BAFCOSalesOrderParent extends LightningElement {
                             }
                             else{
                                 tempList.push({
+                                    hideQtyField : shipValue.quotationType == 'Air Export' ? true : false,
                                     shipName: shipline,
                                     sellingTotal: sellingTotal,
                                     Qty:shipValue.Qty,
@@ -808,5 +828,137 @@ export default class BAFCOSalesOrderParent extends LightningElement {
                 }
             }
         })
+    }
+    handleQuotationChargeShow(e){
+        this.quoteItemId = e.currentTarget.dataset.itemId; 
+        this.displayQuotPop = true;
+        this.isLoading = true;
+        this.quoteIndex = 0;
+        getQuotationCharge({quoteItemId : this.quoteItemId})
+        .then(result=>{
+            console.log('result '+JSON.stringify(result,null,2))
+            this.quotationChargeList = result;
+            this.updateChargeCurrency = result[0].currencyCode;
+            let tempvar = this.quotationChargeList;
+            this.quotationChargeList = tempvar.map(row => ({
+                ...row,
+                index: this.quoteIndex++,
+                additionalChargeError:'',
+                buyinRateError : null,
+                chargeValueError : null,
+            }));
+            setTimeout(() => {
+                for(let i=0;i<this.quotationChargeList.length;i++){
+                    let field = this.template.querySelectorAll('c-b-a-f-c-o-custom-look-up-component')[i];
+                    let Obj={Id:this.quotationChargeList[i].additionalChargeId,Name:this.quotationChargeList[i].additionalChargeName,index:i}
+                    if(field != null) field.handleDefaultSelected(Obj);
+                }
+            }, 200);
+            
+            console.log('this.quotationChargeList '+JSON.stringify(this.quotationChargeList,null,2));
+            this.isLoading = false;
+        })
+        .catch(error=>{
+            console.log('error '+JSON.stringify(error,null,2));
+            this.isLoading = false;
+        })
+    }
+    closeModal(){
+        this.displayQuotPop = false;
+        this.quoteItemId = null;
+        this.editClicked = false;
+    }
+    handleAddNew(){
+        let tempList = this.quotationChargeList;
+        tempList.push({
+            additionalChargeId : null,
+            buyingRate : null,
+            chargeValue : null,
+            quoteChargeId : null,
+            additionalChargeError:'',
+            buyinRateError : '',
+            chargeValueError : '',
+            index: this.quoteIndex++
+        })
+        this.quotationChargeList = tempList;
+    }
+    handleDeleteRow(e){
+        let initialIndex = e.currentTarget.dataset.id; 
+        let index  = this.quotationChargeList.findIndex(x=>x.index==initialIndex);
+        if(this.quotationChargeList[index].quoteChargeId != null){
+            this.toDeleteQuotationList.push(this.quotationChargeList[index].quoteChargeId);
+        }
+        this.quotationChargeList.splice(index,1);
+        this.isLoading = false;
+        setTimeout(() => {
+            this.isLoading = true;
+            for(let i=0;i<this.quotationChargeList.length;i++){
+                let field = this.template.querySelectorAll('c-b-a-f-c-o-custom-look-up-component')[i];
+                console.log('field '+JSON.stringify(field))
+                let Obj={Id:this.quotationChargeList[i].additionalChargeId,Name:this.quotationChargeList[i].additionalChargeName,index:this.quotationChargeList[i].index}
+                if(field != null && this.quotationChargeList[i].additionalChargeId != null) field.handleDefaultSelected(Obj);
+            }
+            this.isLoading = false;
+        }, 200);
+    }
+    handleAdditionalChargeChange(e){
+        console.log('e.detail.index '+JSON.stringify(e.detail ,null,2))
+        let index = this.quotationChargeList.findIndex(x=>x.index==e.detail.index)
+        this.quotationChargeList[index].additionalChargeId = e.detail.Id;
+        this.quotationChargeList[index].additionalChargeName = e.detail.Name;
+        this.quotationChargeList[index].additionalChargeError = '';
+    }
+    handleAdditionalChargeRemoved(e){
+        let index = this.quotationChargeList.findIndex(x=>x.index==e.detail.index)
+        this.quotationChargeList[index].additionalChargeId = null;
+        this.quotationChargeList[index].additionalChargeName = null;
+        this.quotationChargeList[index].additionalChargeError = 'slds-has-error';
+    }
+    submitDetails(){
+        let allValid = true;
+        this.quotationChargeList.forEach(elem=>{
+            if(elem.additionalChargeId == null) {
+                elem.additionalChargeError = 'slds-has-error';
+                allValid = false;
+            }
+            if(elem.buyingRate <= 0 ) {
+                elem.buyinRateError = 'slds-has-error';
+                allValid = false;
+            }
+            if(elem.chargeValue <= 0 ) {
+                elem.chargeValueError = 'slds-has-error';
+                allValid = false;
+            }
+        })
+        if(allValid){
+            this.isLoading = true;
+            updateQuotationCharges({
+                quotationChargeList : this.quotationChargeList,
+                toDeleteQuotationList : this.toDeleteQuotationList,
+                quoteItemId : this.quoteItemId,
+                currencyCode : this.updateChargeCurrency
+            })
+            .then(result=>{
+                this.isLoading = false;
+                console.log('result '+JSON.stringify(result,null,2));
+                eval("$A.get('e.force:refreshView').fire();");
+            })
+            .catch(error=>{
+                console.log('error '+JSON.stringify(error,null,2));
+                this.isLoading = false;
+            })
+        }
+    }
+    handleBuyingRateChange(e){
+        let initialIndex = e.currentTarget.dataset.id; 
+        let index  = this.quotationChargeList.findIndex(x=>x.index==initialIndex);
+        this.quotationChargeList[index].buyingRate = e.target.value;
+        this.quotationChargeList[index].buyinRateError = '';
+    }
+    handleChargeValueChange(e){
+        let initialIndex = e.currentTarget.dataset.id; 
+        let index  = this.quotationChargeList.findIndex(x=>x.index==initialIndex);
+        this.quotationChargeList[index].chargeValue = e.target.value;
+        this.quotationChargeList[index].chargeValueError = '';
     }
 }

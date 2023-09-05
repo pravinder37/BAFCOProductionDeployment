@@ -180,6 +180,8 @@ export default class BAFCOAirExportQuoteIntakeForm extends NavigationMixin(Light
     @track sellingRateKg = 0;
     @track rateType = '';
     @track airExport = true;
+    @track sellingadditionalChargeTotal = 0;
+    @track displayAdditionalTotal = false;
     connectedCallback(){
         this.getRMSDetails();
     }
@@ -301,7 +303,8 @@ export default class BAFCOAirExportQuoteIntakeForm extends NavigationMixin(Light
             tempList2.push({
                 'name':elem.recName,
                 'value':0,
-                'index':this.additionalChargeIndex
+                'index':this.additionalChargeIndex,
+                'sellingCharge':null
             })
             this.additionalChargeIndex++;
         });
@@ -376,14 +379,14 @@ export default class BAFCOAirExportQuoteIntakeForm extends NavigationMixin(Light
     }
     assignTabsData(){
         let tempList3 = [];
-        tempList3.push({
+        /*tempList3.push({
             'name':'Total Ex-Works Charges',
             'value':null,
             'index':this.additionalChargeIndex
-        })
-        this.additionalChargeIndex++;
-        this.additionalChargeList = tempList3;
-        this.displayAdditionalCharge = true
+        })*/
+       // this.additionalChargeIndex++;
+       // this.additionalChargeList = tempList3;
+       // this.displayAdditionalCharge = true
         let keyName = this.shippingTabSelected+'-'+this.shippingEquipTabSelected; 
         let seletedEquipName1 = '';
         let isFDAccount = false;
@@ -407,7 +410,8 @@ export default class BAFCOAirExportQuoteIntakeForm extends NavigationMixin(Light
             tempList3.push({
                 'name':'Freight Difference(FD)',
                 'value':null,
-                'index':this.additionalChargeIndex
+                'index':this.additionalChargeIndex,
+                'sellingCharge':null
             })
             this.additionalChargeIndex++;
             this.additionalChargeList = tempList3;
@@ -512,7 +516,8 @@ export default class BAFCOAirExportQuoteIntakeForm extends NavigationMixin(Light
             tempList2.push({
                 'name':elem.Name,
                 'value':elem.value,
-                'index':this.additionalChargeIndex
+                'index':this.additionalChargeIndex,
+                'sellingCharge':null
             })
             this.additionalChargeIndex++;
         });
@@ -735,6 +740,7 @@ export default class BAFCOAirExportQuoteIntakeForm extends NavigationMixin(Light
     handleBuyingRate(){
         let dtoTotal = 0;   
         let additonalChargeTotal = 0; 
+        let sellingAdditionalCharge = 0;   
         let keyName = this.shippingTabSelected+'-'+this.shippingEquipTabSelected;
         let index  = this.toHoldData.findIndex(x=>x.key == keyName);
         if(index != -1){
@@ -750,11 +756,16 @@ export default class BAFCOAirExportQuoteIntakeForm extends NavigationMixin(Light
                         if(addCha.value > 0){
                             additonalChargeTotal = additonalChargeTotal + addCha.value;
                         }
+                        
                     });
                 }
                 if(additonalChargeTotal > 0 ) {
                     this.additionalChargeTotal = parseInt(additonalChargeTotal);
                     if(this.addAdditionalCharge == true ) dtoTotal = dtoTotal + parseInt(additonalChargeTotal);
+                }
+                if(sellingAdditionalCharge > 0) {
+                    dtoTotal = dtoTotal + sellingAdditionalCharge;
+                    this.sellingadditionalChargeTotal = sellingAdditionalCharge;
                 }
             }
         }
@@ -765,6 +776,7 @@ export default class BAFCOAirExportQuoteIntakeForm extends NavigationMixin(Light
         let dtoTotal = 0;   
         let additonalChargeTotal = 0;  
         let chargeableWeight = 1;   
+        let sellingAdditionalCharge = 0;
         let keyName = this.shippingTabSelected+'-'+this.shippingEquipTabSelected;     
             this.toHoldData.forEach(elem => {
                 if(elem.key == keyName){
@@ -778,6 +790,7 @@ export default class BAFCOAirExportQuoteIntakeForm extends NavigationMixin(Light
                                 if(addCha.value > 0){
                                     //dtoTotal = dtoTotal + addCha.value;
                                     additonalChargeTotal = additonalChargeTotal + addCha.value;
+                                    if(addCha.sellingCharge >0) sellingAdditionalCharge += addCha.sellingCharge
                                 }
                             });
                         }
@@ -790,12 +803,17 @@ export default class BAFCOAirExportQuoteIntakeForm extends NavigationMixin(Light
                             if(dto.addAdditionalCharge == false) dtoTotal = dtoTotal + additonalChargeTotal;
                             this.additionalChargeTotal = additonalChargeTotal;
                         }
+                        if(sellingAdditionalCharge > 0) {
+                            dtoTotal = dtoTotal + sellingAdditionalCharge;
+                            this.sellingadditionalChargeTotal = sellingAdditionalCharge;
+                        }
                         dto.total= dtoTotal;
                         chargeableWeight = dto.chargeableWeight;
                     }
                 }
             });
-            
+            if(sellingAdditionalCharge > 0 || additonalChargeTotal > 0 ) this.displayAdditionalTotal = true;
+            else this.displayAdditionalTotal = false
             if(!isNaN(dtoTotal)){
             this.sellingRate = parseInt(dtoTotal);
             this.total = dtoTotal;
@@ -865,6 +883,8 @@ export default class BAFCOAirExportQuoteIntakeForm extends NavigationMixin(Light
         this.showServiceChargeModal = false; 
     }
     resetCalculation(){
+        this.sellingadditionalChargeTotal = null;
+        this.displayAdditionalTotal = false;
         this.chargeableWeight = null
         this.buyingRate = 0;
         this.rateType ='';
@@ -1080,8 +1100,17 @@ export default class BAFCOAirExportQuoteIntakeForm extends NavigationMixin(Light
     }
     handleCloseCargoDetailsPopUp(){
         this.displayCargoDetails = false;
+        eval("$A.get('e.force:refreshView').fire();");
     }
     handleShowCargoDetails(){
         this.displayCargoDetails = true;
+    }
+    handleSellingAdditionalChange(e){
+        let index = e.target.dataset.recordId;
+        this.additionalChargeList.forEach(elem=>{
+            if(elem.index == index) elem.sellingCharge = parseInt(e.target.value);
+        })
+        this.updateTabsData();
+        this.handleUpdateCalculation();
     }
 }

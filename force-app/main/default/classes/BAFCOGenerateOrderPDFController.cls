@@ -15,6 +15,7 @@ public class BAFCOGenerateOrderPDFController {
     public String destinationPortLabel { get; set; }
     public Boolean isImport {get;set;}
     public Boolean isExport {get;set;}
+    public Boolean isFinance {get;set;}
     public String title{get;set;}
     public boolean displayShipperlist {get;set;}
     public BAFCOGeneratePDFDto dto {get;set;}
@@ -24,8 +25,11 @@ public class BAFCOGenerateOrderPDFController {
         String showShippLine = pageParameters.get('showShippLine');
         String showCharges = pageParameters.get('showCharges');
         String recordId = pageParameters.get('recordId');
+        String isFinance = 'false';
+        isFinance = pageParameters.get('isFinance');
         Order__c orderObj = [Select id,name,Account_Order__r.name from Order__c where id=: recordId];
         system.debug('orderObj '+orderObj);
+        system.debug('** '+pageParameters.get('isFinance'));
         String orderName = orderObj.Account_Order__r.name+' - '+orderObj.Name+'.pdf';
         Apexpages.currentPage().getHeaders().put( 'content-disposition', 'inline; filename=' + orderName );
         if(showShippLine == 'true') this.showShippLine = true; 
@@ -35,6 +39,7 @@ public class BAFCOGenerateOrderPDFController {
         this.recordId = recordId;
         this.isImport = false;
         this.displayShipperlist = false;
+        this.isFinance = isFinance == 'true' ? true : false;
         dto =new BAFCOGeneratePDFDto();
     }
     public void getQuoteData(){
@@ -45,7 +50,7 @@ public class BAFCOGenerateOrderPDFController {
             Order__c orderObj = [Select Remarks__c,Quotation__r.NAme,isAir__c,isLCL__c,id,Recordtype.Name,Quotation__r.Terms_and_Conditions__c,RecordtypeId,
                                  Quotation__r.Effective_From__c,Quotation__r.Payment_Terms__c,Quotation__r.Inclusions__c,
                                  Quotation__r.Exclusions__c,Quotation__r.Remarks__c,Account_Order__r.Name,Name,
-                                 (Select Agent__r.name,Route_Order__r.Service_Type__c,Route_Order__r.INCO_Term__r.name from Order_Items__r),createdDate,CreatedBy.Name,Quotation__r.Quotation_Validity__c from Order__c where id =: this.recordId];
+                                 (Select Nomintated_Agent__r.name,Agent__r.name,Route_Order__r.Service_Type__c,Route_Order__r.INCO_Term__r.name from Order_Items__r),createdDate,CreatedBy.Name,Quotation__r.Quotation_Validity__c from Order__c where id =: this.recordId];
             this.dto.quoteNumber = orderObj.Name;
             if(orderObj.Quotation__r.Quotation_Validity__c != null )this.dto.validityTo = orderObj.Quotation__r.Quotation_Validity__c.day()+'-'+ BAFCOLeadDetailsController.getMonthName(orderObj.Quotation__r.Quotation_Validity__c.month()) +'-'+orderObj.Quotation__r.Quotation_Validity__c.year();
             this.dto.customerName = orderObj.Account_Order__r.Name;
@@ -100,8 +105,8 @@ public class BAFCOGenerateOrderPDFController {
             if(orderObj.Order_Items__r.size() > 0){
                 this.dto.serviceType = orderObj.Order_Items__r[0].Route_Order__r.Service_Type__c;
                 this.dto.shippingTerm =orderObj.Order_Items__r[0].Route_Order__r.INCO_Term__r.name;
-                if(orderObj.Order_Items__r[0].Agent__c != null)
-                this.header = 'AGENT COPY - '+orderObj.Order_Items__r[0].Agent__r.name;
+                if(orderObj.Order_Items__r[0].Nomintated_Agent__c != null)
+                this.header = 'AGENT COPY - '+orderObj.Order_Items__r[0].Nomintated_Agent__r.name;
                 else this.header = 'AGENT COPY';
             }
             if(orderObj.Account_Order__c != null){
@@ -192,6 +197,7 @@ public class BAFCOGenerateOrderPDFController {
                     contDto.podFreeTime = item.POD_freetime__c;
                     contDto.exWorks = item.CurrencyIsoCode +' 0';
                     contDto.total = item.CurrencyIsoCode+' '+(item.Quantity__c > 0 ? item.Quantity__c : 0) * (item.Buying_Rate__c  > 0 ? item.Buying_Rate__c : 0);
+                    contDto.sellingRate = item.Sea_Freight_Order__c ;
                     system.debug('contDto '+contDto);
                     containerDtoList.add(contDto);
                     

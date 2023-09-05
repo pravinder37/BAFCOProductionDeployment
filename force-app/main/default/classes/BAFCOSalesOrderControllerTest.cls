@@ -35,6 +35,7 @@ public class BAFCOSalesOrderControllerTest {
         Shipping_Line__c shipLine = new  Shipping_Line__c();
         shipLine.Name = 'ShipLine';
         shipLine.BSLS_ID__c = 'test';
+        shipLine.code__c= 'tes';
         Insert shipLine;
         
         Equipment_Type__c equip = new Equipment_Type__c();
@@ -104,6 +105,16 @@ public class BAFCOSalesOrderControllerTest {
         quoteItem.Airport_of_Loading__c = airObj.id;
         Insert quoteItem;
         
+       Additional_Charge__c addCharge = new Additional_Charge__c();
+        addCharge.Name = 'AdditionalCharge';
+        insert addCharge;
+        
+        Quotation_Charges__c obj = new Quotation_Charges__c();
+        obj.Charge_Name__c = addCharge.id;
+        obj.Quotation_Item__c = quoteItem.id;
+        insert obj;
+        
+        
     }
     testmethod static void getRouteItemTest(){
         String quoteID = [Select id from Quotation__c limit 1].Id;
@@ -116,6 +127,12 @@ public class BAFCOSalesOrderControllerTest {
         String routeID = getRouteId();
         test.startTest();
         BAFCOSalesOrderController.getQuoteLineItem(quoteID,routeID);        
+        test.stopTest();
+    }
+    testmethod static void getQuotationChargeTest(){
+        test.startTest();
+        Quotation_Item__c item = [Select id from Quotation_Item__c where Quotation__c =: getQuoteId() limit 1];
+        BAFCOSalesOrderController.getQuotationCharge(item.id);        
         test.stopTest();
     }
     testmethod static void getQuoteLineItemTest01(){
@@ -146,11 +163,44 @@ public class BAFCOSalesOrderControllerTest {
         obj2.shipperName = 'test';
         shipperList.add(obj2);
         
-        BAFCOSalesOrderController.createOrder(dtoList,dd,'test','test2','test',consigneeList,shipperList,null);
+        BAFCOSalesOrderController.createOrder(dtoList,dd,'test','test2','test',consigneeList,shipperList,null,null);
         List<Order__c> orderList = [Select id from Order__c];
+        BAFCOSalesOrderController.getOrderRecordType(orderList[0].id);
         Order_item__c item = [Select id from Order_item__c limit 1];
         delete item;
         test.stopTest();
+    }
+    testmethod static void cloneOrderTEST(){
+        String dd = String.valueOF(System.today());
+        List<BAFCOOrderCreationDto> dtoList = getOrderCreationDto();
+        BAFCOSalesOrderController.createOrder(dtoList,dd,'test','test2','test',null,null,null,null);
+        List<Order__c> orderList = [Select id from Order__c];
+        test.starttest();
+        BAFCOSalesOrderController.cloneOrder(orderList[0].id);
+        test.stopTest();
+    }
+    testmethod static void updateQuotationCharges(){
+        Additional_Charge__c addCharge = new Additional_Charge__c();
+        addCharge.Name = 'AdditionalCharge';
+        insert addCharge;
+        BAFCOSalesOrderController.QuotationChargeList dto = new BAFCOSalesOrderController.QuotationChargeList();
+        dto.additionalChargeId = addCharge.id;
+        dto.additionalChargeName = addCharge.Name;
+        dto.buyingRate = 10;
+        dto.chargeValue = 90;
+        List<BAFCOSalesOrderController.QuotationChargeList> dtolist = new List<BAFCOSalesOrderController.QuotationChargeList>();
+        dtolist.add(dto);
+        Quotation_Item__c item = [Select id from Quotation_Item__c where Quotation__c =: getQuoteId() limit 1];
+        Quotation_Charges__c obj = new Quotation_Charges__c();
+        obj.Charge_Name__c = addCharge.id;
+        obj.Quotation_Item__c = item.id;
+        insert obj;
+        List<String> toDelete = new List<String>();
+        toDelete.add(obj.id);
+        test.starttest();
+        BAFCOSalesOrderController.updateQuotationCharges(dtolist, toDelete, item.id, 'USD');
+        test.stopTest();
+        
     }
     static List<BAFCOOrderCreationDto> getOrderCreationDto(){
         List<BAFCOOrderCreationDto.value> valueList = new List<BAFCOOrderCreationDto.value>();        

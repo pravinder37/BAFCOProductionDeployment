@@ -79,6 +79,10 @@ export default class BAFCOAirFreightEnquiryIntake extends LightningElement {
     @track isAirEnquiry = false;
     @api palletizedParent = false;
     @api stackableParent = false;
+    @api totalCBM
+    @api totalGross
+    @api totalVolumeWeight
+    @api totalWM
 
 
     @track width;
@@ -715,6 +719,12 @@ export default class BAFCOAirFreightEnquiryIntake extends LightningElement {
         }
         let containerDto11 = JSON.parse(JSON.stringify(obj11));
         this.dispatchEvent(new CustomEvent('volumeweightupdate', { detail: { dto: containerDto11 } }));
+        let obj12={
+            'index':finalIndex,
+            'wm':containerRecord.wm,
+        }
+        let containerDto12 = JSON.parse(JSON.stringify(obj12));
+        this.dispatchEvent(new CustomEvent('wmupdate', { detail: { dto: containerDto12 } }));
     }
     handlelengthChange(e){
         let index = e.target.dataset.recordId;
@@ -760,6 +770,7 @@ export default class BAFCOAirFreightEnquiryIntake extends LightningElement {
         let containerDto = JSON.parse(JSON.stringify(obj));
         this.dispatchEvent(new CustomEvent('cbmupdate', { detail: { dto: containerDto } })); 
         this.handleVolumeWeight(index,value);
+        this.handleWM(index);
     }
     handleUOMChange(e){
         let index = e.target.dataset.recordId;
@@ -803,6 +814,7 @@ export default class BAFCOAirFreightEnquiryIntake extends LightningElement {
         let containerDto = JSON.parse(JSON.stringify(obj));
         this.dispatchEvent(new CustomEvent('cbmupdate', { detail: { dto: containerDto } })); 
         this.handleVolumeWeight(index,cbm);
+        this.handleWM(index);
     }
     handleVolumeWeight(index,cbm){
         let volumeWeight = cbm * 167;
@@ -813,6 +825,19 @@ export default class BAFCOAirFreightEnquiryIntake extends LightningElement {
         let containerDto = JSON.parse(JSON.stringify(obj));
         this.dispatchEvent(new CustomEvent('volumeweightupdate', { detail: { dto: containerDto } })); 
     }
+    handleWM(index){
+        let containerIndex = this.containerRecord.findIndex(elem=>elem.index == index);
+        let ccRecord = this.containerRecord[containerIndex];
+        let cbm = ccRecord.CBM > 0 ?  ccRecord.CBM : 0;
+        let grossWeight = ccRecord.Weight > 0 ?  (ccRecord.Weight/750)  : 0;
+        let wm = cbm > grossWeight ? cbm : grossWeight;
+        let obj={
+            'index':index,
+            'wm':wm,
+        }
+        let containerDto = JSON.parse(JSON.stringify(obj));
+        this.dispatchEvent(new CustomEvent('wmupdate', { detail: { dto: containerDto } })); 
+    }
     handleWeightChange(e){
         let index = e.target.dataset.recordId;
         let value = e.target.value;
@@ -822,6 +847,7 @@ export default class BAFCOAirFreightEnquiryIntake extends LightningElement {
         }
         let containerDto = JSON.parse(JSON.stringify(obj));
         this.dispatchEvent(new CustomEvent('weightupdate', { detail: { dto: containerDto } })); 
+        this.handleWM(index);
     }
     handleStackableChange(e){
         let index = e.target.dataset.recordId;

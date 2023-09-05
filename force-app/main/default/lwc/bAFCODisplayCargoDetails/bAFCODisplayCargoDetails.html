@@ -16,7 +16,7 @@
            <!-- modal body start -->
            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="overflow-y: scroll !important;">
             <lightning-spinner variant="brand" size="large" if:true={isLoading}></lightning-spinner>
-               <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+               <table if:false={isLCL} class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
                   <thead>
                      <tr>
                         <th>Package</th>
@@ -46,6 +46,36 @@
                      </template>
                   </tbody>
                </table>
+               <table if:true={isLCL} class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                  <thead>
+                     <tr>
+                        <th>Package</th>
+                        <th>Length</th>
+                        <th>Width</th>
+                        <th>Height</th>
+                        <th>CBM (KGs)</th>
+                        <th>UOM</th>
+                        <th>Units</th>
+                        <th>Gross Weight (KGs)</th>
+                        <th>WM</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <template for:each={routeEquipList} for:item="prod">
+                        <tr key={prod}>
+                           <td>{prod.index}</td>
+                           <td>{prod.Length__c}</td>
+                           <td>{prod.Width__c}</td>
+                           <td>{prod.Height__c}</td>
+                           <td>{prod.CBM__c}</td>
+                           <td>{prod.UOM__c}</td>
+                           <td>{prod.Units__c}</td>
+                           <td>{prod.Weight_Kgs__c}</td>
+                           <td>{prod.WM__c}</td>
+                        </tr>
+                     </template>
+                  </tbody>
+               </table>
                <lightning-layout multiple-rows>
                   <lightning-layout-item size="6" large-device-size="6" medium-device-size="6" small-device-size="6">
                      <lightning-input label="Total CBM (Kgs) " type="number" step="0.001" value={totalCBM} disabled></lightning-input>
@@ -54,15 +84,16 @@
                      <lightning-input label="Total Gross Weight (KGs)" value={totalGross} disabled></lightning-input>
                  </lightning-layout-item>
                  <lightning-layout-item size="6" large-device-size="6" medium-device-size="6" small-device-size="6">
-                  <lightning-input label="Total Volumetric Weight (KGs)" value={totalVolumeWeight} disabled></lightning-input>
+                  <lightning-input if:false={isLCL} label="Total Volumetric Weight (KGs)" value={totalVolumeWeight} disabled></lightning-input>
+                  <lightning-input if:true={isLCL} label="Total WM" value={totalWM} disabled></lightning-input>
               </lightning-layout-item>
                </lightning-layout>
            </div>
  
            <!-- modal footer start-->
            <footer class="slds-modal__footer">
-            <button if:true={isOrder} class="slds-button slds-button_brand" onclick={hideEditClicked}>Edit</button>
-              <button class="slds-button slds-button_neutral" onclick={hideModalBox}>Cancel</button>
+            <button  class="slds-button slds-button_brand" onclick={hideEditClicked}>Edit</button>
+              <button class="slds-button slds-button_neutral" onclick={hideModalBox}>Back</button>
            </footer>
         
         </div>
@@ -166,6 +197,13 @@
                                                  class={contr.unitsErrorClass}
                                                  value={contr.Units__c}></lightning-input>
                                      </lightning-layout-item>
+                                     <lightning-layout-item if:true={isLCL} size="6" large-device-size="4" medium-device-size="4" small-device-size="6" >
+                                       <lightning-input type="number" label="WM"
+                                                disabled
+                                               data-record-id={contr.index}  
+                                               style="padding: 0px 20px 0px 0px;font-weight: 700;"
+                                               value={contr.WM__c}></lightning-input>
+                                   </lightning-layout-item>
                                      <lightning-layout-item size="4" style ="padding:25px 0px 0px 15px;" large-device-size="4" medium-device-size="4" small-device-size="4" >
                                          <lightning-button-icon icon-name="utility:ban"
                                              variant="container"

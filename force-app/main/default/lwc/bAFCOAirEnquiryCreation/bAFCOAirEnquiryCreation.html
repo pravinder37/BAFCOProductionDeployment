@@ -53,7 +53,7 @@
             <lightning-layout-item size="12">
                 <lightning-accordion>
                     <template for:each={leadEnquiryList} for:item="lead">
-                        <lightning-accordion-section label={lead.routeName} key={lead.routeName} value={lead.routeName} style="font-weight: 500;" class="customFont">
+                        <lightning-accordion-section label={lead.routeName} key={lead.routeName} value={lead.routeName} style="font-weight: 500;" class="customFont" >
                             <lightning-button-menu slot="actions" alternative-text="Show menu" icon-size="x-small" menu-alignment="auto">
                                 <lightning-menu-item value={lead.leadIndex} prefix-icon-name="utility:ban" label="Remove Route" onclick={handleRemoveRouteOption}></lightning-menu-item>
                             </lightning-button-menu>
@@ -98,6 +98,10 @@
                             pickup-place-class={lead.pickupPlaceClass}
                             stackable-parent={lead.stackableParent}
                             palletized-parent={lead.palletizedParent}
+                            total-c-b-m={lead.totalCBM}
+                            total-gross={lead.totalGross}
+                            total-volume-weight={lead.totalVolumeWeight}
+                            total-w-m={lead.totalWM}
                             min-date={minDate}
                             cargo-readiness={lead.cargoReadiness}
                             disable-add-route ={lead.disableAddRoute}
@@ -112,10 +116,12 @@
                             onstackableupdate={handleStackableUpdate}
                             onpalletizedupdate={handlePalletizedUpdate}
                             onunitsupdate={handleUnitsUpdate}
+                            onwmupdate={handleWMUpdate}
                             oncargodetailsupdate={handleCargoDetailsUpdate}
                             onaddcontainertype={handleAddContainer}
                             onaddemptycontainertype={handleEmptyContainer}
                             onremovecontainertype={handleRemoveContainerType}
+                            ontoggle={handleSectionToggeled}
                             account-id={quoteId}
                             is-edit={isEdit}
                             is-air={isAir}></c-b-a-f-c-o-air-freight-enquiry-intake> 
@@ -129,15 +135,6 @@
                                 title="Add new Route" 
                                 disabled={disableAddRoute}                                   
                                 onclick={addRouteEnquiry}></lightning-button>
-            </lightning-layout-item>
-            <lightning-layout-item size="6" if:true={airEnquiry} large-device-size="6" medium-device-size="6" small-device-size="12">
-                <lightning-input label="Total CBM (Kgs) " type="number" step="0.001" value={totalCBM} disabled></lightning-input>
-            </lightning-layout-item>
-            <lightning-layout-item style="padding-left: 20px;" if:true={airEnquiry} size="6" large-device-size="6" medium-device-size="6" small-device-size="12">
-                <lightning-input label="Total Gross Weight (KGs)" value={totalGross} disabled></lightning-input>
-            </lightning-layout-item>
-            <lightning-layout-item size="6" if:true={airEnquiry} large-device-size="6" medium-device-size="6" small-device-size="12">
-                <lightning-input label="Total Volumetric Weight(Kgs) " value={totalVolumeWeight} disabled></lightning-input>
             </lightning-layout-item>
         </lightning-layout>
     </div>

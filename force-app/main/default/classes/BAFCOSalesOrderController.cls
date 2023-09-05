@@ -228,7 +228,7 @@ public class BAFCOSalesOrderController {
         return dto;
     }
     @AuraEnabled
-    public static Order__c createOrder(List<BAFCOOrderCreationDto> orderCreationList, String validityDate, String custRefNumber, String bookRefNumber, String bbmsJobNumber, List<consigneeList> consigneeList, List<shipperList> shipperList, String OperationExec){
+    public static Order__c createOrder(List<BAFCOOrderCreationDto> orderCreationList, String validityDate, String custRefNumber, String bookRefNumber, String bbmsJobNumber, List<consigneeList> consigneeList, List<shipperList> shipperList, String OperationExec, String nominatedAgent){
         Map<String,List<BAFCOOrderCreationDto.value>> routeIdToValueMap = new Map<String,List<BAFCOOrderCreationDto.value>>();
         Map<String,String> orderIdToOrderData = new  Map<String,String>();
         List<Order_Item__c> orderItemList = new  List<Order_Item__c>();
@@ -307,13 +307,13 @@ public class BAFCOSalesOrderController {
                             orderItem.Origin_Loading_Charges_Order__c = orderDto.originloadingCharges;
                             orderItem.OTHC_Order__c = orderDto.othc;
                             orderItem.Agent_Profit_Share__c = orderDto.agentShare;
-                            if(orderDto.isAir == true){
+                            if(orderDto.isAir == true || orderDto.isLCL == true){
                                 Quotation_Item__c quoteItem = [Select id,Total_CBM__c,Total_Gross_Weight__c,Total_Volumetric_Weight__c from Quotation_Item__c Where id=:orderDto.quoteItemId Limit 1];
                                 orderItem.Total_CBM__c = quoteItem.Total_CBM__c;
                                 orderItem.Total_Volumetric_Weight__c = quoteItem.Total_Volumetric_Weight__c;
                                 orderItem.Total_Gross_Weight__c = quoteItem.Total_Gross_Weight__c;
-                                orderItem.Airport_of_Destination__c = orderDto.postOfDischarge;
-                                orderItem.Airport_of_Loading__c = orderDto.postOfLoading;
+                                if(orderDto.isAir == true) orderItem.Airport_of_Destination__c = orderDto.postOfDischarge;
+                                if(orderDto.isAir == true) orderItem.Airport_of_Loading__c = orderDto.postOfLoading;
                             }
                             else{
                                 orderItem.Port_of_Discharge_Order__c = orderDto.postOfDischarge;
@@ -388,6 +388,7 @@ public class BAFCOSalesOrderController {
                             orderItem.Chargeable_Weight__c = orderDto.chargeableWeight;
                             orderItem.Operational_Charges_buying__c = orderDto.operationalChargeBuying;
                             orderItem.Operational_Charges_selling__c = orderDto.operationalChargeSelling;
+                            orderItem.Nomintated_Agent__c = nominatedAgent;
                             if(orderDto.checkBoxSelected == true) orderItemList.add(orderItem);
                         }
                     }
@@ -402,7 +403,7 @@ public class BAFCOSalesOrderController {
                 List<Consignee__c> conList = new List<Consignee__c>();
                 List<Shipper__c> shipList = new List<Shipper__c>();
                 for(Order_Item__c item : orderItemList){
-                    if(consigneeList.size() > 0){
+                    if(consigneeList != null && consigneeList.size() > 0){
                         for(consigneeList consObj : consigneeList){
                             if(consObj.consigneeId != null){
                                 Consignee__c coObj = new Consignee__c();
@@ -412,7 +413,7 @@ public class BAFCOSalesOrderController {
                             }
                         }
                     }
-                    if(shipperList.size() > 0){
+                    if(shipperList !=null && shipperList.size() > 0){
                         for(shipperList ssObj : shipperList){
                             Shipper__c shipObj = new Shipper__c();
                             shipObj.Shipper__c = ssObj.shipperId;
@@ -537,6 +538,81 @@ public class BAFCOSalesOrderController {
         }
         system.debug('orderObjCloneCopy '+orderObjCloneCopy.id);
         return orderObjCloneCopy.id;
+    }
+    @AuraEnabled
+    public static List<QuotationChargeList> getQuotationCharge(String quoteItemId){
+        List<QuotationChargeList> dtoList = new List<QuotationChargeList>();
+        for(Quotation_Charges__c quoteChargeObj : [Select Quotation_Item__r.currencyIsoCode,id,Buying_Rate__c,Charge_Name__r.name,Charge_Value__c from Quotation_Charges__c where Quotation_Item__c =: quoteItemId and isExWorks__c = false]){
+            QuotationChargeList dtoObj = new QuotationChargeList();
+            dtoObj.additionalChargeName = quoteChargeObj.Charge_Name__r.name;
+            dtoObj.additionalChargeId = quoteChargeObj.Charge_Name__c;
+            dtoObj.buyingRate = quoteChargeObj.Buying_Rate__c != null ? quoteChargeObj.Buying_Rate__c : 0;
+            dtoObj.chargeValue = quoteChargeObj.Charge_Value__c != null ? quoteChargeObj.Charge_Value__c : 0;
+            dtoObj.quoteChargeId =quoteChargeObj.Id;
+            dtoObj.currencyCode = quoteChargeObj.Quotation_Item__r.currencyIsoCode;
+            dtoList.add(dtoObj);
+        }
+        return dtoList;
+    }
+    @AuraEnabled
+    public static void updateQuotationCharges(List<QuotationChargeList> quotationChargeList, List<String> toDeleteQuotationList,String quoteItemId, String currencyCode){
+           if(quotationChargeList.size() > 0){
+            Decimal BuyingTotal = 0;
+            Decimal ChargeValue = 0;
+               String OperationalChargesbuying = '';
+               String OperationalChargeSelling = '';
+            List<Quotation_Charges__c> quoteList = new List<Quotation_Charges__c>();
+            for(QuotationChargeList item :quotationChargeList){
+                Quotation_Charges__c obj = new Quotation_Charges__c();
+                obj.Charge_Name__c = item.additionalChargeId;
+                obj.Charge_Name_text__c = item.additionalChargeName;
+                obj.Buying_Rate__c = item.buyingRate;
+                obj.Charge_Value__c = item.chargeValue;
+                if(item.chargeValue > 0){
+                    String nn = item.additionalChargeName + ' : '+item.chargeValue+' ' +currencyCode;
+                    OperationalChargeSelling = OperationalChargeSelling + nn + '\n ';
+                }
+                if(item.buyingRate > 0){
+                    String nn = item.additionalChargeName + ' : '+item.buyingRate+' ' +currencyCode;
+                    OperationalChargesbuying = OperationalChargesbuying + nn + '\n ';
+                }
+                obj.Id = item.quoteChargeId;
+                obj.Quotation_Item__c = quoteItemId;
+                if(item.buyingRate > 0){
+                    BuyingTotal = BuyingTotal+item.buyingRate;
+                }
+                if(item.chargeValue > 0){
+                    ChargeValue = ChargeValue+item.chargeValue;
+                }
+                quoteList.add(obj);
+            }
+            if(quoteList.size() > 0) upsert quoteList;
+            
+            Quotation_Item__c item = [Select id,Sea_Freight__c,Buying_Input__c  from Quotation_Item__c where id =: quoteItemId];
+            if(BuyingTotal > 0 ) item.Buying_Rate__c = (item.Buying_Input__c > 0 ? item.Buying_Input__c : 0) + BuyingTotal;
+            if(ChargeValue > 0 ) item.Total__c = (item.Sea_Freight__c > 0 ? item.Sea_Freight__c : 0) + ChargeValue;
+               item.Operational_Charges_Buying__c = OperationalChargesbuying;
+               item.Operational_Charges_Selling__c = OperationalChargeSelling;
+            item.id = quoteItemId;
+            update item;
+        }
+        if(toDeleteQuotationList != null && toDeleteQuotationList.size() > 0){
+            List<Quotation_Charges__c> toDelete = new List<Quotation_Charges__c>();
+            for(String key : toDeleteQuotationList){
+                Quotation_Charges__c obj= new Quotation_Charges__c();
+                obj.Id = key;
+                toDelete.add(obj);
+            }
+            if(toDelete.size() >0) delete toDelete;
+        }
+    }
+    public class QuotationChargeList{
+        @AuraEnabled public String additionalChargeName { get; set; }
+        @AuraEnabled public String additionalChargeId { get; set; }
+        @AuraEnabled public Decimal buyingRate { get; set; }
+        @AuraEnabled public Decimal chargeValue { get; set; }
+        @AuraEnabled public String quoteChargeId { get; set; }
+        @AuraEnabled public String currencyCode { get; set; }
     }
     public class EquipData{
         @AuraEnabled public string quoteRemark{get;set;}

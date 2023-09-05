@@ -72,9 +72,10 @@ export default class BAFCOCustomLookUpComponent extends LightningElement {
         let selectedName = requestorObj.Name;
         let index = requestorObj.index;
         this.selectedName = selectedName;
-        let SelectedObj  = {Id:selectedId, Name:selectedName,index:index};        
+        let SelectedObj  = {Id:selectedId, Name:selectedName,index:index,defaultSelected:true};  
         const valueSelectedEvent = new CustomEvent('lookupselected', {detail:  SelectedObj });
-        this.dispatchEvent(valueSelectedEvent);
+            this.dispatchEvent(valueSelectedEvent); 
+         
         if(this.blurTimeout) {
             clearTimeout(this.blurTimeout);
         }

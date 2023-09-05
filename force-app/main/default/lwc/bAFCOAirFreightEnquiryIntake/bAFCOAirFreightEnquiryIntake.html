@@ -113,6 +113,7 @@
                     </label>
                     <c-b-a-f-c-o-airport-custom-lookup
                                     obj-name={portObject}
+                                    is-air={isAirEnquiry}
                                     search-placeholder="Search Destination Port" 
                                     icon-name="standard:account"
                                     index={leadIndex} 
@@ -237,7 +238,7 @@
             <template for:each={containerRecord} for:item="contr">
                 <lightning-layout-item size="12" key={contr}>
                     <lightning-layout multiple-rows>
-                        <lightning-layout-item if:true={isAirEnquiry} size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
+                        <lightning-layout-item  size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
                             <lightning-combobox label="UOM"
                                 data-record-id={contr.index} 
                                 style="padding-right: 20px;font-weight: 700;"
@@ -247,7 +248,7 @@
                                 onchange={handleUOMChange}
                                 placeholder="Select"></lightning-combobox>
                         </lightning-layout-item>
-                        <lightning-layout-item if:true={isAirEnquiry} size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
+                        <lightning-layout-item  size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
                             <lightning-input type="number" label="Length"
                                     onchange={handlelengthChange}
                                     step="0.01"
@@ -257,7 +258,7 @@
                                     class={contr.lengthErrorClass}
                                     value={contr.length}></lightning-input>
                         </lightning-layout-item>
-                        <lightning-layout-item if:true={isAirEnquiry} size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
+                        <lightning-layout-item size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
                             <lightning-input type="number" label="Width"
                                     step="0.01"
                                     onchange={handleWidthChange}
@@ -267,7 +268,7 @@
                                     class={contr.widthErrorClass}
                                     value={contr.width}></lightning-input>
                         </lightning-layout-item>
-                        <lightning-layout-item if:true={isAirEnquiry} size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
+                        <lightning-layout-item  size="4" large-device-size="4" medium-device-size="4" small-device-size="4" >
                             <lightning-input type="number" label="Height"
                                     onchange={handleHeightChange}
                                     step="0.01"
@@ -296,12 +297,19 @@
                                     class={contr.WeightErrorClass}
                                     value={contr.Weight}></lightning-input>
                         </lightning-layout-item>
-                        <lightning-layout-item size="6" large-device-size="4" medium-device-size="4" small-device-size="6" >
+                        <lightning-layout-item size="6" if:true={isAirEnquiry} large-device-size="4" medium-device-size="4" small-device-size="6" >
                             <lightning-input type="number" label="Volumetric weight(Kgs)"
                                     step="0.01"
                                     disabled
                                     style="padding: 0px 20px 0px 0px;font-weight: 700;"
                                     value={contr.volumeWeight}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6" if:true={isLCL} large-device-size="4" medium-device-size="4" small-device-size="6" >
+                            <lightning-input type="number" label="W/M"
+                                    step="0.01"
+                                    disabled
+                                    style="padding: 0px 20px 0px 0px;font-weight: 700;"
+                                    value={contr.wm}></lightning-input>
                         </lightning-layout-item>
                         <lightning-layout-item if:true={isLCL} size="6" style="padding-top: 14px;" large-device-size="4" medium-device-size="4" small-device-size="6" >
                             <lightning-input type="checkbox" label="Stackable"
@@ -346,4 +354,18 @@
             </template>
         </lightning-layout>
     </div>
+    <lightning-layout multiple-rows>
+        <lightning-layout-item size="6" large-device-size="6" medium-device-size="6" small-device-size="12">
+                <lightning-input label="Total CBM (Kgs) " type="number" step="0.001" value={totalCBM} disabled></lightning-input>
+        </lightning-layout-item>
+        <lightning-layout-item style="padding-left: 20px;" size="6" large-device-size="6" medium-device-size="6" small-device-size="12">
+                <lightning-input label="Total Gross Weight (KGs)" value={totalGross} disabled></lightning-input>
+        </lightning-layout-item>
+        <lightning-layout-item size="6" if:true={isAirEnquiry} large-device-size="6" medium-device-size="6" small-device-size="12">
+                <lightning-input label="Total Volumetric Weight(Kgs) " value={totalVolumeWeight} disabled></lightning-input>
+        </lightning-layout-item>
+        <lightning-layout-item size="6" if:false={isAirEnquiry} large-device-size="6" medium-device-size="6" small-device-size="12">
+                <lightning-input label="Total W/M " value={totalWM} disabled></lightning-input>
+        </lightning-layout-item>
+    </lightning-layout>
 </template>

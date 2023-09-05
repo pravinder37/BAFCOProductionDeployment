@@ -48,8 +48,15 @@
                         </div>
                          <div class="slds-accordion__content" if:true={item.displayRow}>
                            <lightning-layout multiple-rows data-id={item.Id} style="cursor: pointer;padding-left: 10%;">
-                              <lightning-layout-item size="3" if:true={item.Port_of_Loading__c}  style="background: #EEF5FF;padding: 2%;margin-left: 2%;">
-                                 Port of Loading : {item.Port_of_Loading__r.Name}
+                              <lightning-layout-item size="3" if:false={isAir}  style="background: #EEF5FF;padding: 2%;margin-left: 2%;">
+                                 <span if:true={item.Port_of_Loading__c}>
+                                    Port of Loading : {item.Port_of_Loading__r.Name}
+                                 </span>
+                              </lightning-layout-item>
+                              <lightning-layout-item size="3" if:true={isAir}  style="background: #EEF5FF;padding: 2%;margin-left: 2%;">
+                                 <span if:true={item.Airport_of_Loading__c}>
+                                    Airport of Loading : {item.Airport_of_Loading__r.Name}
+                                 </span>
                               </lightning-layout-item>
                                 <lightning-layout-item size="3" style="background: #EEF5FF;padding: 2%;margin-left: 2%;">
                                  Place of Pickup : {item.Pickup_Place__c}

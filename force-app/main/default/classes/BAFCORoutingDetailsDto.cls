@@ -5,6 +5,8 @@ public class BAFCORoutingDetailsDto {
     @AuraEnabled
     public String routeId { get; set; }
     @AuraEnabled
+    public String optyId { get; set; }
+    @AuraEnabled
     public String routeName { get; set; }
     @AuraEnabled
     public String routingRegular { get; set; }
@@ -81,6 +83,10 @@ public class BAFCORoutingDetailsDto {
     public Boolean isAir { get; set; }
     @AuraEnabled public Boolean stackableParent { get; set; }
     @AuraEnabled public Boolean palletizedParent { get; set; }
+    @AuraEnabled public Decimal totalGross { get; set; }
+    @AuraEnabled public Decimal totalVolumeWeight { get; set; }
+    @AuraEnabled public Decimal totalCBM { get; set; }
+    @AuraEnabled public Decimal totalWM { get; set; }
     
     public class containerRecord{
         @AuraEnabled
@@ -100,6 +106,7 @@ public class BAFCORoutingDetailsDto {
         @AuraEnabled public Decimal Weight { get; set; }
         @AuraEnabled public Decimal units { get; set; }
         @AuraEnabled public Decimal volumeWeight { get; set; }
+        @AuraEnabled public Decimal wm { get; set; }
         @AuraEnabled public Boolean stackable { get; set; }
         @AuraEnabled public Boolean palletized { get; set; }
         @AuraEnabled public String cargoDetails { get; set; }

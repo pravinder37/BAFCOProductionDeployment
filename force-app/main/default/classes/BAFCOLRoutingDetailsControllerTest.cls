@@ -31,6 +31,7 @@ public class BAFCOLRoutingDetailsControllerTest {
         Shipping_Line__c shipLine = new  Shipping_Line__c();
         shipLine.Name = 'ShipLine';
         shipLine.BSLS_ID__c = 'test';
+        shipLine.code__c ='test';
         Insert shipLine;
         
         Equipment_Type__c equip = new Equipment_Type__c();
@@ -613,7 +614,7 @@ public class BAFCOLRoutingDetailsControllerTest {
     }
     testMethod static void getExWorksOnLoad(){
         test.startTest();
-        BAFCOLRoutingDetailsController.getExWorksOnLoad();
+        BAFCOLRoutingDetailsController.getExWorksOnLoad(false);
         test.stopTest();
     }
      testMethod static void copyExistingRMSTest(){

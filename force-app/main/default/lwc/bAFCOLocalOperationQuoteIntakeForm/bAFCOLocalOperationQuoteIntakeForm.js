@@ -3,6 +3,7 @@ import getRouteListOnload from '@salesforce/apex/BAFCOLocalOperationQuoteControl
 import genrateQuotation from '@salesforce/apex/BAFCOLocalOperationQuoteController.genrateQuotation';
 import updateValidityDate from '@salesforce/apex/BAFCOLRoutingDetailsController.updateValidityDate';
 import { NavigationMixin } from 'lightning/navigation';
+import getExchangeRate from '@salesforce/apex/BAFCOLRoutingDetailsController.getExchangeRate';
 export default class BAFCOLocalOperationQuoteIntakeForm extends NavigationMixin(LightningElement) {
     @api routeName;
     @api routingRegular;
@@ -58,6 +59,7 @@ export default class BAFCOLocalOperationQuoteIntakeForm extends NavigationMixin(
     @track quotationItemId = '';
 
     @track incoChargList = [];
+    @track curencyCodeOption = [];
 
     @track showAdditionalChargeModal = false;
     @track additionalChargeList = [];
@@ -157,6 +159,7 @@ export default class BAFCOLocalOperationQuoteIntakeForm extends NavigationMixin(
     @track currencyCode = 'USD';
 
     connectedCallback(){
+        this.getExchangeRate();
         if(this.businessType == 'Export'){
             this.displayPOL = true;
             this.displayPlOP = true;
@@ -662,6 +665,32 @@ export default class BAFCOLocalOperationQuoteIntakeForm extends NavigationMixin(
         this.exWorksTotal = value
         this.updateTabsData();
         this.handleUpdateCalculation();
+    }
+    handleCurrencyCodeSelection(e){
+        this.currencyCode = e.target.value;
+        this.updateTabsData();
+        this.handleUpdateCalculation();
+    }
+    getExchangeRate(){
+        getExchangeRate()
+        .then(result=>{
+            let templist = [];
+            console.log('getExchangeRate res',JSON.stringify(result,null,2))
+            if(result != null){
+                result.forEach(elem => {
+                    templist.push({
+                        label:elem.Currency_Code__c,
+                        value:elem.Currency_Code__c,
+                        exchangeRate:elem.Final_Rate__c,
+                        offSet:elem.Offset_Value__c != undefined ? elem.Offset_Value__c : 0
+                    })
+                });
+            }
+            this.curencyCodeOption = templist;
+        })
+        .catch(error=>{
+            console.log('getExchangeRate err',JSON.stringify(error,null,2))
+        })
     }
     
 }

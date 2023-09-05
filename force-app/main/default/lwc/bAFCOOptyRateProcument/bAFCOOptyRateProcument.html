@@ -1,0 +1,52 @@
+<template>
+    <lightning-spinner variant="brand" size="large" if:true={isLoading}></lightning-spinner>
+    <div style="min-height: 250px;" if:true={hasRecord}>
+        <div style="padding: 2%; font-size: 30px;"><h2 class="slds-align_absolute-center">Quick Action</h2></div>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+            <thead>
+            <tr class="slds-line-height_reset">
+                <th scope="col">Port of Loading</th>
+                <th scope="col">Port of Destination</th>
+                <th scope="col">Commodity</th>
+                <th scope="col">Equipment type</th>
+                <th scope="col">Quantiity</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+                <template for:each={routeList} for:item="item">
+                    <tr class="slds-hint-parent" key={item}>
+                        <td>{item.portLoading}</td>
+                        <td>{item.portDischarge}</td>
+                        <td>{item.commodity}</td>
+                        <td>{item.equipmentType}</td>
+                        <td>{item.quantity}</td>
+                        <td><lightning-button variant="brand"
+                            label="Quick Action" 
+                            data-id={item.routeId}
+                            title="Quick Action"
+                            style="font-weight: 600;float: right;padding-top: 10%;"                                                
+                            onclick={handleQuickActionClicked}></lightning-button></td>
+                    </tr>
+                </template>
+                
+            </tbody>
+        </table>
+    </div>
+    <div if:false={hasRecord}>
+        <div style="padding-top: 2%; font-size: 30px;"><h2 class="slds-align_absolute-center">Quick Action</h2></div>
+        <hr/>
+        <span class="slds-align_absolute-center" style="padding-bottom: 5%; font-size: 15px;">No Records found</span>
+    </div>
+    <template if:true={showProcument}>
+        <c-b-a-f-c-o-rate-procurement 
+                                port-loading={portLoading}
+                                commodity={commodity}
+                                equipment={shippingEquipTabSelected}
+                                port-discharge={portDestination}
+                                enquiry-id={recordId}
+                                route-id={routeId}
+                                came-from-import={cameFromImport}
+                                quantity={quantity} onclose={handleCloseProcurement}></c-b-a-f-c-o-rate-procurement>
+    </template>
+</template>

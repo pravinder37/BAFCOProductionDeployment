@@ -1,7 +1,7 @@
 @isTest
 public class BAFCOGenerateOrderPDFMobileCntrlTest {
 	@TestSetup
-    static void setup() {
+    static void setup() { 
         account acc = new Account();
         acc.Branch__c = 'Jeddah';
         acc.Average_Credit_Days__c = 2;
@@ -20,6 +20,7 @@ public class BAFCOGenerateOrderPDFMobileCntrlTest {
         
         Agent__c agentObj = new Agent__c();
         agentObj.name =  'test';
+        agentObj.Type__c = 'WACO';
         insert agentObj;
         
         Port__c port = new Port__c();

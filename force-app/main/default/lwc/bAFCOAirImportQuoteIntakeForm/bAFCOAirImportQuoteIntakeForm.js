@@ -178,6 +178,8 @@ export default class BAFCOAirImportQuoteIntakeForm extends NavigationMixin(Light
     @track buyingRateKg = 0;
     @track sellingRateKg = 0;
     @track rateType = '';
+    @track sellingadditionalChargeTotal = 0;
+    @track displayAdditionalTotal = false;
 
     connectedCallback(){
         this.getRouteListOnload();
@@ -253,6 +255,8 @@ export default class BAFCOAirImportQuoteIntakeForm extends NavigationMixin(Light
     resetCalculation(){
         console.log('reset call ');
         this.transitTime = null;
+        this.displayAdditionalTotal = false;
+        this.sellingadditionalChargeTotal = null;
         this.chargeableWeight = null;
         this.buyingRate = 0;
         this.quantity=0;
@@ -385,14 +389,14 @@ export default class BAFCOAirImportQuoteIntakeForm extends NavigationMixin(Light
         let currencyCode ='';
         let rateKgs =null;
         let chargeableWeight = null;
-        tempList3.push({
+        /*tempList3.push({
             'name':'Total Ex-Works Charges',
             'value':null,
             'index':this.additionalChargeIndex
         })
         this.additionalChargeIndex++;
         this.additionalChargeList = tempList3;
-        this.displayAdditionalCharge = true
+        this.displayAdditionalCharge = true*/
         let dedicatedRoutingObj = this.routingListMap[this.agentTabSelected];
         let templist =[];
         let tabView = '';
@@ -414,7 +418,8 @@ export default class BAFCOAirImportQuoteIntakeForm extends NavigationMixin(Light
                     tempList3.push({
                         'name':'Freight Difference(FD)',
                         'value':null,
-                        'index':this.additionalChargeIndex
+                        'index':this.additionalChargeIndex,
+                        'sellingCharge':null
                     })
                     this.additionalChargeIndex++;
                     this.additionalChargeList = tempList3;
@@ -582,6 +587,7 @@ export default class BAFCOAirImportQuoteIntakeForm extends NavigationMixin(Light
         let dtoTotal = 0;   
         let chargeableWeight = 1;
         let additonalChargeTotal = 0; 
+        let sellingAdditionalCharge = 0;
         let keyName = this.agentTabSelected+'-'+this.shippingTabSelected+'-'+this.shippingEquipTabSelected;  
         let index  = this.toHoldData.findIndex(x=>x.key == keyName);
         if(index != -1){
@@ -598,16 +604,23 @@ export default class BAFCOAirImportQuoteIntakeForm extends NavigationMixin(Light
                         if(addCha.value > 0){
                             additonalChargeTotal = additonalChargeTotal + addCha.value;
                         }
+                        if(addCha.sellingCharge >0) sellingAdditionalCharge += addCha.sellingCharge
                     });
                 }
                 if(additonalChargeTotal > 0 ) {
                     this.additionalChargeTotal = parseInt(additonalChargeTotal);
                     if(dto.addAdditionalCharge == false )dtoTotal = dtoTotal + parseInt(additonalChargeTotal);
                 }
+                if(sellingAdditionalCharge > 0) {
+                    dtoTotal = dtoTotal + sellingAdditionalCharge;
+                    this.sellingadditionalChargeTotal = sellingAdditionalCharge;
+                }
                 dto.total= dtoTotal;
                 chargeableWeight = dto.chargeableWeight;
             }
         }
+        if(sellingAdditionalCharge > 0 || additonalChargeTotal > 0 ) this.displayAdditionalTotal = true;
+            else this.displayAdditionalTotal = false
         if(!isNaN(dtoTotal)){
             this.sellingRate = parseInt(dtoTotal);
             this.total = dtoTotal;
@@ -700,7 +713,8 @@ export default class BAFCOAirImportQuoteIntakeForm extends NavigationMixin(Light
             tempList2.push({
                 'name':elem.recName,
                 'value':0,
-                'index':this.additionalChargeIndex
+                'index':this.additionalChargeIndex,
+                'sellingCharge':null
             })
             this.additionalChargeIndex++;
         });
@@ -913,8 +927,17 @@ export default class BAFCOAirImportQuoteIntakeForm extends NavigationMixin(Light
     }
     handleCloseCargoDetailsPopUp(){
         this.displayCargoDetails = false;
+        this.handledAddRateSave();
     }
     handleShowCargoDetails(){
         this.displayCargoDetails = true;
+    }
+    handleSellingAdditionalChange(e){
+        let index = e.target.dataset.recordId;
+        this.additionalChargeList.forEach(elem=>{
+            if(elem.index == index) elem.sellingCharge = parseInt(e.target.value);
+        })
+        this.updateTabsData();
+        this.handleUpdateCalculation();
     }
 }

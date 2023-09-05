@@ -49,6 +49,7 @@ public class BAFCOQuotationReviseControllerTest {
         Shipping_Line__c shipLine = new  Shipping_Line__c();
         shipLine.Name = 'ShipLine';
         shipLine.BSLS_ID__c = 'test';
+        shipLine.Code__c = 'tes';
         Insert shipLine;
         
         Equipment_Type__c equip = new Equipment_Type__c();

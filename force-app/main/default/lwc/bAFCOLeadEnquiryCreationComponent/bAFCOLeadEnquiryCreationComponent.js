@@ -624,6 +624,7 @@ export default class BAFCOLeadEnquiryCreationComponent extends NavigationMixin(L
                             'pickupPlaceClass':'',
                             'disableAddRoute':false,
                             'routeId':elem.routeId,
+                            'optyId':elem.optyId
                         }
                         tempList.push(leadEnqObj);
                     });

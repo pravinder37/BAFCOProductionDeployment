@@ -3,7 +3,7 @@ public class BAFCORouteEquipmentTriggerControllerTest {
     testmethod static void insertRouteProcumnetExport(){
         Port__c port = new Port__c();
         port.City__c = 'Test 2';
-        port.Name ='PortName 2';
+        port.Name ='PortName 2'; 
         port.sector__c = 'Africa';
         insert port;
         
@@ -49,6 +49,7 @@ public class BAFCORouteEquipmentTriggerControllerTest {
         Shipping_Line__c shipLine = new  Shipping_Line__c();
         shipLine.Name = 'ShipLine';
         shipLine.BSLS_ID__c = 'test';
+        shipLine.Code__c = 'test';
         Insert shipLine;
         
         Route__c route1 = new Route__c();
@@ -136,6 +137,7 @@ public class BAFCORouteEquipmentTriggerControllerTest {
         Shipping_Line__c shipLine = new  Shipping_Line__c();
         shipLine.Name = 'ShipLine';
         shipLine.BSLS_ID__c = 'test';
+        shipLine.Code__c = 'test';
         Insert shipLine;
         
         Route__c route1 = new Route__c();
@@ -173,5 +175,8 @@ public class BAFCORouteEquipmentTriggerControllerTest {
         rEquip.Route__c = route1.id;
         rEquip.Equipment_Type__c = equip.id;
         Insert rEquip;
+        rEquip.CBM__c = 12;
+        update rEquip;
+        
     }
 }

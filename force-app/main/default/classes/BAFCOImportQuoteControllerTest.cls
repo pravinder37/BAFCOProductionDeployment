@@ -20,6 +20,7 @@ public class BAFCOImportQuoteControllerTest {
         Shipping_Line__c shipLine = new  Shipping_Line__c();
         shipLine.Name = 'ShipLine';
         shipLine.BSLS_ID__c = 'test';
+        shipLine.Code__c = 'test';
         Insert shipLine;
         
         Equipment_Type__c equip = new Equipment_Type__c();
@@ -80,6 +81,7 @@ public class BAFCOImportQuoteControllerTest {
         Insert rEquip;
         Agent__c agentObj = new Agent__c();
         agentObj.name =  'test';
+        agentObj.Type__c = 'WACO';
         insert agentObj;
          Id RMS_IMPORT_RECORDTYPE_Id = Schema.SObjectType.RMS__c.getRecordTypeInfosByName()
         .get('Import')

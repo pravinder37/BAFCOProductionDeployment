@@ -6,6 +6,7 @@ import updateRouteEquipmentDetails from '@salesforce/apex/BAFCOLeadDetailsContro
 export default class BAFCODisplayCargoDetails extends LightningElement {
     @api routeId = '';
     @api isOrder = false;
+    @api cameFromLcl ;
     @track routeEquipList =[];
     isLoading = false;
     totalCBM = null;
@@ -17,6 +18,8 @@ export default class BAFCODisplayCargoDetails extends LightningElement {
     totalCBMUpdate = null
     totalGrossUpdate = null
     totalVolumeWeightUpdate = null
+    totalWM = null;
+    @track isLCL = false;
 
     @wire(getPicklistValuesByRecordType, { objectApiName: ROUTE_EQUIPMENT_OBJECT, recordTypeId: '012000000000000AAA' })
     routeEQuipObjectData({ data, error }) {
@@ -28,6 +31,9 @@ export default class BAFCODisplayCargoDetails extends LightningElement {
         }
     }
     connectedCallback(){
+        console.log('cameFromLcl '+this.cameFromLcl);
+        console.log('isLCL '+typeof(this.cameFromLcl));
+        if(this.cameFromLcl == 'true') this.isLCL = true;
         if(this.routeId != '') this.getRouteEquipmentDetails();
     }
     hideModalBox(){
@@ -40,6 +46,12 @@ export default class BAFCODisplayCargoDetails extends LightningElement {
             console.log('getRouteEquipmentDetails result , '+JSON.stringify(result,null,2))
             this.routeEquipList = result;
             let tempvar = this.routeEquipList;
+            tempvar.forEach(elem=>{
+                if(elem.WM__c !=undefined && elem.WM__c > 0 ) {
+                let wm = parseFloat(elem.WM__c );
+                elem.WM__c = wm.toFixed(2);
+                }
+            })
             let index = 1;
             this.routeEquipList = tempvar.map(row => ({
                 ...row,
@@ -57,6 +69,7 @@ export default class BAFCODisplayCargoDetails extends LightningElement {
                this.totalCBM = this.routeEquipList[0].Route__r.Total_CBM__c > 0 ? this.routeEquipList[0].Route__r.Total_CBM__c.toFixed(3) : 0;
                this.totalGross = this.routeEquipList[0].Route__r.Total_Gross_Weight_KGs__c > 0 ? this.routeEquipList[0].Route__r.Total_Gross_Weight_KGs__c : 0;
                this.totalVolumeWeight = this.routeEquipList[0].Route__r.Total_Volumetric_Weight__c > 0 ? this.routeEquipList[0].Route__r.Total_Volumetric_Weight__c : 0;
+               this.totalWM = this.routeEquipList[0].Route__r.Total_WM__c > 0 ? this.routeEquipList[0].Route__r.Total_WM__c : 0;
                this.handleTotalField();
             this.isLoading = false;
         })
@@ -105,12 +118,14 @@ export default class BAFCODisplayCargoDetails extends LightningElement {
             this.handleVolumeWeight(index,e.target.value);
         }
         else this.routeEquipList[contrIndex].CBMChanged = false;
+        this.handleWM(index);
     }
     handleWeightChange(e){
         let index = e.target.dataset.recordId;
         let contrIndex =this.routeEquipList.findIndex(x=>x.index == index);
         this.routeEquipList[contrIndex].Weight_Kgs__c = e.target.value;
         this.handleTotalField();
+        this.handleWM(index);
     }
     handleUnitsChange(e){
         let index = e.target.dataset.recordId;
@@ -136,6 +151,7 @@ export default class BAFCODisplayCargoDetails extends LightningElement {
             totalCBMUpdate : this.totalCBMUpdate,
             totalGrossUpdate : this.totalGrossUpdate,
             totalVolumeWeightUpdate : this.totalVolumeWeightUpdate,
+            totalWM : this.totalWM,
             routeId : this.routeId
         })
         .then(result=>{
@@ -160,6 +176,7 @@ export default class BAFCODisplayCargoDetails extends LightningElement {
             Height__c: null,
             CBM__c: null,
             Weight_Kgs__c: null,
+            WM__c:null,
             Units__c: 1,
             Volumetric_weight_Kgs__c:null,
             Route__c:this.routeId,
@@ -204,16 +221,28 @@ export default class BAFCODisplayCargoDetails extends LightningElement {
         if(lenght == null && width == null && height == null){
             this.routeEquipList[containerIndex].disableCBM = false;
         }
+        this.handleWM(index);
     }
     handleVolumeWeight(index,cbm){
         let containerIndex = this.routeEquipList.findIndex(elem=>elem.index == index);
         this.routeEquipList[containerIndex].Volumetric_weight_Kgs__c = cbm * 167;
         this.handleTotalField();
     }
+    handleWM(index){
+        let containerIndex = this.routeEquipList.findIndex(elem=>elem.index == index);
+        let ccRecord = this.routeEquipList[containerIndex];
+        console.log('ccRecord '+JSON.stringify(ccRecord,null,2))
+        let cbm = ccRecord.CBM__c > 0 ?  ccRecord.CBM__c : 0;
+        let grossWeight = ccRecord.Weight_Kgs__c > 0 ?  (ccRecord.Weight_Kgs__c/750)  : 0;
+        let wm = cbm > grossWeight ? cbm : grossWeight;
+        this.routeEquipList[containerIndex].WM__c = wm;
+        this.handleTotalField();
+    }
     handleTotalField(){
         let totalCBM = 0;
         let totalGross = 0;
         let totalVolumeWeight = 0;
+        let totalWM = 0;
         this.routeEquipList.forEach(elem2=>{
             console.log('elem '+JSON.stringify(elem2,null,2))
             let units = elem2.Units__c > 0 ? elem2.Units__c : 1;
@@ -226,9 +255,13 @@ export default class BAFCODisplayCargoDetails extends LightningElement {
             if(elem2.Volumetric_weight_Kgs__c > 0){
                 totalVolumeWeight = parseFloat(parseFloat(totalVolumeWeight) + (parseFloat(elem2.Volumetric_weight_Kgs__c)* units))
             }
+            if(elem2.WM__c > 0){
+                totalWM = parseFloat(parseFloat(totalWM) + (parseFloat(elem2.WM__c)* units))
+            }
         })
         this.totalCBMUpdate = totalCBM > 0 ? totalCBM.toFixed(3) : null;
         this.totalGrossUpdate = totalGross > 0 ? totalGross.toFixed(2) : null;
         this.totalVolumeWeightUpdate = totalVolumeWeight > 0 ? totalVolumeWeight.toFixed(2) : null;
+        this.totalWM = totalWM > 0 ? totalWM.toFixed(2) : null;
     }
 }
